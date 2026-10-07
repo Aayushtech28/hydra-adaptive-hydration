@@ -1,0 +1,66 @@
+{
+  "@@locale": "en",
+  "appName": "HYDRA",
+  "tagline": "Hydration that adapts to your day.",
+  "notifChannelName": "Hydration check-ins",
+  "notifChannelDescription": "Gentle, adaptive reminders to keep you on pace.",
+  "notifTitle": "HYDRA",
+  "notifFirstOfDay1": "Good morning. Ready for a first sip?",
+  "notifFirstOfDay2": "A glass to start the day?",
+  "notifGentle1": "A small sip is enough.",
+  "notifGentle2": "No rush. A little water when you can.",
+  "notifNeutral1": "Ready for your next drink?",
+  "notifNeutral2": "Time for your next hydration check.",
+  "notifEncouraging1": "You're doing well. Keep your rhythm going.",
+  "notifEncouraging2": "Your rhythm is looking good.",
+  "notifProgress1": "You're {percent}% through today's plan.",
+  "@notifProgress1": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "notifProgress2": "{percent}% of today's plan so far. Nice pace.",
+  "@notifProgress2": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "notifOnPace1": "You're still on pace.",
+  "notifOnPace2": "Right on rhythm. A sip keeps it that way.",
+  "notifBehind1": "A small drink will bring you back toward your plan.",
+  "notifBehind2": "A little behind pace. A few sips will help.",
+  "notifRecovery1": "Missed the last one? No problem. We've adjusted the next check-in.",
+  "notifRecovery2": "We've spread your plan across the rest of the day. One sip is a good start.",
+  "notifClosing1": "Your day is winding down. No need to catch up.",
+  "notifClosing2": "Nothing to force tonight. Tomorrow we'll start earlier.",
+  "notifAfterWorkout1": "Nice work. A drink after your workout?",
+  "notifAfterWorkout2": "Workout done. Time for some water?",
+  "notifActionAdd": "+{amount}",
+  "@notifActionAdd": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "notifActionSnooze": "Snooze 30 min",
+  "whyFirstOfDay": "This is your first check-in of the day, shortly after you wake up.",
+  "whyOnTrackScheduled": "You're on track, so we're keeping the usual spacing.",
+  "whyAheadStayQuiet": "You're ahead of your plan, so we'll stay quiet for longer.",
+  "whySlightlyBehindEarlier": "You're slightly behind your plan, so we moved this reminder earlier.",
+  "whySignificantlyBehindSpread": "You're behind your plan. We're spreading what's left across your remaining time instead of asking for a big catch-up.",
+  "whySnoozedUntil": "You snoozed, so we'll check in again then.",
+  "whyQuietHoursExit": "This was moved to the end of your quiet time.",
+  "whyWorkoutEnded": "We waited until your workout window ended.",
+  "whyFatigueQuiet": "You haven't needed the last few reminders, so we're quiet until tomorrow.",
+  "whyFatigueSlowed": "You've been responding to fewer reminders, so we're spacing them out more.",
+  "whyDayClosingTomorrow": "Your day is almost over. We won't force a catch-up. Tomorrow we'll start earlier.",
+  "whyGoalReachedTomorrow": "You've reached today's target. Next check-in is tomorrow morning.",
+  "whyPausedUntilLog": "Reminders are paused until you log a drink.",
+  "whyPausedUntilTime": "Reminders are paused until the time you chose.",
+  "whyRemindersOff": "Reminders are turned off. HYDRA still tracks your pace."
+}
