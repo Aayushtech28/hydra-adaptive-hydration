@@ -168,6 +168,20 @@ class LocalNotificationService implements NotificationService {
   }
 
   @override
+  Future<void> showTest({required String title, required String body}) async {
+    if (!_initialized) return;
+    await _plugin.show(
+      id: 3999,
+      title: title,
+      body: body,
+      notificationDetails: NotificationDetails(
+        android: AndroidNotificationDetails(kReminderChannelId, _channelName, channelDescription: _channelDescription),
+        iOS: const DarwinNotificationDetails(),
+      ),
+    );
+  }
+
+  @override
   Future<void> cancelAll() => _plugin.cancelAllPendingNotifications();
 
   @override

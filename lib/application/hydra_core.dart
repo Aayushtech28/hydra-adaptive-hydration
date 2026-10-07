@@ -106,6 +106,9 @@ class HydraCore {
   /// Called when the app resumes / starts: resolve elapsed reminders, detect
   /// timezone change, refresh schedule and widget.
   Future<void> onResume() async {
+    // The background notification isolate writes through its own connection;
+    // tell this isolate's streams to re-read.
+    db.markTablesUpdated(db.allTables);
     await errors.guard(ErrorArea.notifications, () async {
       await reschedule(reason: 'resume');
     });

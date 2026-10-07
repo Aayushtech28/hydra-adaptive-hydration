@@ -7,6 +7,7 @@ import '../data/repositories/reminder_repository.dart';
 import '../data/repositories/routine_repository.dart';
 import '../domain/hre/types.dart';
 import '../domain/insights/day_stats.dart';
+import '../domain/models/entities.dart';
 import '../domain/models/enums.dart';
 import '../domain/models/routine_resolver.dart';
 
@@ -61,6 +62,56 @@ class StatsService {
     );
   }
 
+  /// Stats for an arbitrary inclusive range (cached for closed days, live for
+  /// today). Missing days are returned as empty stats so calendars are dense.
+  Future<List<DayStats>> rangeStats(LocalDate from, LocalDate to, {required LocalDate today, DateTime? now}) async {
+    final profile = (await profiles.get())!;
+    final cached = await summaries.range(from, to);
+    final out = <DayStats>[];
+    var d = from;
+    while (!d.isAfter(to)) {
+      DayStats? s;
+      if (d == today) {
+        s = await computeDay(d, now: now);
+      } else if (d.isAfter(today)) {
+        s = DayStats.empty(d, profile.dailyTargetMl);
+      } else {
+        s = cached[d];
+        if (s == null) {
+          final entries = await hydration.entriesForDay(d);
+          s = entries.isEmpty ? DayStats.empty(d, profile.dailyTargetMl) : await computeDay(d, now: now);
+          await summaries.put(s, now: now ?? DateTime.now());
+        }
+      }
+      out.add(s);
+      d = d.addDays(1);
+    }
+    return out;
+  }
+
+  /// Everything the Day view needs: entries, the day's plan curve and stats.
+  Future<DayDetail> detail(LocalDate date, {DateTime? now}) async {
+    final profile = (await profiles.get())!;
+    final rs = await routines.getAll();
+    final entries = await hydration.entriesForDay(date);
+    final zone = entries.isNotEmpty ? entries.first.timezone : await timezoneName();
+    final loc = locationFor(zone);
+    final resolved = RoutineResolver.resolve(profile: profile, routines: rs, date: date);
+    final window = DayWindow.build(
+      date: date,
+      location: loc,
+      wakeMinute: resolved.wakeMinute,
+      sleepMinute: resolved.sleepMinute,
+    );
+    return DayDetail(
+      date: date,
+      entries: entries,
+      trajectory: PlanTrajectory(targetMl: profile.dailyTargetMl, window: window),
+      stats: await computeDay(date, now: now),
+      routineName: resolved.name,
+    );
+  }
+
   /// The first day the user has any data or started the app.
   Future<LocalDate> firstDay(LocalDate today) async {
     final profile = (await profiles.get())!;
@@ -100,4 +151,19 @@ class StatsService {
     }
     return out;
   }
+}
+
+class DayDetail {
+  const DayDetail({
+    required this.date,
+    required this.entries,
+    required this.trajectory,
+    required this.stats,
+    required this.routineName,
+  });
+  final LocalDate date;
+  final List<HydrationEntry> entries;
+  final PlanTrajectory trajectory;
+  final DayStats stats;
+  final String? routineName;
 }

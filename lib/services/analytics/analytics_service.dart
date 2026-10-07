@@ -51,8 +51,13 @@ abstract class AnalyticsSink {
 }
 
 class AnalyticsService {
-  AnalyticsService(this._sinks);
+  AnalyticsService(List<AnalyticsSink> sinks) : _sinks = [...sinks];
   final List<AnalyticsSink> _sinks;
+
+  void addSink(AnalyticsSink s) {
+    _sinks.add(s);
+    unawaited(s.setEnabled(_enabled));
+  }
   bool _enabled = false;
 
   bool get enabled => _enabled;

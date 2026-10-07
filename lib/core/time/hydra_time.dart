@@ -114,3 +114,6 @@ class AppClock {
 
   DateTime now() => _source().add(offset);
 }
+
+/// Converts an absolute instant to wall-clock time in [loc].
+tz.TZDateTime tzFrom(DateTime instant, tz.Location loc) => tz.TZDateTime.from(instant.toUtc(), loc);

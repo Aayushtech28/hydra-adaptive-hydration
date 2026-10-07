@@ -78,6 +78,9 @@ abstract class NotificationService {
   Future<void> cancelAll();
   Future<int> pendingCount();
 
+  /// Shows an immediate notification (used by the notification check-up).
+  Future<void> showTest({required String title, required String body});
+
   /// Interactions received while the app process is alive.
   Stream<NotificationAction> get actions;
 

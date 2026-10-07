@@ -62,5 +62,996 @@
   "whyGoalReachedTomorrow": "You've reached today's target. Next check-in is tomorrow morning.",
   "whyPausedUntilLog": "Reminders are paused until you log a drink.",
   "whyPausedUntilTime": "Reminders are paused until the time you chose.",
-  "whyRemindersOff": "Reminders are turned off. HYDRA still tracks your pace."
+  "whyRemindersOff": "Reminders are turned off. HYDRA still tracks your pace.",
+  "commonOk": "OK",
+  "commonCancel": "Cancel",
+  "commonSave": "Save",
+  "commonDelete": "Delete",
+  "commonDone": "Done",
+  "commonNext": "Next",
+  "commonBack": "Back",
+  "commonSkip": "Skip",
+  "commonContinue": "Continue",
+  "commonTryAgain": "Try again",
+  "commonUndo": "Undo",
+  "commonEdit": "Edit",
+  "commonClose": "Close",
+  "commonNotNow": "Not now",
+  "commonOn": "On",
+  "commonOff": "Off",
+  "commonLearnMore": "Learn more",
+  "commonProBadge": "Pro",
+  "commonLoadFailed": "Couldn't load this right now.",
+  "navHome": "Home",
+  "navHistory": "History",
+  "navInsights": "Insights",
+  "navYou": "You",
+  "onbWelcomeTitle": "Hydration that adapts to your day.",
+  "onbWelcomeBody": "HYDRA learns your rhythm and quietly keeps you on pace. The smarter it gets, the quieter it gets.",
+  "onbGetStarted": "Get started",
+  "onbWakeTitle": "When do you usually start your day?",
+  "onbWakeBody": "Your first check-in will come shortly after this.",
+  "onbSleepTitle": "When does your day usually end?",
+  "onbSleepBody": "HYDRA stays quiet from your last check-in until you wake.",
+  "onbTimeTooShort": "That's a very short day. Try at least six hours between waking and sleeping.",
+  "onbTimeWakeEarly": "Wake times before 4:00 are not supported. Pick a later time.",
+  "onbTimeOvernight": "Overnight days can end by 4:00 at the latest.",
+  "onbStyleTitle": "How much prompting do you prefer?",
+  "onbStyleBody": "You can change this any time, and HYDRA adapts as it learns.",
+  "styleGentle": "Gentle",
+  "styleGentleBody": "Fewer, softer reminders and a quieter day.",
+  "styleBalanced": "Balanced",
+  "styleBalancedBody": "A steady rhythm that adapts to your pace.",
+  "styleFocus": "Focus",
+  "styleFocusBody": "More persistent check-ins for people who often forget.",
+  "onbUnitTitle": "Choose your measurement.",
+  "onbUnitBody": "Everything is stored in millilitres, so you can switch whenever you like.",
+  "unitMl": "Millilitres (ml)",
+  "unitL": "Litres (L)",
+  "unitFlOz": "US fluid ounces (fl oz)",
+  "unitCups": "US cups",
+  "onbTargetTitle": "Set your daily target.",
+  "onbTargetBody": "This is the amount you choose. It isn't medical advice.",
+  "onbStarterTarget": "Starter target",
+  "onbStarterTargetBody": "A general planning preset. Adjust it to whatever suits you.",
+  "onbCustomTarget": "Custom target",
+  "onbYourTarget": "Your target",
+  "onbYourTargetBody": "How much you want to drink each day. You decide this.",
+  "onbHydraSchedule": "HYDRA schedule",
+  "onbHydraScheduleBody": "When to check in during your day. HYDRA decides this and adapts it.",
+  "onbTargetInvalid": "Enter a target between {min} and {max}.",
+  "onbReadyTitle": "Your hydration rhythm is ready.",
+  "onbReadyNotifTitle": "Notifications",
+  "onbReadyNotifBody": "HYDRA can remind you at the right moments, and you can log right from the notification.",
+  "onbReadyPrivacyTitle": "Private by design",
+  "onbReadyPrivacyBody": "Your hydration history stays on this device. No account needed.",
+  "onbReadyHealthTitle": "Optional Health sync",
+  "onbReadyHealthBody": "After you've logged a few drinks, you can choose to sync with your health app.",
+  "onbAllowNotifications": "Allow notifications",
+  "onbStartWithout": "Start without reminders",
+  "onbStart": "Open HYDRA",
+  "onbStepOf": "Step {current} of {total}",
+  "dashGreetMorning": "Good morning",
+  "dashGreetAfternoon": "Good afternoon",
+  "dashGreetEvening": "Good evening",
+  "dashGreetNight": "Hello",
+  "dashToday": "Today",
+  "dashConsumedOfTarget": "{consumed} / {target}",
+  "dashProgressSemantics": "{percent} percent of today's target. {consumed} of {target}.",
+  "paceAhead": "Ahead of pace",
+  "paceOnTrack": "On pace",
+  "paceSlightlyBehind": "Adjusting",
+  "paceNeedsAttention": "Needs attention",
+  "paceDayClosing": "Day winding down",
+  "paceGoalReached": "Goal reached",
+  "paceBeforeWake": "Your day starts soon",
+  "paceFinishBy": "On pace to finish by {time}",
+  "paceFinishLater": "At this pace you'd finish after your planned window. We'll adjust gently.",
+  "paceGoalReachedBody": "You've reached today's target. Nicely done.",
+  "paceClosingBody": "No need to force a catch-up tonight. Tomorrow starts fresh.",
+  "paceSpreadBody": "About {amount} per check-in keeps you comfortable.",
+  "nextReminderTitle": "Next reminder",
+  "nextReminderAt": "{time}",
+  "nextReminderTomorrowAt": "Tomorrow, {time}",
+  "nextReminderNone": "No reminder scheduled",
+  "nextReminderPaused": "Paused",
+  "nextReminderOff": "Reminders are off",
+  "nextReminderWhy": "Why now?",
+  "nextReminderLastDrink": "Last drink {minutes} min ago.",
+  "nextReminderPause": "Pause",
+  "nextReminderResume": "Resume",
+  "pause15": "15 minutes",
+  "pause30": "30 minutes",
+  "pause60": "1 hour",
+  "pauseUntil3pm": "Until 3 PM",
+  "pauseUntilLog": "Until I log again",
+  "pauseWelcomeBack": "Welcome back. Picking up where you left off.",
+  "quickAddTitle": "Quick add",
+  "quickAddCustom": "Custom",
+  "quickAddVessels": "My vessels",
+  "logged": "Logged {amount}",
+  "loggedUndone": "Removed",
+  "logFailed": "That amount isn't valid.",
+  "timelineTitle": "Today",
+  "timelineEmptyTitle": "First day starts here.",
+  "timelineEmptyBody": "Tap an amount above when you drink. HYDRA will start learning your rhythm from your first log.",
+  "timelineEntry": "{time} · {amount}",
+  "entryEdit": "Edit entry",
+  "entryDeleted": "Entry removed",
+  "entryAmount": "Amount ({unit})",
+  "entryTime": "Time",
+  "entryDate": "Date",
+  "entryYesterday": "Yesterday",
+  "entryNow": "Now",
+  "logSheetTitle": "Add hydration",
+  "logSheetLog": "Log now",
+  "logSheetRecent": "Recent",
+  "logSheetLogAt": "Log at",
+  "logSheetFuture": "That time is in the future.",
+  "insightCardTitle": "Today's insight",
+  "insightNoData": "Log your first drink and HYDRA will begin learning your rhythm.",
+  "insightFirstDay": "You've started your first day. Patterns appear after about a week.",
+  "insightEarlyDays": "{days} days in. A little more history and HYDRA can spot your patterns.",
+  "insightMorningStrength": "Your mornings are consistently strong ({percent}% of your morning plan).",
+  "insightAfternoonDrift": "Your afternoon is where your rhythm usually drifts ({percent}% of the plan).",
+  "insightEveningDrift": "Evenings are where you tend to fall behind ({percent}% of the plan).",
+  "insightEarlyFirstDrink": "Your strongest days start with a drink within {minutes} minutes of waking.",
+  "insightWeekdayStable": "Your routine holds steady on weekdays and weekends.",
+  "insightWeekendVariance": "Weekdays average {weekday}% of plan versus {weekend}% on weekends.",
+  "insightReminderResponse": "You logged after {percent}% of your last {count} reminders.",
+  "insightRoutineImprovement": "Your routine improved by {points} points since last week.",
+  "insightRecovery": "Yesterday didn't erase your progress. Your rhythm is still building.",
+  "tzChangedTitle": "Your timezone changed",
+  "tzChangedBody": "HYDRA moved your reminders to {zone} local time. Your history stays exactly as it was.",
+  "tzChangedAdjust": "Got it",
+  "fatigueTitle": "Want fewer reminders?",
+  "fatigueBody": "You haven't needed many recent reminders. We can make HYDRA quieter.",
+  "fatigueAccept": "Make it quieter",
+  "fatigueDecline": "Keep as is",
+  "permNudgeTitle": "Reminders are off",
+  "permNudgeBody": "Notifications are turned off for HYDRA. Tracking still works; turn them on if you'd like reminders.",
+  "permNudgeAction": "Allow notifications",
+  "healthNudgeTitle": "Sync with your health app?",
+  "healthNudgeBody": "Optional. HYDRA only reads and writes water intake, and works fine without it.",
+  "healthNudgeAction": "Set up Health sync",
+  "disclaimerShort": "HYDRA is a wellness and habit tool, not medical advice. If you have a medical condition or a clinician-directed fluid limit, follow your healthcare professional's guidance.",
+  "@onbTargetInvalid": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "@onbStepOf": {
+    "placeholders": {
+      "current": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "@dashConsumedOfTarget": {
+    "placeholders": {
+      "consumed": {
+        "type": "String"
+      },
+      "target": {
+        "type": "String"
+      }
+    }
+  },
+  "@dashProgressSemantics": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      },
+      "consumed": {
+        "type": "String"
+      },
+      "target": {
+        "type": "String"
+      }
+    }
+  },
+  "@paceFinishBy": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "@paceSpreadBody": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "@nextReminderAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "@nextReminderTomorrowAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "@nextReminderLastDrink": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "@logged": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "@timelineEntry": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "@entryAmount": {
+    "placeholders": {
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "@insightEarlyDays": {
+    "placeholders": {
+      "days": {
+        "type": "String"
+      }
+    }
+  },
+  "@insightMorningStrength": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "@insightAfternoonDrift": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "@insightEveningDrift": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "@insightEarlyFirstDrink": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "@insightWeekendVariance": {
+    "placeholders": {
+      "weekday": {
+        "type": "String"
+      },
+      "weekend": {
+        "type": "String"
+      }
+    }
+  },
+  "@insightReminderResponse": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      },
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "@insightRoutineImprovement": {
+    "placeholders": {
+      "points": {
+        "type": "String"
+      }
+    }
+  },
+  "@tzChangedBody": {
+    "placeholders": {
+      "zone": {
+        "type": "String"
+      }
+    }
+  },
+  "a11yLogAmount": "Log {amount}",
+  "a11yVesselLog": "Log {name}, {amount}",
+  "a11yDeleteEntry": "Delete entry",
+  "a11yRemindersMenu": "Reminder options",
+  "dashAllEntries": "Show details",
+  "dashWhyHide": "Hide",
+  "dashLastLogged": "Last logged {time}",
+  "dashLogFailedOffline": "Couldn't save that. Please try again.",
+  "logSheetAmountHint": "Amount",
+  "logSheetVesselsEmpty": "Add a bottle or glass in You → Vessels for one-tap logging.",
+  "logSheetEditing": "Edit entry",
+  "logSheetSaved": "Saved",
+  "entryConfirmDeleteTitle": "Remove this entry?",
+  "entryConfirmDeleteBody": "Your total and pace will update.",
+  "proRequiredHistoryEdit": "Editing past days is part of HYDRA Pro.",
+  "pace3Seconds": "Pace",
+  "@a11yLogAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "@a11yVesselLog": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "@dashLastLogged": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "historyTitle": "History",
+  "historyDay": "Day",
+  "historyWeek": "Week",
+  "historyMonth": "Month",
+  "historyCalendar": "Calendar",
+  "historyDayTotal": "{amount} of {target}",
+  "historyPrevDay": "Previous day",
+  "historyNextDay": "Next day",
+  "historyToday": "Today",
+  "historyNoEntriesTitle": "Nothing logged this day",
+  "historyNoEntriesBody": "Entries you log appear here. You can add one for this day with Custom.",
+  "historyFutureTitle": "This day hasn't happened yet",
+  "historyFutureBody": "Come back once it's underway.",
+  "historyPlanVsActual": "Plan vs. actual",
+  "historyChartSemantics": "Planned {planned}, actual {actual}",
+  "historyLegendPlan": "Plan",
+  "historyLegendActual": "Actual",
+  "historyWeekEmptyTitle": "No weekly history yet",
+  "historyWeekEmptyBody": "After a few days of logging, your week appears here as a calm overview, not a scoreboard.",
+  "historyDayStatusOnPlan": "On plan",
+  "historyDayStatusSteady": "Building",
+  "historyDayStatusAttention": "Needs attention",
+  "historyDayStatusNoData": "No data",
+  "historyDayPercentStatus": "{percent}% · {status}",
+  "historyMonthTrendTitle": "Weekly rhythm",
+  "historyMonthSummary": "{days} active days · {complete} on plan",
+  "historyMonthAverage": "Average plan adherence {percent}%",
+  "historyMonthEmptyTitle": "Your month starts here",
+  "historyMonthEmptyBody": "Trends appear once there are a few days of history to compare.",
+  "historyCalendarCell": "{date}: {status}",
+  "historyEditPro": "Editing earlier days is part of HYDRA Pro.",
+  "historyWeekOf": "Week of {date}",
+  "weekdayShortMon": "Mon",
+  "weekdayShortTue": "Tue",
+  "weekdayShortWed": "Wed",
+  "weekdayShortThu": "Thu",
+  "weekdayShortFri": "Fri",
+  "weekdayShortSat": "Sat",
+  "weekdayShortSun": "Sun",
+  "adLabel": "Advertisement",
+  "adSponsored": "Sponsored",
+  "@historyDayTotal": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "target": {
+        "type": "String"
+      }
+    }
+  },
+  "@historyChartSemantics": {
+    "placeholders": {
+      "planned": {
+        "type": "String"
+      },
+      "actual": {
+        "type": "String"
+      }
+    }
+  },
+  "@historyDayPercentStatus": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "@historyMonthSummary": {
+    "placeholders": {
+      "days": {
+        "type": "String"
+      },
+      "complete": {
+        "type": "String"
+      }
+    }
+  },
+  "@historyMonthAverage": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "@historyCalendarCell": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "@historyWeekOf": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "insightsTitle": "Insights",
+  "momentumTitle": "Hydration momentum",
+  "momentumDisclaimer": "A behaviour score about your routine. It isn't a health measure.",
+  "momentumTierBuilding": "Building",
+  "momentumTierSteady": "Steady",
+  "momentumTierStrong": "Strong",
+  "momentumTierExcellent": "Excellent",
+  "momentumTrendUp": "Up {points} from the previous two weeks",
+  "momentumTrendDown": "Down {points} from the previous two weeks",
+  "momentumTrendFlat": "Holding steady",
+  "momentumInsufficient": "Momentum appears after about five days of use. There's no rush.",
+  "momentumComponentConsistency": "Consistency",
+  "momentumComponentStability": "Routine stability",
+  "momentumComponentResponse": "Reminder response",
+  "momentumComponentTiming": "Plan timing",
+  "momentumComponentIndependence": "Self-started logging",
+  "consistencyTitle": "Consistency",
+  "consistencyBody": "Your last 30 days, with recent days counting a little more. One quiet day doesn't undo your rhythm.",
+  "consistencyInsufficient": "Consistency appears after about three days.",
+  "consistencyBuilding": "You're building a reliable rhythm.",
+  "streakTitle": "Streak",
+  "streakDays": "{days} days",
+  "streakBest": "Best: {days}",
+  "streakRecovery": "A recovery day is available, so one miss won't reset you.",
+  "streakRecoveryUsed": "Yesterday didn't end your streak.",
+  "independenceTitle": "Reminder independence",
+  "independenceCelebrate": "You needed {percent}% fewer reminders than when you started.",
+  "independenceCelebrateBody": "Your consistency held while you relied on reminders less. That's habit forming.",
+  "independenceSteady": "Your reminder use is steady. HYDRA never reduces reminders just to improve this number.",
+  "independenceInsufficient": "This appears after about four weeks of use.",
+  "habitTitle": "Habit stage",
+  "habitNext": "Next: {stage}",
+  "stageRemember": "Remember",
+  "stageRememberBody": "HYDRA reminds you while you settle in.",
+  "stageRespond": "Respond",
+  "stageRespondBody": "You regularly act on reminders.",
+  "stagePredict": "Predict",
+  "stagePredictBody": "Your routine is becoming predictable, so HYDRA can time reminders better.",
+  "stageRoutine": "Routine",
+  "stageRoutineBody": "Hydration fits into your day.",
+  "stageAutomatic": "Automatic",
+  "stageAutomaticBody": "It's second nature now. HYDRA mostly stays quiet.",
+  "insightsPatternsTitle": "Patterns",
+  "challengesTitle": "Challenges",
+  "challengesBody": "Gentle goals about routine, never about drinking more.",
+  "challengeProgress": "{progress} of {goal}",
+  "challengeCompleted": "Completed",
+  "challengeMorningMomentumTitle": "Morning Momentum",
+  "challengeMorningMomentumBody": "Have your first drink within 90 minutes of waking.",
+  "challengeQuietConsistencyTitle": "Quiet Consistency",
+  "challengeQuietConsistencyBody": "Stay on plan with three reminders or fewer in a day.",
+  "challengeWeekdayRhythmTitle": "Weekday Rhythm",
+  "challengeWeekdayRhythmBody": "Keep your routine going on weekdays.",
+  "challengeAfternoonRescueTitle": "Afternoon Rescue",
+  "challengeAfternoonRescueBody": "Stay on plan through the afternoon.",
+  "challengeRoutineBuilderTitle": "Routine Builder",
+  "challengeRoutineBuilderBody": "Start your day at a similar time.",
+  "challengeWindow": "Last {days} days",
+  "challengesEmptyTitle": "No active challenges",
+  "challengesEmptyBody": "Challenges appear here when they're available.",
+  "recapWeeklyTitle": "Your week",
+  "recapWeeklyCta": "See your week",
+  "recapMonthlyTitle": "Your month",
+  "recapMonthlyCta": "See your month",
+  "recapNeedMoreTitle": "Your first recap is on its way",
+  "recapNeedMoreBody": "A weekly recap appears after about three days of use.",
+  "recapConsistency": "Consistency",
+  "recapStrongestDay": "Strongest day",
+  "recapBestWindow": "Most consistent window",
+  "recapOpportunity": "Biggest opportunity",
+  "recapCompletion": "Plan completion",
+  "recapCompletionValue": "{done} of {total} days",
+  "recapResponse": "Reminder response",
+  "recapTrend": "Compared with last week",
+  "recapTrendUp": "Up {points} points",
+  "recapTrendDown": "Down {points} points",
+  "recapTrendFlat": "About the same",
+  "recapReminders": "Reminders per day",
+  "recapRemindersFewer": "{percent}% fewer than last week",
+  "recapRemindersMore": "{percent}% more than last week",
+  "recapEncourageUp": "You're becoming more consistent.",
+  "recapEncourageSteady": "Your rhythm is holding steady.",
+  "recapEncourageDown": "A quieter week. Your rhythm is still there.",
+  "recapShare": "Share",
+  "recapShareChoose": "Choose what to include",
+  "recapShareHint": "Only the items you tick are added to the image.",
+  "recapShareFailed": "Couldn't create the image.",
+  "segMorning": "Morning",
+  "segAfternoon": "Afternoon",
+  "segEvening": "Evening",
+  "recapMonthlyActive": "Active days",
+  "recapMonthlyBestRoutine": "Best routine",
+  "recapMonthlyFavoriteVessel": "Favorite vessel",
+  "recapMonthlyImproved": "Most improved",
+  "recapMonthlyHabit": "Habit stage",
+  "recapMonthlyMomentum": "Momentum",
+  "recapMonthlyLocked": "The full monthly report is part of HYDRA Pro.",
+  "recapMonthlyWatch": "Watch a short ad to see it once",
+  "recapMonthlyUnlock": "Unlock with HYDRA Pro",
+  "recapMonthlyAdFailed": "No ad is available right now. Try again later.",
+  "routineKindWeekday": "Weekday",
+  "routineKindWeekend": "Weekend",
+  "routineKindWork": "Work",
+  "routineKindStudy": "Study",
+  "routineKindWorkout": "Workout",
+  "routineKindTravel": "Travel",
+  "routineKindCustom": "Custom",
+  "@momentumTrendUp": {
+    "placeholders": {
+      "points": {
+        "type": "String"
+      }
+    }
+  },
+  "@momentumTrendDown": {
+    "placeholders": {
+      "points": {
+        "type": "String"
+      }
+    }
+  },
+  "@streakDays": {
+    "placeholders": {
+      "days": {
+        "type": "String"
+      }
+    }
+  },
+  "@streakBest": {
+    "placeholders": {
+      "days": {
+        "type": "String"
+      }
+    }
+  },
+  "@independenceCelebrate": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "@habitNext": {
+    "placeholders": {
+      "stage": {
+        "type": "String"
+      }
+    }
+  },
+  "@challengeProgress": {
+    "placeholders": {
+      "progress": {
+        "type": "String"
+      },
+      "goal": {
+        "type": "String"
+      }
+    }
+  },
+  "@challengeWindow": {
+    "placeholders": {
+      "days": {
+        "type": "String"
+      }
+    }
+  },
+  "@recapCompletionValue": {
+    "placeholders": {
+      "done": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "@recapTrendUp": {
+    "placeholders": {
+      "points": {
+        "type": "String"
+      }
+    }
+  },
+  "@recapTrendDown": {
+    "placeholders": {
+      "points": {
+        "type": "String"
+      }
+    }
+  },
+  "@recapRemindersFewer": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "@recapRemindersMore": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "youTitle": "You",
+  "youProCardTitle": "HYDRA Pro",
+  "youProCardBody": "Your hydration system, optimized around your life.",
+  "youProActive": "HYDRA Pro is active",
+  "youProManage": "Manage subscription",
+  "youSectionPlan": "Your plan",
+  "youSectionReminders": "Reminders",
+  "youSectionData": "Data and connections",
+  "youSectionApp": "App",
+  "youGoal": "Daily target",
+  "youSchedule": "Wake and sleep",
+  "youStyle": "Reminder style",
+  "youRoutines": "Routines",
+  "youVessels": "Vessels",
+  "youUnits": "Measurement",
+  "youNotifications": "Notifications",
+  "youHealth": "Health sync",
+  "youPrivacy": "Privacy Center",
+  "youAppearance": "Appearance",
+  "youSupport": "Help and support",
+  "youDebug": "Developer tools",
+  "goalTitle": "Daily target",
+  "goalBody": "This is the amount you choose to aim for. HYDRA never changes it on its own, and it isn't medical advice.",
+  "goalCurrent": "Current target",
+  "goalSave": "Save target",
+  "goalSaved": "Target updated",
+  "goalHotNote": "If it's hot or you're very active, you may want a higher target. That's your call.",
+  "scheduleTitle": "Wake and sleep",
+  "scheduleBody": "HYDRA spreads your target across your waking hours and stays quiet while you sleep.",
+  "scheduleWake": "Wake time",
+  "scheduleSleep": "Sleep time",
+  "scheduleWeekendToggle": "Different on weekends",
+  "scheduleWeekendWake": "Weekend wake time",
+  "scheduleWeekendSleep": "Weekend sleep time",
+  "scheduleInvalid": "Those times don't make a valid day. Try at least six hours awake.",
+  "scheduleSaved": "Schedule updated",
+  "scheduleEnvironment": "Hydration environment",
+  "scheduleEnvironmentNormal": "Normal",
+  "scheduleEnvironmentHot": "Hot or very active",
+  "scheduleEnvironmentBody": "Hot days make HYDRA check in a little more often. Your target stays yours.",
+  "remindersTitle": "Notifications",
+  "remindersToggle": "Reminders",
+  "remindersToggleBody": "Adaptive check-ins during your day.",
+  "remindersPermissionOff": "Notifications are off for HYDRA in system settings.",
+  "remindersPermissionAllow": "Allow notifications",
+  "remindersStyle": "Reminder style",
+  "remindersTone": "Wording",
+  "toneAuto": "Adaptive",
+  "toneAutoBody": "Wording follows how your day is going.",
+  "toneGentle": "Gentle",
+  "toneNeutral": "Neutral",
+  "toneEncouraging": "Encouraging",
+  "toneProgress": "Progress",
+  "remindersQuietHours": "Smart quiet hours",
+  "remindersQuietBody": "HYDRA notices times you usually skip reminders and can stay quiet then.",
+  "remindersQuietSuggestion": "You usually skip reminders around {start} to {end}. Stay quiet then?",
+  "remindersQuietAccept": "Add quiet time",
+  "remindersQuietNone": "No pattern yet. HYDRA learns from a few days of responses.",
+  "remindersHelp": "Notifications not arriving?",
+  "remindersFatigueNote": "HYDRA slows down automatically when reminders aren't helping.",
+  "notifHelpTitle": "Notification check-up",
+  "notifHelpBody": "HYDRA checks each thing that has to be right for reminders to arrive.",
+  "notifHelpPermission": "Notifications allowed",
+  "notifHelpRemindersOn": "Reminders turned on",
+  "notifHelpNotPaused": "Not paused",
+  "notifHelpScheduled": "Next reminder scheduled",
+  "notifHelpNextAt": "Next reminder: {time}",
+  "notifHelpBattery": "Your phone's battery saver may delay reminders. If they arrive late, exclude HYDRA from battery optimization.",
+  "notifHelpFocus": "Focus or Do Not Disturb modes can silence reminders on purpose.",
+  "notifHelpTest": "Send a test notification",
+  "notifHelpTestSent": "Test sent",
+  "notifHelpFix": "Fix",
+  "notifHelpOk": "OK",
+  "notifHelpNeedsAttention": "Needs attention",
+  "notifTestBody": "This is a test reminder from HYDRA.",
+  "vesselsTitle": "Vessels",
+  "vesselsBody": "Log your own bottle or glass in one tap.",
+  "vesselsEmptyTitle": "No vessels yet",
+  "vesselsEmptyBody": "Add the glass or bottle you actually use, and logging becomes a single tap.",
+  "vesselsAdd": "Add vessel",
+  "vesselName": "Name",
+  "vesselAmount": "Volume ({unit})",
+  "vesselIcon": "Icon",
+  "vesselFavorite": "Show on home",
+  "vesselLimit": "Free includes {count} vessels. HYDRA Pro has no limit.",
+  "vesselLimitWatch": "Watch a short ad for one extra slot today",
+  "vesselDeleteTitle": "Delete this vessel?",
+  "vesselDeleteBody": "Past entries keep their amounts.",
+  "vesselSaved": "Vessel saved",
+  "vesselDefaultGlass": "Glass",
+  "vesselDefaultDesk": "Desk bottle",
+  "vesselDefaultGym": "Gym bottle",
+  "routinesTitle": "Routines",
+  "routinesBody": "A routine sets wake, sleep and quiet times for certain days. Switch with one tap.",
+  "routinesEmptyTitle": "No routines yet",
+  "routinesEmptyBody": "Your wake and sleep times apply every day. Add a routine for work days, study, workouts or travel.",
+  "routinesAdd": "Add routine",
+  "routinesActive": "In use",
+  "routinesUse": "Use now",
+  "routinesUseAuto": "Back to automatic",
+  "routinesDays": "Days",
+  "routinesName": "Name",
+  "routinesKind": "Type",
+  "routinesQuiet": "Quiet times",
+  "routinesQuietAdd": "Add quiet time",
+  "routinesWorkout": "Workout window",
+  "routinesWorkoutBody": "Reminders pause during this time and resume right after.",
+  "routinesFrom": "From",
+  "routinesTo": "To",
+  "routinesLimit": "Free includes {count} routines. HYDRA Pro has no limit.",
+  "routinesProKind": "Workout and Travel routines are part of HYDRA Pro.",
+  "routinesDeleteTitle": "Delete this routine?",
+  "routinesDeleteBody": "Your history isn't affected.",
+  "routinesSaved": "Routine saved",
+  "routinesInvalid": "Check the wake and sleep times.",
+  "routinesNameInvalid": "Give the routine a short name.",
+  "healthTitle": "Health sync",
+  "healthIntro": "Sync water intake with your health app. HYDRA reads and writes water only: nothing else.",
+  "healthProBody": "Health sync is part of HYDRA Pro.",
+  "healthProCta": "See HYDRA Pro",
+  "healthEnable": "Turn on Health sync",
+  "healthDisable": "Turn off",
+  "healthDirection": "What to sync",
+  "healthDirectionTwoWay": "Both ways",
+  "healthDirectionImport": "Import from Health",
+  "healthDirectionExport": "Send HYDRA to Health",
+  "healthSyncNow": "Sync now",
+  "healthLastSync": "Last synced {time}",
+  "healthNever": "Not synced yet",
+  "healthSynced": "Synced: {imported} imported, {exported} sent",
+  "healthAvailabilityMissing": "Health Connect isn't installed on this device.",
+  "healthAvailabilityUnsupported": "Health sync isn't available on this device.",
+  "healthInstall": "Install Health Connect",
+  "healthPermissionDenied": "HYDRA doesn't have permission to read or write water intake.",
+  "healthManagePermissions": "Manage health permissions",
+  "healthFailedTitle": "HYDRA couldn't sync right now.",
+  "healthFailedBody": "Your drinks are safe in HYDRA and tracking continues as normal.",
+  "healthContinueWithout": "Continue without sync",
+  "healthDeleteNote": "Deleting HYDRA data doesn't delete records already in your health app. Remove those there.",
+  "healthDuplicateNote": "HYDRA matches drinks it already knows about, so nothing is counted twice.",
+  "privacyTitle": "Privacy Center",
+  "privacyIntro": "Your hydration history stays on this device. No account. Health data is never used to choose ads.",
+  "privacyYourData": "Your data",
+  "privacyHydration": "Hydration history",
+  "privacyHydrationValue": "On this device",
+  "privacyHealth": "Health sync",
+  "privacyAnalytics": "Anonymous usage statistics",
+  "privacyAnalyticsBody": "Product events like 'onboarding completed'. Never amounts or history.",
+  "privacyAds": "Advertising",
+  "privacyAdsValue": "Contextual only",
+  "privacyAdsBody": "Ads never use your hydration or health data.",
+  "privacyPro": "Ad-free with HYDRA Pro",
+  "privacyNotifications": "Notifications",
+  "privacyStorage": "Local storage",
+  "privacyStorageValue": "Private app storage",
+  "privacyWidgetHide": "Hide amounts in widgets",
+  "privacyWidgetHideBody": "Widgets show only the percentage.",
+  "privacyExport": "Export my data",
+  "privacyExportBody": "A CSV or JSON file with every entry, vessel and routine.",
+  "privacyExportCsv": "Export as CSV",
+  "privacyExportJson": "Export as JSON",
+  "privacyExportFailed": "Couldn't create the export.",
+  "privacyDelete": "Delete my data",
+  "privacyDeleteBody": "Removes everything from this device.",
+  "privacyDeleteConfirmTitle": "Delete all HYDRA data?",
+  "privacyDeleteConfirmBody": "This permanently deletes:\n• hydration history\n• vessels\n• routines\n• preferences\n• local insights\n\nHealth records in your health app are not deleted. Your subscription is separate and isn't cancelled.",
+  "privacyDeleteConfirmAction": "Delete everything",
+  "privacyDeleted": "Your data was deleted.",
+  "privacyChoices": "Manage privacy choices",
+  "privacyHealthPerms": "Manage health permissions",
+  "privacyPolicy": "Privacy Policy",
+  "privacyTerms": "Terms",
+  "privacyOpenFailed": "Couldn't open the link.",
+  "privacyExportContents": "Exports contain: id, date, time (UTC), timezone, volume in ml, vessel and source.",
+  "appearanceTitle": "Appearance",
+  "appearanceMode": "Mode",
+  "appearanceSystem": "System",
+  "appearanceLight": "Light",
+  "appearanceDark": "Dark",
+  "appearanceThemes": "Themes",
+  "appearanceOcean": "Ocean",
+  "appearanceAurora": "Aurora",
+  "appearanceGraphite": "Graphite",
+  "appearanceThemeProNote": "Aurora and Graphite are part of HYDRA Pro.",
+  "appearanceWatchTheme": "Watch a short ad to try Aurora for 24 hours",
+  "appearanceThemeUntil": "Aurora is on until tomorrow.",
+  "appearanceReduceMotion": "HYDRA follows your system's reduce-motion setting.",
+  "paywallTitle": "HYDRA Pro",
+  "paywallHeadline": "Your hydration system, optimized around your life.",
+  "paywallBenefitNoAds": "No ads",
+  "paywallBenefitScheduler": "Advanced adaptive scheduling",
+  "paywallBenefitHealth": "Health sync",
+  "paywallBenefitInsights": "Advanced insights",
+  "paywallBenefitVessels": "Unlimited vessels",
+  "paywallBenefitRoutines": "Advanced routines",
+  "paywallBenefitTravel": "Travel mode",
+  "paywallBenefitWidgets": "Advanced widgets",
+  "paywallBenefitExport": "Export",
+  "paywallBenefitThemes": "Premium themes",
+  "paywallFreeNote": "Logging, reminders, progress and privacy controls stay free.",
+  "paywallAnnual": "Annual",
+  "paywallMonthly": "Monthly",
+  "paywallLifetime": "Lifetime",
+  "paywallBestValue": "Best value",
+  "paywallPerMonth": "about {price} per month",
+  "paywallTrial": "{days}-day free trial, then {price}",
+  "paywallContinue": "Continue",
+  "paywallRestore": "Restore purchases",
+  "paywallManage": "Manage subscription",
+  "paywallTerms": "Subscriptions renew automatically unless cancelled at least 24 hours before the period ends. Manage or cancel any time in your store account settings.",
+  "paywallUnavailableTitle": "Purchases aren't available right now",
+  "paywallUnavailableBody": "HYDRA couldn't reach the store. Everything free keeps working. Please try again later.",
+  "paywallPurchased": "Welcome to HYDRA Pro",
+  "paywallRestored": "Purchases restored",
+  "paywallRestoreNone": "No earlier purchase was found.",
+  "paywallCancelled": "No charge was made.",
+  "paywallPending": "Your purchase is pending approval.",
+  "paywallFailed": "The purchase didn't go through. You haven't been charged.",
+  "paywallActiveTitle": "You have HYDRA Pro",
+  "paywallBillingIssue": "There's a problem with your payment method. Update it in your store account to keep Pro.",
+  "supportTitle": "Help and support",
+  "supportFaqNotifTitle": "Reminders aren't arriving",
+  "supportFaqNotifBody": "Open the notification check-up to see what to fix.",
+  "supportFaqHealthTitle": "Health sync problems",
+  "supportFaqHealthBody": "Open Health sync to retry or continue without it.",
+  "supportFaqRestoreTitle": "Restore purchases",
+  "supportFaqRestoreBody": "Use Restore on the HYDRA Pro screen. No account is needed.",
+  "supportContact": "Contact support",
+  "supportCopyDiagnostics": "Copy diagnostics",
+  "supportDiagnosticsCopied": "Diagnostics copied. They contain no hydration history.",
+  "supportAbout": "About HYDRA",
+  "supportVersion": "Version {version}",
+  "supportFeedbackTitle": "How is HYDRA doing?",
+  "supportFeedbackLove": "Love it",
+  "supportFeedbackGood": "Good",
+  "supportFeedbackOkay": "Okay",
+  "supportFeedbackNot": "Not useful",
+  "supportFeedbackThanks": "Thank you.",
+  "supportFeedbackFix": "What should we fix?",
+  "supportLicenses": "Open-source licenses",
+  "@remindersQuietSuggestion": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "@notifHelpNextAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "@vesselAmount": {
+    "placeholders": {
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "@vesselLimit": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "@routinesLimit": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "@healthLastSync": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "@healthSynced": {
+    "placeholders": {
+      "imported": {
+        "type": "String"
+      },
+      "exported": {
+        "type": "String"
+      }
+    }
+  },
+  "@paywallPerMonth": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "@paywallTrial": {
+    "placeholders": {
+      "days": {
+        "type": "String"
+      },
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "@supportVersion": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  }
 }

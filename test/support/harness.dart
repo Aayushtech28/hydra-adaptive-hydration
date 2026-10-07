@@ -43,6 +43,8 @@ class FakeNotificationService implements NotificationService {
   Future<int> pendingCount() async => scheduled.length;
   @override
   Future<NotificationAction?> launchAction() async => null;
+  @override
+  Future<void> showTest({required String title, required String body}) async {}
 }
 
 class FakeWidgets implements WidgetPublisher {

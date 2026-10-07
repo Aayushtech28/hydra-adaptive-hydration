@@ -15,6 +15,10 @@ class HydrationRepository {
   final AppDatabase _db;
   final DateTime Function() _now;
 
+  /// Emits whenever any hydration entry changes (add/edit/delete/import).
+  Stream<void> get changes =>
+      _db.tableUpdates(TableUpdateQuery.onTable(_db.hydrationEntries));
+
   /// Validates, then persists. Never accepts a non-positive/absurd volume.
   /// For external sources a duplicate (source, externalRecordId) returns the
   /// existing row instead of creating a second one (no double counting).
