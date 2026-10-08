@@ -25,17 +25,30 @@ class ProUpsell extends StatelessWidget {
     final l = AppLocalizations.of(context);
     return HCard(
       color: context.hx.accentSoft,
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(children: [
-          Icon(Icons.auto_awesome, size: 18, color: context.hx.accent),
-          const SizedBox(width: 8),
-          Text(l.paywallTitle, style: context.text.labelLarge?.copyWith(color: context.hx.accent)),
-        ]),
-        const SizedBox(height: 4),
-        Text(message, style: context.text.bodyMedium),
-        const SizedBox(height: Gap.md),
-        FilledButton(onPressed: () => context.push('/pro'), child: Text(l.healthProCta)),
-      ]),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.auto_awesome, size: 18, color: context.hx.accent),
+              const SizedBox(width: 8),
+              Text(
+                l.paywallTitle,
+                style: context.text.labelLarge?.copyWith(
+                  color: context.hx.accent,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(message, style: context.text.bodyMedium),
+          const SizedBox(height: Gap.md),
+          FilledButton(
+            onPressed: () => context.push('/pro'),
+            child: Text(l.healthProCta),
+          ),
+        ],
+      ),
     );
   }
 }

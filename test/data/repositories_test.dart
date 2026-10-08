@@ -35,13 +35,18 @@ void main() {
       expect(back.timezone, 'Asia/Kolkata');
     });
 
-    test('rejects zero, negative and absurd volumes (DB never touched)', () async {
-      for (final bad in [0, -50, 5001, 100000]) {
-        expect(() => repo.add(volumeMl: bad, at: t0, timezone: 'UTC'),
-            throwsA(isA<ValidationException>()));
-      }
-      expect(await repo.all(), isEmpty);
-    });
+    test(
+      'rejects zero, negative and absurd volumes (DB never touched)',
+      () async {
+        for (final bad in [0, -50, 5001, 100000]) {
+          expect(
+            () => repo.add(volumeMl: bad, at: t0, timezone: 'UTC'),
+            throwsA(isA<ValidationException>()),
+          );
+        }
+        expect(await repo.all(), isEmpty);
+      },
+    );
 
     test('database CHECK constraint also rejects bad volumes', () async {
       await expectLater(
@@ -76,47 +81,89 @@ void main() {
       final a = await repo.add(volumeMl: 300, at: t0, timezone: 'Asia/Kolkata');
       await repo.update(a.id, volumeMl: 350);
       expect((await repo.getById(a.id))!.volumeMl, 350);
-      expect(() => repo.update(a.id, volumeMl: 0), throwsA(isA<ValidationException>()));
-      expect(() => repo.update('missing', volumeMl: 5), throwsA(isA<ValidationException>()));
+      expect(
+        () => repo.update(a.id, volumeMl: 0),
+        throwsA(isA<ValidationException>()),
+      );
+      expect(
+        () => repo.update('missing', volumeMl: 5),
+        throwsA(isA<ValidationException>()),
+      );
     });
 
     test('moving an entry to another day recomputes its local date', () async {
       final a = await repo.add(volumeMl: 300, at: t0, timezone: 'Asia/Kolkata');
-      final moved = await repo.update(a.id, at: t0.subtract(const Duration(days: 1)));
+      final moved = await repo.update(
+        a.id,
+        at: t0.subtract(const Duration(days: 1)),
+      );
       expect(moved.localDate, const LocalDate(2026, 10, 6));
     });
 
-    test('changing device timezone later never rewrites historical instants', () async {
-      final a = await repo.add(volumeMl: 250, at: t0, timezone: 'Asia/Kolkata');
-      // A later entry in another zone.
-      await repo.add(volumeMl: 250, at: t0.add(const Duration(hours: 20)), timezone: 'America/New_York');
-      final back = await repo.getById(a.id);
-      expect(back!.timestampUtc, t0);
-      expect(back.timezone, 'Asia/Kolkata');
-      expect(back.localDate, const LocalDate(2026, 10, 7));
-    });
+    test(
+      'changing device timezone later never rewrites historical instants',
+      () async {
+        final a = await repo.add(
+          volumeMl: 250,
+          at: t0,
+          timezone: 'Asia/Kolkata',
+        );
+        // A later entry in another zone.
+        await repo.add(
+          volumeMl: 250,
+          at: t0.add(const Duration(hours: 20)),
+          timezone: 'America/New_York',
+        );
+        final back = await repo.getById(a.id);
+        expect(back!.timestampUtc, t0);
+        expect(back.timezone, 'Asia/Kolkata');
+        expect(back.localDate, const LocalDate(2026, 10, 7));
+      },
+    );
 
     test('100 rapid logs are all persisted and totals are exact', () async {
       await Future.wait([
         for (var i = 0; i < 100; i++)
-          repo.add(volumeMl: 50, at: t0.add(Duration(seconds: i)), timezone: 'Asia/Kolkata'),
+          repo.add(
+            volumeMl: 50,
+            at: t0.add(Duration(seconds: i)),
+            timezone: 'Asia/Kolkata',
+          ),
       ]);
       expect(await repo.totalForDay(const LocalDate(2026, 10, 7)), 5000);
-      expect((await repo.entriesForDay(const LocalDate(2026, 10, 7))).length, 100);
+      expect(
+        (await repo.entriesForDay(const LocalDate(2026, 10, 7))).length,
+        100,
+      );
     });
 
     test('duplicate external record does not double count', () async {
-      final a = await repo.add(volumeMl: 500, at: t0, timezone: 'UTC',
-          source: EntrySource.healthkit, externalRecordId: 'HK-1');
-      final b = await repo.add(volumeMl: 500, at: t0, timezone: 'UTC',
-          source: EntrySource.healthkit, externalRecordId: 'HK-1');
+      final a = await repo.add(
+        volumeMl: 500,
+        at: t0,
+        timezone: 'UTC',
+        source: EntrySource.healthkit,
+        externalRecordId: 'HK-1',
+      );
+      final b = await repo.add(
+        volumeMl: 500,
+        at: t0,
+        timezone: 'UTC',
+        source: EntrySource.healthkit,
+        externalRecordId: 'HK-1',
+      );
       expect(b.id, a.id);
       expect((await repo.all()).length, 1);
     });
 
     test('deleting an imported entry leaves a tombstone', () async {
-      final a = await repo.add(volumeMl: 500, at: t0, timezone: 'UTC',
-          source: EntrySource.healthConnect, externalRecordId: 'HC-9');
+      final a = await repo.add(
+        volumeMl: 500,
+        at: t0,
+        timezone: 'UTC',
+        source: EntrySource.healthConnect,
+        externalRecordId: 'HC-9',
+      );
       await repo.delete(a.id);
       expect(await repo.tombstones(EntrySource.healthConnect), {'HC-9'});
       // restore clears it
@@ -124,15 +171,21 @@ void main() {
       expect(await repo.tombstones(EntrySource.healthConnect), isEmpty);
     });
 
-    test('frequent volumes need minimum uses (no unpredictable suggestions)', () async {
-      repo = HydrationRepository(db, now: () => t0.add(const Duration(days: 1)));
-      for (var i = 0; i < 4; i++) {
-        await repo.add(volumeMl: 330, at: t0, timezone: 'UTC');
-      }
-      await repo.add(volumeMl: 123, at: t0, timezone: 'UTC');
-      final f = await repo.frequentVolumes();
-      expect(f.single.ml, 330);
-    });
+    test(
+      'frequent volumes need minimum uses (no unpredictable suggestions)',
+      () async {
+        repo = HydrationRepository(
+          db,
+          now: () => t0.add(const Duration(days: 1)),
+        );
+        for (var i = 0; i < 4; i++) {
+          await repo.add(volumeMl: 330, at: t0, timezone: 'UTC');
+        }
+        await repo.add(volumeMl: 123, at: t0, timezone: 'UTC');
+        final f = await repo.frequentVolumes();
+        expect(f.single.ml, 330);
+      },
+    );
 
     test('streams update after writes', () async {
       final d = const LocalDate(2026, 10, 7);
@@ -155,8 +208,14 @@ void main() {
       final back = await repo.get();
       expect(back!.dailyTargetMl, 3000);
       expect(back.quickAddsMl, [200, 300]);
-      expect(() => repo.save(p.copyWith(dailyTargetMl: 100)), throwsA(isA<ValidationException>()));
-      expect(() => repo.save(p.copyWith(wakeMinute: 2000)), throwsA(isA<ValidationException>()));
+      expect(
+        () => repo.save(p.copyWith(dailyTargetMl: 100)),
+        throwsA(isA<ValidationException>()),
+      );
+      expect(
+        () => repo.save(p.copyWith(wakeMinute: 2000)),
+        throwsA(isA<ValidationException>()),
+      );
     });
 
     test('vessels: limit, validation, delete keeps history', () async {
@@ -168,24 +227,42 @@ void main() {
       final e = (await h.all()).single;
       expect(e.volumeMl, 750);
       expect(e.vesselId, isNull);
-      expect(() => v.upsert(name: '', volumeMl: 100), throwsA(isA<ValidationException>()));
-      expect(() => v.upsert(name: 'x', volumeMl: 0), throwsA(isA<ValidationException>()));
+      expect(
+        () => v.upsert(name: '', volumeMl: 100),
+        throwsA(isA<ValidationException>()),
+      );
+      expect(
+        () => v.upsert(name: 'x', volumeMl: 0),
+        throwsA(isA<ValidationException>()),
+      );
       for (var i = 0; i < 2; i++) {
         await v.upsert(name: 'v$i', volumeMl: 100, limit: 2);
       }
-      expect(() => v.upsert(name: 'over', volumeMl: 100, limit: 2),
-          throwsA(isA<ValidationException>()));
+      expect(
+        () => v.upsert(name: 'over', volumeMl: 100, limit: 2),
+        throwsA(isA<ValidationException>()),
+      );
     });
 
     test('routines persist spans and reject invalid times', () async {
       final r = RoutineRepository(db);
-      final routine = r.blank(name: 'Office', kind: RoutineKind.work, wake: 7 * 60, sleep: 23 * 60, weekdays: {1, 2, 3, 4, 5})
+      final routine = r
+          .blank(
+            name: 'Office',
+            kind: RoutineKind.work,
+            wake: 7 * 60,
+            sleep: 23 * 60,
+            weekdays: {1, 2, 3, 4, 5},
+          )
           .copyWith(quietSpans: [const TimeSpan(13 * 60, 14 * 60)]);
       await r.upsert(routine);
       final back = (await r.getAll()).single;
       expect(back.weekdays, {1, 2, 3, 4, 5});
       expect(back.quietSpans.single, const TimeSpan(13 * 60, 14 * 60));
-      expect(() => r.upsert(routine.copyWith(sleepMinute: 8 * 60)), throwsA(isA<ValidationException>()));
+      expect(
+        () => r.upsert(routine.copyWith(sleepMinute: 8 * 60)),
+        throwsA(isA<ValidationException>()),
+      );
     });
   });
 
@@ -207,8 +284,15 @@ void main() {
       await rr.cancelFuturePending(t0);
       expect((await rr.pendingAfter(t0)).length, 0);
       await rr.insertScheduled([e.copyWith(outcome: ReminderOutcome.pending)]);
-      await rr.resolve('r1', ReminderOutcome.logged, t0.add(const Duration(hours: 1, minutes: 5)));
-      expect((await rr.recentResolved()).single.outcome, ReminderOutcome.logged);
+      await rr.resolve(
+        'r1',
+        ReminderOutcome.logged,
+        t0.add(const Duration(hours: 1, minutes: 5)),
+      );
+      expect(
+        (await rr.recentResolved()).single.outcome,
+        ReminderOutcome.logged,
+      );
     });
 
     test('settings kv + malformed json is safe', () async {

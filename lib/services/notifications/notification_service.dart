@@ -29,7 +29,11 @@ class NotificationAction {
     if (actionId.startsWith(_logPrefix)) {
       final ml = int.tryParse(actionId.substring(_logPrefix.length));
       if (ml == null || ml <= 0 || ml > 5000) return null;
-      return NotificationAction(NotificationActionKind.log, ml: ml, eventId: event);
+      return NotificationAction(
+        NotificationActionKind.log,
+        ml: ml,
+        eventId: event,
+      );
     }
     return null;
   }
@@ -39,7 +43,9 @@ class NotificationAction {
   static String? _eventIdFromPayload(String? payload) {
     if (payload == null) return null;
     final parts = payload.split('|');
-    return parts.length == 2 && parts[0] == 'v1' && parts[1].isNotEmpty ? parts[1] : null;
+    return parts.length == 2 && parts[0] == 'v1' && parts[1].isNotEmpty
+        ? parts[1]
+        : null;
   }
 }
 
@@ -69,12 +75,19 @@ class ActionLabels {
 }
 
 abstract class NotificationService {
-  Future<void> init({required ActionLabels labels, required String channelName, required String channelDescription});
+  Future<void> init({
+    required ActionLabels labels,
+    required String channelName,
+    required String channelDescription,
+  });
   Future<NotificationPermission> permission();
   Future<NotificationPermission> requestPermission();
 
   /// Atomically replaces every scheduled reminder with [reminders].
-  Future<void> replaceAll(List<ScheduledReminder> reminders, {required ActionLabels labels});
+  Future<void> replaceAll(
+    List<ScheduledReminder> reminders, {
+    required ActionLabels labels,
+  });
   Future<void> cancelAll();
   Future<int> pendingCount();
 

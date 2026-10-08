@@ -33,8 +33,12 @@ class VesselsScreen extends ConsumerWidget {
     final vessels = ref.read(vesselsProvider).value ?? const [];
     if (v == null && !isPro) {
       final today = DateTime.now();
-      final rewardDate = await core.settings.getString(SettingKeys.rewardedExtraVesselDate);
-      final extra = rewardDate == '${today.year}-${today.month}-${today.day}' ? 1 : 0;
+      final rewardDate = await core.settings.getString(
+        SettingKeys.rewardedExtraVesselDate,
+      );
+      final extra = rewardDate == '${today.year}-${today.month}-${today.day}'
+          ? 1
+          : 0;
       if (vessels.length >= VesselRepository.freeLimit + extra) {
         if (!context.mounted) return;
         await _limit(context, ref);
@@ -59,15 +63,25 @@ class VesselsScreen extends ConsumerWidget {
         title: Text(l.vesselsTitle),
         content: Text(l.vesselLimit('${VesselRepository.freeLimit}')),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(l.commonClose)),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(l.commonClose),
+          ),
           TextButton(
             onPressed: () async {
               Navigator.pop(ctx);
-              final earned = await svc.adCoordinator.showRewarded(AdPlacement.rewardedVessel);
+              final earned = await svc.adCoordinator.showRewarded(
+                AdPlacement.rewardedVessel,
+              );
               if (earned) {
                 final d = DateTime.now();
-                await svc.core.settings.setString(SettingKeys.rewardedExtraVesselDate, '${d.year}-${d.month}-${d.day}');
-                svc.analytics.log(AnalyticsEvent.rewardedCompleted, {'placement': 'vessel'});
+                await svc.core.settings.setString(
+                  SettingKeys.rewardedExtraVesselDate,
+                  '${d.year}-${d.month}-${d.day}',
+                );
+                svc.analytics.log(AnalyticsEvent.rewardedCompleted, {
+                  'placement': 'vessel',
+                });
               }
             },
             child: Text(l.vesselLimitWatch),
@@ -103,17 +117,27 @@ class VesselsScreen extends ConsumerWidget {
                 icon: Icons.local_drink_outlined,
                 title: l.vesselsEmptyTitle,
                 message: l.vesselsEmptyBody,
-                action: FilledButton(onPressed: () => _edit(context, ref, null), child: Text(l.vesselsAdd)),
+                action: FilledButton(
+                  onPressed: () => _edit(context, ref, null),
+                  child: Text(l.vesselsAdd),
+                ),
               )
             : ReorderableListView.builder(
-                padding: const EdgeInsets.fromLTRB(Gap.screen, Gap.sm, Gap.screen, 96),
+                padding: const EdgeInsets.fromLTRB(
+                  Gap.screen,
+                  Gap.sm,
+                  Gap.screen,
+                  96,
+                ),
                 itemCount: vessels.length,
-                onReorder: (a, b) async {
+                onReorderItem: (a, b) async {
                   final list = [...vessels];
-                  if (b > a) b--;
                   final item = list.removeAt(a);
                   list.insert(b, item);
-                  await ref.read(coreProvider).vessels.reorder(list.map((e) => e.id).toList());
+                  await ref
+                      .read(coreProvider)
+                      .vessels
+                      .reorder(list.map((e) => e.id).toList());
                 },
                 itemBuilder: (context, i) {
                   final v = vessels[i];
@@ -122,19 +146,36 @@ class VesselsScreen extends ConsumerWidget {
                     padding: const EdgeInsets.only(bottom: Gap.sm),
                     child: HCard(
                       onTap: () => _edit(context, ref, v),
-                      child: Row(children: [
-                        Icon(_icons[v.icon] ?? Icons.local_drink_outlined, color: context.hx.accent),
-                        const SizedBox(width: Gap.md),
-                        Expanded(
-                          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                            Text(v.name, style: context.text.titleSmall),
-                            Text(Formatters.volume(v.volumeMl, p.unit, locale), style: context.text.bodySmall),
-                          ]),
-                        ),
-                        if (v.isFavorite) Icon(Icons.star, size: 18, color: context.hx.accent, semanticLabel: l.vesselFavorite),
-                        const SizedBox(width: Gap.sm),
-                        const Icon(Icons.drag_handle),
-                      ]),
+                      child: Row(
+                        children: [
+                          Icon(
+                            _icons[v.icon] ?? Icons.local_drink_outlined,
+                            color: context.hx.accent,
+                          ),
+                          const SizedBox(width: Gap.md),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(v.name, style: context.text.titleSmall),
+                                Text(
+                                  Formatters.volume(v.volumeMl, p.unit, locale),
+                                  style: context.text.bodySmall,
+                                ),
+                              ],
+                            ),
+                          ),
+                          if (v.isFavorite)
+                            Icon(
+                              Icons.star,
+                              size: 18,
+                              color: context.hx.accent,
+                              semanticLabel: l.vesselFavorite,
+                            ),
+                          const SizedBox(width: Gap.sm),
+                          const Icon(Icons.drag_handle),
+                        ],
+                      ),
                     ),
                   );
                 },
@@ -167,7 +208,10 @@ class _VesselSheetState extends ConsumerState<_VesselSheet> {
     _amount = TextEditingController(
       text: v == null
           ? ''
-          : p.unit.fromMl(v.volumeMl.toDouble()).toStringAsFixed(p.unit.displayDecimals).replaceFirst(RegExp(r'\.0+$'), ''),
+          : p.unit
+                .fromMl(v.volumeMl.toDouble())
+                .toStringAsFixed(p.unit.displayDecimals)
+                .replaceFirst(RegExp(r'\.0+$'), ''),
     );
     _icon = v?.icon ?? 'glass';
     _fav = v?.isFavorite ?? false;
@@ -198,7 +242,8 @@ class _VesselSheetState extends ConsumerState<_VesselSheet> {
         icon: _icon,
         isFavorite: _fav,
       );
-      if (widget.vessel == null) svc.analytics.log(AnalyticsEvent.vesselCreated);
+      if (widget.vessel == null)
+        svc.analytics.log(AnalyticsEvent.vesselCreated);
       nav.pop();
     } on ValidationException {
       setState(() => _error = l.logFailed);
@@ -213,58 +258,98 @@ class _VesselSheetState extends ConsumerState<_VesselSheet> {
       padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
       child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(Gap.screen, 0, Gap.screen, Gap.xl),
-        child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(widget.vessel == null ? l.vesselsAdd : l.commonEdit, style: context.text.titleLarge),
-          const SizedBox(height: Gap.lg),
-          TextField(controller: _name, maxLength: 40, decoration: InputDecoration(labelText: l.vesselName, counterText: '')),
-          const SizedBox(height: Gap.md),
-          TextField(
-            controller: _amount,
-            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            decoration: InputDecoration(labelText: l.vesselAmount(p.unit.symbol), errorText: _error),
-          ),
-          const SizedBox(height: Gap.lg),
-          Text(l.vesselIcon, style: context.text.labelMedium),
-          const SizedBox(height: Gap.sm),
-          Wrap(spacing: 8, children: [
-            for (final e in _icons.entries)
-              ChoiceChip(
-                label: Icon(e.value, size: 20),
-                selected: _icon == e.key,
-                onSelected: (_) => setState(() => _icon = e.key),
-                tooltip: e.key,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              widget.vessel == null ? l.vesselsAdd : l.commonEdit,
+              style: context.text.titleLarge,
+            ),
+            const SizedBox(height: Gap.lg),
+            TextField(
+              controller: _name,
+              maxLength: 40,
+              decoration: InputDecoration(
+                labelText: l.vesselName,
+                counterText: '',
               ),
-          ]),
-          SwitchListTile(contentPadding: EdgeInsets.zero, title: Text(l.vesselFavorite), value: _fav, onChanged: (v) => setState(() => _fav = v)),
-          const SizedBox(height: Gap.md),
-          Row(children: [
-            if (widget.vessel != null)
-              TextButton(
-                onPressed: () async {
-                  final ok = await showDialog<bool>(
-                    context: context,
-                    builder: (ctx) => AlertDialog(
-                      title: Text(l.vesselDeleteTitle),
-                      content: Text(l.vesselDeleteBody),
-                      actions: [
-                        TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l.commonCancel)),
-                        TextButton(onPressed: () => Navigator.pop(ctx, true), child: Text(l.commonDelete)),
-                      ],
+            ),
+            const SizedBox(height: Gap.md),
+            TextField(
+              controller: _amount,
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
+              decoration: InputDecoration(
+                labelText: l.vesselAmount(p.unit.symbol),
+                errorText: _error,
+              ),
+            ),
+            const SizedBox(height: Gap.lg),
+            Text(l.vesselIcon, style: context.text.labelMedium),
+            const SizedBox(height: Gap.sm),
+            Wrap(
+              spacing: 8,
+              children: [
+                for (final e in _icons.entries)
+                  ChoiceChip(
+                    label: Icon(e.value, size: 20),
+                    selected: _icon == e.key,
+                    onSelected: (_) => setState(() => _icon = e.key),
+                    tooltip: e.key,
+                  ),
+              ],
+            ),
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              title: Text(l.vesselFavorite),
+              value: _fav,
+              onChanged: (v) => setState(() => _fav = v),
+            ),
+            const SizedBox(height: Gap.md),
+            Row(
+              children: [
+                if (widget.vessel != null)
+                  TextButton(
+                    onPressed: () async {
+                      final ok = await showDialog<bool>(
+                        context: context,
+                        builder: (ctx) => AlertDialog(
+                          title: Text(l.vesselDeleteTitle),
+                          content: Text(l.vesselDeleteBody),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(ctx, false),
+                              child: Text(l.commonCancel),
+                            ),
+                            TextButton(
+                              onPressed: () => Navigator.pop(ctx, true),
+                              child: Text(l.commonDelete),
+                            ),
+                          ],
+                        ),
+                      );
+                      if (ok == true) {
+                        await ref
+                            .read(coreProvider)
+                            .vessels
+                            .delete(widget.vessel!.id);
+                        if (context.mounted) Navigator.pop(context);
+                      }
+                    },
+                    child: Text(
+                      l.commonDelete,
+                      style: TextStyle(color: context.hx.attention),
                     ),
-                  );
-                  if (ok == true) {
-                    await ref.read(coreProvider).vessels.delete(widget.vessel!.id);
-                    if (context.mounted) Navigator.pop(context);
-                  }
-                },
-                child: Text(l.commonDelete, style: TextStyle(color: context.hx.attention)),
-              ),
-            const Spacer(),
-            FilledButton(onPressed: _save, child: Text(l.commonSave)),
-          ]),
-        ]),
+                  ),
+                const Spacer(),
+                FilledButton(onPressed: _save, child: Text(l.commonSave)),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
 }
-

@@ -40,7 +40,10 @@ abstract final class ConsistencyCalculator {
   /// [days] are eligible days (any order), each with stats (empty = missed).
   static ConsistencyResult compute(List<DayStats> days, LocalDate asOf) {
     final inWindow = days
-        .where((d) => asOf.differenceInDays(d.date) < window && !d.date.isAfter(asOf))
+        .where(
+          (d) =>
+              asOf.differenceInDays(d.date) < window && !d.date.isAfter(asOf),
+        )
         .toList();
     if (inWindow.length < minDays) {
       return ConsistencyResult(
@@ -93,9 +96,14 @@ class StreakResult {
 abstract final class StreakCalculator {
   /// [days] ordered oldest → newest and contiguous. Today (last element) is
   /// only counted if already good; otherwise ignored (it is still in progress).
-  static StreakResult compute(List<DayStats> days, {bool todayInProgress = true}) {
+  static StreakResult compute(
+    List<DayStats> days, {
+    bool todayInProgress = true,
+  }) {
     var list = days;
-    if (todayInProgress && list.isNotEmpty && list.last.adherence < kGoodDayAdherence) {
+    if (todayInProgress &&
+        list.isNotEmpty &&
+        list.last.adherence < kGoodDayAdherence) {
       list = list.sublist(0, list.length - 1);
     }
     var streak = 0, best = 0, tokens = 0;

@@ -49,34 +49,53 @@ class UmpConsentService implements ConsentService {
     // The UMP plugin reports some platform failures asynchronously (e.g. the
     // plugin is unavailable on this platform), outside any try/catch. A
     // guarded zone turns those into "no ads", never a crash.
-    unawaited(runZonedGuarded(() async {
-      ConsentInformation.instance.requestConsentInfoUpdate(
-        ConsentRequestParameters(),
+    unawaited(
+      runZonedGuarded(
         () async {
-          try {
-            await ConsentForm.loadAndShowConsentFormIfRequired((FormError? err) async {
-              if (err != null) {
-                Log.warning('consent', 'consent form error', fields: {'code': err.errorCode});
+          ConsentInformation.instance.requestConsentInfoUpdate(
+            ConsentRequestParameters(),
+            () async {
+              try {
+                await ConsentForm.loadAndShowConsentFormIfRequired((
+                  FormError? err,
+                ) async {
+                  if (err != null) {
+                    Log.warning(
+                      'consent',
+                      'consent form error',
+                      fields: {'code': err.errorCode},
+                    );
+                  }
+                  await _refresh();
+                  if (!done.isCompleted) done.complete();
+                });
+              } catch (_) {
+                await _refresh();
+                if (!done.isCompleted) done.complete();
               }
+            },
+            (FormError err) async {
+              Log.warning(
+                'consent',
+                'consent info update failed',
+                fields: {'code': err.errorCode},
+              );
               await _refresh();
               if (!done.isCompleted) done.complete();
-            });
-          } catch (_) {
-            await _refresh();
-            if (!done.isCompleted) done.complete();
-          }
+            },
+          );
         },
-        (FormError err) async {
-          Log.warning('consent', 'consent info update failed', fields: {'code': err.errorCode});
-          await _refresh();
+        (e, st) {
+          Log.warning(
+            'consent',
+            'consent unavailable; ads stay off',
+            fields: {'type': e.runtimeType.toString()},
+          );
+          _canRequest = false;
           if (!done.isCompleted) done.complete();
         },
-      );
-    }, (e, st) {
-      Log.warning('consent', 'consent unavailable; ads stay off', fields: {'type': e.runtimeType.toString()});
-      _canRequest = false;
-      if (!done.isCompleted) done.complete();
-    }));
+      ),
+    );
     await done.future.timeout(const Duration(seconds: 20), onTimeout: () {});
   }
 
@@ -91,7 +110,8 @@ class UmpConsentService implements ConsentService {
     };
     final before = _canRequest;
     _canRequest = await info.canRequestAds();
-    _privacyOptions = await info.getPrivacyOptionsRequirementStatus() ==
+    _privacyOptions =
+        await info.getPrivacyOptionsRequirementStatus() ==
         PrivacyOptionsRequirementStatus.required;
     if (before != _canRequest) _changes.add(_canRequest);
   }

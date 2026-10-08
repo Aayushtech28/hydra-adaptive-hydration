@@ -36,14 +36,21 @@ class _GoalScreenState extends ConsumerState<GoalScreen> {
     super.dispose();
   }
 
-  String _fmt(int ml, VolumeUnit u) =>
-      u.fromMl(ml.toDouble()).toStringAsFixed(u.displayDecimals).replaceFirst(RegExp(r'\.0+$'), '');
+  String _fmt(int ml, VolumeUnit u) => u
+      .fromMl(ml.toDouble())
+      .toStringAsFixed(u.displayDecimals)
+      .replaceFirst(RegExp(r'\.0+$'), '');
 
   void _change(String s) {
     final l = AppLocalizations.of(context);
     final u = _unit!;
     final locale = ref.read(profileProvider).value?.locale ?? 'en';
-    final r = validateVolume(parseLocalizedNumber(s), u, minMl: VolumeLimits.minTargetMl, maxMl: VolumeLimits.maxTargetMl);
+    final r = validateVolume(
+      parseLocalizedNumber(s),
+      u,
+      minMl: VolumeLimits.minTargetMl,
+      maxMl: VolumeLimits.maxTargetMl,
+    );
     setState(() {
       if (r is VolumeOk) {
         _ml = r.ml;
@@ -58,7 +65,10 @@ class _GoalScreenState extends ConsumerState<GoalScreen> {
   }
 
   void _step(int dir) {
-    final next = (_ml + dir * 100).clamp(VolumeLimits.minTargetMl, VolumeLimits.maxTargetMl);
+    final next = (_ml + dir * 100).clamp(
+      VolumeLimits.minTargetMl,
+      VolumeLimits.maxTargetMl,
+    );
     setState(() {
       _ml = next;
       _error = null;
@@ -69,9 +79,14 @@ class _GoalScreenState extends ConsumerState<GoalScreen> {
   Future<void> _save() async {
     final l = AppLocalizations.of(context);
     if (_error != null) return;
-    await ref.read(coreProvider).updateProfile((p) => p.copyWith(dailyTargetMl: _ml, targetIsUserChosen: true));
+    await ref
+        .read(coreProvider)
+        .updateProfile(
+          (p) => p.copyWith(dailyTargetMl: _ml, targetIsUserChosen: true),
+        );
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l.goalSaved)));
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(l.goalSaved)));
     context.pop();
   }
 
@@ -82,30 +97,51 @@ class _GoalScreenState extends ConsumerState<GoalScreen> {
     return Scaffold(
       appBar: AppBar(title: Text(l.goalTitle)),
       body: SafeArea(
-        child: PageBody(children: [
-          Text(l.goalBody, style: context.text.bodyLarge),
-          const SizedBox(height: Gap.xl),
-          Row(children: [
-            IconButton.filledTonal(tooltip: '−', onPressed: () => _step(-1), icon: const Icon(Icons.remove)),
-            const SizedBox(width: Gap.md),
-            Expanded(
-              child: TextField(
-                controller: _ctrl,
-                textAlign: TextAlign.center,
-                style: context.text.headlineMedium,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                onChanged: _change,
-                decoration: InputDecoration(labelText: l.goalCurrent, suffixText: p.unit.symbol, errorText: _error),
-              ),
+        child: PageBody(
+          children: [
+            Text(l.goalBody, style: context.text.bodyLarge),
+            const SizedBox(height: Gap.xl),
+            Row(
+              children: [
+                IconButton.filledTonal(
+                  tooltip: '−',
+                  onPressed: () => _step(-1),
+                  icon: const Icon(Icons.remove),
+                ),
+                const SizedBox(width: Gap.md),
+                Expanded(
+                  child: TextField(
+                    controller: _ctrl,
+                    textAlign: TextAlign.center,
+                    style: context.text.headlineMedium,
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                    onChanged: _change,
+                    decoration: InputDecoration(
+                      labelText: l.goalCurrent,
+                      suffixText: p.unit.symbol,
+                      errorText: _error,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: Gap.md),
+                IconButton.filledTonal(
+                  tooltip: '+',
+                  onPressed: () => _step(1),
+                  icon: const Icon(Icons.add),
+                ),
+              ],
             ),
-            const SizedBox(width: Gap.md),
-            IconButton.filledTonal(tooltip: '+', onPressed: () => _step(1), icon: const Icon(Icons.add)),
-          ]),
-          const SizedBox(height: Gap.md),
-          Text(l.goalHotNote, style: context.text.bodySmall),
-          const SizedBox(height: Gap.xl),
-          FilledButton(onPressed: _error == null ? _save : null, child: Text(l.goalSave)),
-        ]),
+            const SizedBox(height: Gap.md),
+            Text(l.goalHotNote, style: context.text.bodySmall),
+            const SizedBox(height: Gap.xl),
+            FilledButton(
+              onPressed: _error == null ? _save : null,
+              child: Text(l.goalSave),
+            ),
+          ],
+        ),
       ),
     );
   }

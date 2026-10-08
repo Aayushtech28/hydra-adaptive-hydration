@@ -36,7 +36,9 @@ class RemoteConfig {
     if (raw is! Map) return defaults;
     final m = raw.cast<String, Object?>();
     final flags = const FeatureFlags().withRemote(
-      (m['flags'] is Map) ? (m['flags']! as Map).cast<String, Object?>() : const {},
+      (m['flags'] is Map)
+          ? (m['flags']! as Map).cast<String, Object?>()
+          : const {},
     );
     final chs = <ChallengeDefinition>[];
     if (m['challenges'] is List) {
@@ -71,8 +73,10 @@ abstract class RemoteConfigService {
 
 /// Loads the cache immediately (offline-safe) and refreshes in the background.
 class HttpRemoteConfigService implements RemoteConfigService {
-  HttpRemoteConfigService(this._settings, {HttpClient Function()? clientFactory})
-      : _clientFactory = clientFactory ?? HttpClient.new;
+  HttpRemoteConfigService(
+    this._settings, {
+    HttpClient Function()? clientFactory,
+  }) : _clientFactory = clientFactory ?? HttpClient.new;
 
   final SettingsRepository _settings;
   final HttpClient Function() _clientFactory;
@@ -95,18 +99,28 @@ class HttpRemoteConfigService implements RemoteConfigService {
   Future<void> refresh() async {
     const url = AppConfig.remoteConfigUrl;
     if (url.isEmpty) return; // not configured: bundled defaults stay in force
-    final client = _clientFactory()..connectionTimeout = const Duration(seconds: 6);
+    final client = _clientFactory()
+      ..connectionTimeout = const Duration(seconds: 6);
     try {
-      final req = await client.getUrl(Uri.parse(url)).timeout(const Duration(seconds: 8));
+      final req = await client
+          .getUrl(Uri.parse(url))
+          .timeout(const Duration(seconds: 8));
       final res = await req.close().timeout(const Duration(seconds: 8));
       if (res.statusCode != 200) return;
-      final body = await res.transform(utf8.decoder).join().timeout(const Duration(seconds: 8));
+      final body = await res
+          .transform(utf8.decoder)
+          .join()
+          .timeout(const Duration(seconds: 8));
       if (body.length > 64 * 1024) return;
       final parsed = RemoteConfig.parse(jsonDecode(body));
       _current = parsed;
       await _settings.setString(SettingKeys.remoteConfigCache, body);
     } on Object catch (e) {
-      Log.info('remote_config', 'refresh failed; keeping current', fields: {'type': e.runtimeType.toString()});
+      Log.info(
+        'remote_config',
+        'refresh failed; keeping current',
+        fields: {'type': e.runtimeType.toString()},
+      );
     } finally {
       client.close(force: true);
     }

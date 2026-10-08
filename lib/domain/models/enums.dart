@@ -4,8 +4,10 @@ enum ReminderMode {
   balanced,
   focus;
 
-  static ReminderMode parse(String? v) => ReminderMode.values
-      .firstWhere((m) => m.name == v, orElse: () => ReminderMode.balanced);
+  static ReminderMode parse(String? v) => ReminderMode.values.firstWhere(
+    (m) => m.name == v,
+    orElse: () => ReminderMode.balanced,
+  );
 }
 
 /// How reminder copy sounds. `auto` lets the engine vary copy by state.
@@ -20,7 +22,13 @@ enum NotificationTone {
       .firstWhere((m) => m.name == v, orElse: () => NotificationTone.auto);
 }
 
-enum PaceState { ahead, onTrack, slightlyBehind, significantlyBehind, dayClosing }
+enum PaceState {
+  ahead,
+  onTrack,
+  slightlyBehind,
+  significantlyBehind,
+  dayClosing,
+}
 
 /// Where a hydration entry came from. Used for dedupe/reconciliation.
 enum EntrySource {
@@ -32,8 +40,10 @@ enum EntrySource {
   smartBottle,
   import;
 
-  static EntrySource parse(String? v) => EntrySource.values
-      .firstWhere((m) => m.name == v, orElse: () => EntrySource.manual);
+  static EntrySource parse(String? v) => EntrySource.values.firstWhere(
+    (m) => m.name == v,
+    orElse: () => EntrySource.manual,
+  );
 
   /// True for sources that originate outside HYDRA (never re-exported).
   bool get isExternal =>

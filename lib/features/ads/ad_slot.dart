@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -39,7 +41,8 @@ class _AdSlotState extends ConsumerState<AdSlot> {
   }
 
   Future<void> _loadInner() async {
-    if (widget.placement.format != AdFormat.banner && widget.placement.format != AdFormat.native) {
+    if (widget.placement.format != AdFormat.banner &&
+        widget.placement.format != AdFormat.native) {
       return;
     }
     final svc = ref.read(servicesProvider);
@@ -51,12 +54,12 @@ class _AdSlotState extends ConsumerState<AdSlot> {
         ? await svc.ads.loadBanner(width)
         : await svc.ads.loadNative();
     if (!mounted || ad == null) {
-      ad?.dispose();
+      unawaited(ad?.dispose() ?? Future<void>.value());
       return;
     }
     // A user who upgraded while the ad loaded never sees it.
     if (ref.read(isProProvider)) {
-      ad.dispose();
+      unawaited(ad.dispose());
       return;
     }
     setState(() => _ad = ad);
@@ -92,8 +95,12 @@ class _AdSlotState extends ConsumerState<AdSlot> {
             ClipRRect(
               borderRadius: BorderRadius.circular(Radii.md),
               child: SizedBox(
-                height: isNative ? 120 : (ad as BannerAd).size.height.toDouble(),
-                width: isNative ? double.infinity : (ad as BannerAd).size.width.toDouble(),
+                height: isNative
+                    ? 120
+                    : (ad as BannerAd).size.height.toDouble(),
+                width: isNative
+                    ? double.infinity
+                    : (ad as BannerAd).size.width.toDouble(),
                 child: AdWidget(ad: ad as AdWithView),
               ),
             ),

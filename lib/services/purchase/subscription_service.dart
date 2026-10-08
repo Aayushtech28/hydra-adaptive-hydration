@@ -55,11 +55,12 @@ abstract class SubscriptionService {
 /// stays on the free tier (core tracking is never affected).
 class RevenueCatSubscriptionService implements SubscriptionService {
   RevenueCatSubscriptionService(this._settings, {DateTime Function()? now})
-      : _now = now ?? DateTime.now;
+    : _now = now ?? DateTime.now;
 
   final SettingsRepository _settings;
   final DateTime Function() _now;
-  final StreamController<Entitlement> _controller = StreamController.broadcast();
+  final StreamController<Entitlement> _controller =
+      StreamController.broadcast();
   Entitlement _current = Entitlement.free;
   bool _configured = false;
 
@@ -96,7 +97,10 @@ class RevenueCatSubscriptionService implements SubscriptionService {
   Future<void> _loadCache() async {
     final j = await _settings.getJson(SettingKeys.entitlementCache);
     if (j.isEmpty) return;
-    _current = EntitlementResolver.fromCacheOnFailure(Entitlement.fromJson(j), _now());
+    _current = EntitlementResolver.fromCacheOnFailure(
+      Entitlement.fromJson(j),
+      _now(),
+    );
     _controller.add(_current);
   }
 
@@ -109,8 +113,11 @@ class RevenueCatSubscriptionService implements SubscriptionService {
     } catch (e) {
       // Transient failure: keep (and age) the cached state; never downgrade
       // immediately.
-      Log.info('purchases', 'refresh failed; using cached entitlement',
-          fields: {'type': e.runtimeType.toString()});
+      Log.info(
+        'purchases',
+        'refresh failed; using cached entitlement',
+        fields: {'type': e.runtimeType.toString()},
+      );
       final aged = EntitlementResolver.fromCacheOnFailure(_current, _now());
       if (aged.status != _current.status) {
         _current = aged;
@@ -122,7 +129,8 @@ class RevenueCatSubscriptionService implements SubscriptionService {
 
   Entitlement _map(CustomerInfo info) {
     final ent = info.entitlements.all[AppConfig.proEntitlementId];
-    DateTime? parse(String? s) => s == null ? null : DateTime.tryParse(s)?.toUtc();
+    DateTime? parse(String? s) =>
+        s == null ? null : DateTime.tryParse(s)?.toUtc();
     return EntitlementResolver.fromCustomer(
       CustomerSnapshot(
         entitlementActive: ent?.isActive ?? false,
@@ -139,7 +147,10 @@ class RevenueCatSubscriptionService implements SubscriptionService {
 
   Future<void> _apply(Entitlement e) async {
     _current = e;
-    await _settings.setString(SettingKeys.entitlementCache, jsonEncode(e.toJson()));
+    await _settings.setString(
+      SettingKeys.entitlementCache,
+      jsonEncode(e.toJson()),
+    );
     _controller.add(e);
   }
 
@@ -159,7 +170,9 @@ class RevenueCatSubscriptionService implements SubscriptionService {
           period: period,
           priceLabel: sp.priceString,
           hasFreeTrial: intro != null && intro.price == 0,
-          trialDays: intro != null && intro.price == 0 ? intro.periodNumberOfUnits * _unitDays(intro.periodUnit) : null,
+          trialDays: intro != null && intro.price == 0
+              ? intro.periodNumberOfUnits * _unitDays(intro.periodUnit)
+              : null,
           monthlyEquivalentLabel: period == ProPeriod.annual
               ? _monthlyEquivalent(sp.price, sp.currencyCode)
               : null,
@@ -179,12 +192,12 @@ class RevenueCatSubscriptionService implements SubscriptionService {
   }
 
   static int _unitDays(PeriodUnit u) => switch (u) {
-        PeriodUnit.day => 1,
-        PeriodUnit.week => 7,
-        PeriodUnit.month => 30,
-        PeriodUnit.year => 365,
-        _ => 1,
-      };
+    PeriodUnit.day => 1,
+    PeriodUnit.week => 7,
+    PeriodUnit.month => 30,
+    PeriodUnit.year => 365,
+    _ => 1,
+  };
 
   static String _monthlyEquivalent(double price, String currency) =>
       '${(price / 12).toStringAsFixed(2)} $currency';
@@ -199,9 +212,16 @@ class RevenueCatSubscriptionService implements SubscriptionService {
       return current.isPro ? PurchaseOutcome.success : PurchaseOutcome.pending;
     } on PlatformException catch (e) {
       final code = PurchasesErrorHelper.getErrorCode(e);
-      if (code == PurchasesErrorCode.purchaseCancelledError) return PurchaseOutcome.cancelled;
-      if (code == PurchasesErrorCode.paymentPendingError) return PurchaseOutcome.pending;
-      Log.error('purchases', 'purchase failed', error: e, fields: {'code': code.name});
+      if (code == PurchasesErrorCode.purchaseCancelledError)
+        return PurchaseOutcome.cancelled;
+      if (code == PurchasesErrorCode.paymentPendingError)
+        return PurchaseOutcome.pending;
+      Log.error(
+        'purchases',
+        'purchase failed',
+        error: e,
+        fields: {'code': code.name},
+      );
       return PurchaseOutcome.failed;
     } catch (e, st) {
       Log.error('purchases', 'purchase failed', error: e, stack: st);

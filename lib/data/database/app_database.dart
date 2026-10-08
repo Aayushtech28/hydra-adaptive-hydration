@@ -40,20 +40,20 @@ class AppDatabase extends _$AppDatabase {
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
-        onCreate: (m) async {
-          await m.createAll();
-          await _createCustomIndexes();
-        },
-        onUpgrade: (m, from, to) async {
-          // Add a `if (from < N) {...}` block per schema bump. Never edit
-          // history; migrations must be additive and data-preserving.
-          await _createCustomIndexes();
-        },
-        beforeOpen: (details) async {
-          await customStatement('PRAGMA foreign_keys = ON');
-          await customStatement('PRAGMA journal_mode = WAL');
-        },
-      );
+    onCreate: (m) async {
+      await m.createAll();
+      await _createCustomIndexes();
+    },
+    onUpgrade: (m, from, to) async {
+      // Add a `if (from < N) {...}` block per schema bump. Never edit
+      // history; migrations must be additive and data-preserving.
+      await _createCustomIndexes();
+    },
+    beforeOpen: (details) async {
+      await customStatement('PRAGMA foreign_keys = ON');
+      await customStatement('PRAGMA journal_mode = WAL');
+    },
+  );
 
   Future<void> _createCustomIndexes() async {
     // A given external record may exist at most once per source.
@@ -66,8 +66,8 @@ class AppDatabase extends _$AppDatabase {
 
   /// Wipes every user table inside one transaction ("Delete all my data").
   Future<void> deleteEverything() => transaction(() async {
-        for (final t in allTables) {
-          await delete(t).go();
-        }
-      });
+    for (final t in allTables) {
+      await delete(t).go();
+    }
+  });
 }

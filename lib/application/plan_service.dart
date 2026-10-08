@@ -79,15 +79,15 @@ class PlanService {
   static const int responseWindowMin = 45;
 
   DayContext _ctx(ResolvedDay r, tz.Location loc) => DayContext(
-        window: DayWindow.build(
-          date: r.date,
-          location: loc,
-          wakeMinute: r.wakeMinute,
-          sleepMinute: r.sleepMinute,
-        ),
-        quietSpans: r.quietSpans,
-        workoutSpans: r.workoutSpans,
-      );
+    window: DayWindow.build(
+      date: r.date,
+      location: loc,
+      wakeMinute: r.wakeMinute,
+      sleepMinute: r.sleepMinute,
+    ),
+    quietSpans: r.quietSpans,
+    workoutSpans: r.workoutSpans,
+  );
 
   Future<PlanContext> load(DateTime now) async {
     final profile = await profiles.get();
@@ -95,8 +95,16 @@ class PlanService {
     final rs = await routines.getAll();
     final loc = locationFor(await timezoneName());
     final date = logicalDateOf(now, loc);
-    final today = RoutineResolver.resolve(profile: profile, routines: rs, date: date);
-    final tomorrow = RoutineResolver.resolve(profile: profile, routines: rs, date: date.addDays(1));
+    final today = RoutineResolver.resolve(
+      profile: profile,
+      routines: rs,
+      date: date,
+    );
+    final tomorrow = RoutineResolver.resolve(
+      profile: profile,
+      routines: rs,
+      date: date.addDays(1),
+    );
 
     final entries = await hydration.entriesForDay(date);
     final consumed = entries.fold<int>(0, (s, e) => s + e.volumeMl);
@@ -105,7 +113,11 @@ class PlanService {
     final todayCtx = _ctx(today, loc);
     final dayEvents = await reminders.forDate(date);
     final fired = dayEvents
-        .where((e) => !e.scheduledAt.isAfter(now) && e.outcome != ReminderOutcome.cancelled)
+        .where(
+          (e) =>
+              !e.scheduledAt.isAfter(now) &&
+              e.outcome != ReminderOutcome.cancelled,
+        )
         .toList();
     final lastReminder = fired.isEmpty ? null : fired.last.scheduledAt;
 
@@ -114,7 +126,8 @@ class PlanService {
     for (var i = fired.length - 1; i >= 0; i--) {
       final e = fired[i];
       if (lastLogAt != null && e.scheduledAt.isBefore(lastLogAt)) break;
-      final expiredPending = e.outcome == ReminderOutcome.pending &&
+      final expiredPending =
+          e.outcome == ReminderOutcome.pending &&
           now.difference(e.scheduledAt).inMinutes >= responseWindowMin;
       if (e.outcome == ReminderOutcome.ignored || expiredPending) {
         unanswered++;
@@ -123,11 +136,14 @@ class PlanService {
       }
     }
 
-    final outcomes = (await reminders.recentResolved()).map((e) => e.outcome).toList();
+    final outcomes = (await reminders.recentResolved())
+        .map((e) => e.outcome)
+        .toList();
     final askedAt = await settings.getTime(SettingKeys.askedFewerReminders);
     final fatigue = FatigueCalculator.compute(
       outcomes,
-      alreadyAskedRecently: askedAt != null && now.difference(askedAt).inDays < 14,
+      alreadyAskedRecently:
+          askedAt != null && now.difference(askedAt).inDays < 14,
     );
 
     final snooze = await settings.getTime(SettingKeys.snoozeUntil);
@@ -138,10 +154,14 @@ class PlanService {
       final last = await hydration.lastEntry();
       pausedUntilLog = last == null || !last.createdAt.isAfter(pauseLogStart);
     }
-    final timedPause = pausedUntil != null && pausedUntil.isAfter(now) ? pausedUntil : null;
+    final timedPause = pausedUntil != null && pausedUntil.isAfter(now)
+        ? pausedUntil
+        : null;
 
     final first = await hydration.firstEntryDate();
-    final historyDays = first == null ? 0 : date.differenceInDays(first).clamp(0, 10000) + 1;
+    final historyDays = first == null
+        ? 0
+        : date.differenceInDays(first).clamp(0, 10000) + 1;
 
     final input = SchedulerInput(
       now: now,

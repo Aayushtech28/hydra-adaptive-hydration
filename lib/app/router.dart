@@ -53,52 +53,109 @@ final routerProvider = Provider<GoRouter>((ref) {
     routes: [
       GoRoute(path: '/', redirect: (_, _) => '/home'),
       GoRoute(path: '/onboarding', builder: (_, _) => const OnboardingScreen()),
-      GoRoute(path: '/pro', parentNavigatorKey: root, builder: (_, _) => const PaywallScreen()),
-      GoRoute(path: '/recap/weekly', parentNavigatorKey: root, builder: (_, _) => const WeeklyRecapScreen()),
-      GoRoute(path: '/recap/monthly', parentNavigatorKey: root, builder: (_, _) => const MonthlyRecapScreen()),
+      GoRoute(
+        path: '/pro',
+        parentNavigatorKey: root,
+        builder: (_, _) => const PaywallScreen(),
+      ),
+      GoRoute(
+        path: '/recap/weekly',
+        parentNavigatorKey: root,
+        builder: (_, _) => const WeeklyRecapScreen(),
+      ),
+      GoRoute(
+        path: '/recap/monthly',
+        parentNavigatorKey: root,
+        builder: (_, _) => const MonthlyRecapScreen(),
+      ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, shell) => HydraShell(shell: shell),
         branches: [
-          StatefulShellBranch(routes: [
-            GoRoute(path: '/home', builder: (_, _) => const DashboardScreen()),
-          ]),
-          StatefulShellBranch(routes: [
-            GoRoute(path: '/history', builder: (_, _) => const HistoryScreen()),
-          ]),
-          StatefulShellBranch(routes: [
-            GoRoute(path: '/insights', builder: (_, _) => const InsightsScreen()),
-          ]),
-          StatefulShellBranch(routes: [
-            GoRoute(
-              path: '/you',
-              builder: (_, _) => const YouScreen(),
-              routes: [
-                GoRoute(path: 'goal', builder: (_, _) => const GoalScreen()),
-                GoRoute(path: 'schedule', builder: (_, _) => const ScheduleScreen()),
-                GoRoute(
-                  path: 'notifications',
-                  builder: (_, _) => const NotificationsScreen(),
-                  routes: [GoRoute(path: 'help', builder: (_, _) => const NotificationHelpScreen())],
-                ),
-                GoRoute(path: 'vessels', builder: (_, _) => const VesselsScreen()),
-                GoRoute(
-                  path: 'routines',
-                  builder: (_, _) => const RoutinesScreen(),
-                  routes: [
-                    GoRoute(
-                      path: 'edit',
-                      builder: (_, s) => RoutineEditScreen(routineId: s.uri.queryParameters['id']),
-                    ),
-                  ],
-                ),
-                GoRoute(path: 'health', builder: (_, _) => const HealthScreen()),
-                GoRoute(path: 'privacy', builder: (_, _) => const PrivacyScreen()),
-                GoRoute(path: 'appearance', builder: (_, _) => const AppearanceScreen()),
-                GoRoute(path: 'support', builder: (_, _) => const SupportScreen()),
-                GoRoute(path: 'debug', builder: (_, _) => const DebugScreen()),
-              ],
-            ),
-          ]),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/home',
+                builder: (_, _) => const DashboardScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/history',
+                builder: (_, _) => const HistoryScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/insights',
+                builder: (_, _) => const InsightsScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/you',
+                builder: (_, _) => const YouScreen(),
+                routes: [
+                  GoRoute(path: 'goal', builder: (_, _) => const GoalScreen()),
+                  GoRoute(
+                    path: 'schedule',
+                    builder: (_, _) => const ScheduleScreen(),
+                  ),
+                  GoRoute(
+                    path: 'notifications',
+                    builder: (_, _) => const NotificationsScreen(),
+                    routes: [
+                      GoRoute(
+                        path: 'help',
+                        builder: (_, _) => const NotificationHelpScreen(),
+                      ),
+                    ],
+                  ),
+                  GoRoute(
+                    path: 'vessels',
+                    builder: (_, _) => const VesselsScreen(),
+                  ),
+                  GoRoute(
+                    path: 'routines',
+                    builder: (_, _) => const RoutinesScreen(),
+                    routes: [
+                      GoRoute(
+                        path: 'edit',
+                        builder: (_, s) => RoutineEditScreen(
+                          routineId: s.uri.queryParameters['id'],
+                        ),
+                      ),
+                    ],
+                  ),
+                  GoRoute(
+                    path: 'health',
+                    builder: (_, _) => const HealthScreen(),
+                  ),
+                  GoRoute(
+                    path: 'privacy',
+                    builder: (_, _) => const PrivacyScreen(),
+                  ),
+                  GoRoute(
+                    path: 'appearance',
+                    builder: (_, _) => const AppearanceScreen(),
+                  ),
+                  GoRoute(
+                    path: 'support',
+                    builder: (_, _) => const SupportScreen(),
+                  ),
+                  GoRoute(
+                    path: 'debug',
+                    builder: (_, _) => const DebugScreen(),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ],
       ),
     ],

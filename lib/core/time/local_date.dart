@@ -39,10 +39,11 @@ class LocalDate implements Comparable<LocalDate> {
     return LocalDate(d.year, d.month, d.day);
   }
 
-  int differenceInDays(LocalDate other) =>
-      DateTime.utc(year, month, day)
-          .difference(DateTime.utc(other.year, other.month, other.day))
-          .inDays;
+  int differenceInDays(LocalDate other) => DateTime.utc(
+    year,
+    month,
+    day,
+  ).difference(DateTime.utc(other.year, other.month, other.day)).inDays;
 
   /// ISO weekday: Monday = 1 … Sunday = 7.
   int get weekday => DateTime.utc(year, month, day).weekday;

@@ -39,7 +39,8 @@ abstract final class RecapBuilder {
   /// [week] = last 7 completed days (oldest → newest); [prev] the 7 before.
   static WeeklyRecap? weekly(List<DayStats> week, List<DayStats> prev) {
     final elig = week;
-    if (elig.length < minDays || week.where((d) => d.active).isEmpty) return null;
+    if (elig.length < minDays || week.where((d) => d.active).isEmpty)
+      return null;
     final cons = _mean(elig.map((d) => d.adherence));
     final best = [...elig.where((d) => d.active)]
       ..sort((a, b) => b.adherence.compareTo(a.adherence));
@@ -77,7 +78,9 @@ abstract final class RecapBuilder {
       strongestDay: best.isEmpty ? null : best.first.date,
       strongestSegment: strongest,
       opportunitySegment: opportunity,
-      planCompletionDays: week.where((d) => d.adherence >= kCompletedDayAdherence).length,
+      planCompletionDays: week
+          .where((d) => d.adherence >= kCompletedDayAdherence)
+          .length,
       eligibleDays: elig.length,
       responsePercent: resolved >= 4 ? (100 * logged / resolved).round() : null,
       trendPoints: trend,
@@ -87,16 +90,16 @@ abstract final class RecapBuilder {
   }
 
   static List<double?> _segmentMeans(List<DayStats> days) => [
-        for (var i = 0; i < 3; i++)
-          () {
-            final v = days
-                .where((d) => d.active)
-                .map((d) => d.segmentRatio(i))
-                .whereType<double>()
-                .toList();
-            return v.length < 3 ? null : v.reduce((a, b) => a + b) / v.length;
-          }(),
-      ];
+    for (var i = 0; i < 3; i++)
+      () {
+        final v = days
+            .where((d) => d.active)
+            .map((d) => d.segmentRatio(i))
+            .whereType<double>()
+            .toList();
+        return v.length < 3 ? null : v.reduce((a, b) => a + b) / v.length;
+      }(),
+  ];
 
   static double _mean(Iterable<double> v) {
     final l = v.toList();
@@ -144,7 +147,9 @@ abstract final class RecapBuilder {
       activeDays: active.length,
       eligibleDays: days.length,
       consistency: (_mean(days.map((d) => d.adherence)) * 100).round(),
-      planCompletionDays: days.where((d) => d.adherence >= kCompletedDayAdherence).length,
+      planCompletionDays: days
+          .where((d) => d.adherence >= kCompletedDayAdherence)
+          .length,
       bestRoutine: bestKind,
       favoriteVesselName: favoriteVesselName,
       favoriteVesselMl: favoriteVesselMl,

@@ -33,7 +33,11 @@ abstract class HealthService {
 
   /// Writes one drink; returns a stable link marker stored as the entry's
   /// externalRecordId. Idempotent per [clientId].
-  Future<String> writeWater({required int ml, required DateTime at, required String clientId});
+  Future<String> writeWater({
+    required int ml,
+    required DateTime at,
+    required String clientId,
+  });
 
   /// Android only: sends the user to install Health Connect.
   Future<void> installProvider();
@@ -49,8 +53,9 @@ class PlatformHealthService implements HealthService {
   bool _configured = false;
 
   @override
-  EntrySource get platformSource =>
-      defaultTargetPlatform == TargetPlatform.iOS ? EntrySource.healthkit : EntrySource.healthConnect;
+  EntrySource get platformSource => defaultTargetPlatform == TargetPlatform.iOS
+      ? EntrySource.healthkit
+      : EntrySource.healthConnect;
 
   Future<void> _ensureConfigured() async {
     if (_configured) return;
@@ -60,7 +65,8 @@ class PlatformHealthService implements HealthService {
 
   @override
   Future<HealthAvailability> availability() async {
-    if (kIsWeb || !(Platform.isAndroid || Platform.isIOS)) return HealthAvailability.unsupported;
+    if (kIsWeb || !(Platform.isAndroid || Platform.isIOS))
+      return HealthAvailability.unsupported;
     if (Platform.isIOS) return HealthAvailability.available;
     try {
       await _ensureConfigured();
@@ -68,8 +74,8 @@ class PlatformHealthService implements HealthService {
       return s == HealthConnectSdkStatus.sdkAvailable
           ? HealthAvailability.available
           : s == HealthConnectSdkStatus.sdkUnavailable
-              ? HealthAvailability.unsupported
-              : HealthAvailability.notInstalled;
+          ? HealthAvailability.unsupported
+          : HealthAvailability.notInstalled;
     } catch (e, st) {
       Log.error('health', 'availability check failed', error: e, stack: st);
       return HealthAvailability.unsupported;
@@ -81,7 +87,8 @@ class PlatformHealthService implements HealthService {
     try {
       await _ensureConfigured();
       final ok = await _health.hasPermissions(_types, permissions: _access);
-      if (ok == null) return HealthPermissionState.unknown; // iOS hides read status
+      if (ok == null)
+        return HealthPermissionState.unknown; // iOS hides read status
       return ok ? HealthPermissionState.granted : HealthPermissionState.denied;
     } catch (e) {
       return HealthPermissionState.unknown;
@@ -115,16 +122,22 @@ class PlatformHealthService implements HealthService {
         final liters = v.numericValue.toDouble();
         final ml = (liters * 1000).round();
         if (ml <= 0 || ml > 5000) continue; // ignore nonsensical external data
-        out.add(ExternalHydration(
-          id: p.uuid,
-          at: p.dateFrom.toUtc(),
-          ml: ml,
-          writtenByHydra: p.sourceId.startsWith(_hydraSourcePrefix),
-        ));
+        out.add(
+          ExternalHydration(
+            id: p.uuid,
+            at: p.dateFrom.toUtc(),
+            ml: ml,
+            writtenByHydra: p.sourceId.startsWith(_hydraSourcePrefix),
+          ),
+        );
       }
       return out;
     } on HealthException catch (e) {
-      Log.warning('health', 'read failed', fields: {'type': e.runtimeType.toString()});
+      Log.warning(
+        'health',
+        'read failed',
+        fields: {'type': e.runtimeType.toString()},
+      );
       throw const HealthSyncException(HealthSyncFailure.permissionRevoked);
     } catch (e, st) {
       Log.error('health', 'read failed', error: e, stack: st);
@@ -133,7 +146,11 @@ class PlatformHealthService implements HealthService {
   }
 
   @override
-  Future<String> writeWater({required int ml, required DateTime at, required String clientId}) async {
+  Future<String> writeWater({
+    required int ml,
+    required DateTime at,
+    required String clientId,
+  }) async {
     try {
       await _ensureConfigured();
       final ok = await _health.writeHealthData(
@@ -145,7 +162,8 @@ class PlatformHealthService implements HealthService {
         clientRecordId: clientId,
         recordingMethod: RecordingMethod.manual,
       );
-      if (!ok) throw const HealthSyncException(HealthSyncFailure.permissionRevoked);
+      if (!ok)
+        throw const HealthSyncException(HealthSyncFailure.permissionRevoked);
       return 'w:$clientId';
     } on HealthSyncException {
       rethrow;
@@ -168,17 +186,22 @@ class UnsupportedHealthService implements HealthService {
   @override
   EntrySource get platformSource => EntrySource.healthConnect;
   @override
-  Future<HealthAvailability> availability() async => HealthAvailability.unsupported;
+  Future<HealthAvailability> availability() async =>
+      HealthAvailability.unsupported;
   @override
-  Future<HealthPermissionState> permission() async => HealthPermissionState.denied;
+  Future<HealthPermissionState> permission() async =>
+      HealthPermissionState.denied;
   @override
   Future<bool> requestPermission() async => false;
   @override
   Future<List<ExternalHydration>> readWater(DateTime from, DateTime to) async =>
       throw const HealthSyncException(HealthSyncFailure.unavailable);
   @override
-  Future<String> writeWater({required int ml, required DateTime at, required String clientId}) async =>
-      throw const HealthSyncException(HealthSyncFailure.unavailable);
+  Future<String> writeWater({
+    required int ml,
+    required DateTime at,
+    required String clientId,
+  }) async => throw const HealthSyncException(HealthSyncFailure.unavailable);
   @override
   Future<void> installProvider() async {}
 }

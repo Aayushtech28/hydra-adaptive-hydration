@@ -25,14 +25,17 @@ class TimeWheel extends StatelessWidget {
     final t = context.hx;
     final use24 = MediaQuery.alwaysUse24HourFormatOf(context);
     return Semantics(
-      label: '${semanticsLabel ?? ''} ${Formatters.minuteOfDay(minute, locale, use24h: use24)}',
+      label:
+          '${semanticsLabel ?? ''} ${Formatters.minuteOfDay(minute, locale, use24h: use24)}',
       child: SizedBox(
         height: 190,
         child: CupertinoTheme(
           data: CupertinoThemeData(
             brightness: Theme.of(context).brightness,
             textTheme: CupertinoTextThemeData(
-              dateTimePickerTextStyle: context.text.headlineSmall?.copyWith(color: t.ink),
+              dateTimePickerTextStyle: context.text.headlineSmall?.copyWith(
+                color: t.ink,
+              ),
             ),
           ),
           child: CupertinoDatePicker(

@@ -43,11 +43,7 @@ LocalDate logicalDateOf(DateTime instant, tz.Location loc) {
 
 /// Wall-clock time on [date] in [loc] (DST-safe: nonexistent times roll
 /// forward, repeated times use the first occurrence).
-tz.TZDateTime wallTime(
-  tz.Location loc,
-  LocalDate date,
-  MinuteOfDay minute,
-) {
+tz.TZDateTime wallTime(tz.Location loc, LocalDate date, MinuteOfDay minute) {
   final extraDays = minute ~/ 1440;
   final m = minute % 1440;
   final d = date.addDays(extraDays);
@@ -74,12 +70,7 @@ class DayWindow {
     final wake = wallTime(location, date, wakeMinute);
     final sleepDate = sleepMinute <= wakeMinute ? date.addDays(1) : date;
     final sleep = wallTime(location, sleepDate, sleepMinute);
-    return DayWindow(
-      date: date,
-      location: location,
-      wake: wake,
-      sleep: sleep,
-    );
+    return DayWindow(date: date, location: location, wake: wake, sleep: sleep);
   }
 
   final LocalDate date;
@@ -116,4 +107,5 @@ class AppClock {
 }
 
 /// Converts an absolute instant to wall-clock time in [loc].
-tz.TZDateTime tzFrom(DateTime instant, tz.Location loc) => tz.TZDateTime.from(instant.toUtc(), loc);
+tz.TZDateTime tzFrom(DateTime instant, tz.Location loc) =>
+    tz.TZDateTime.from(instant.toUtc(), loc);

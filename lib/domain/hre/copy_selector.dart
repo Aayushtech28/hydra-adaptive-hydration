@@ -45,9 +45,9 @@ abstract final class CopySelector {
     return switch (snapshot.state) {
       PaceState.ahead => (CopyKey.onPace, variant),
       PaceState.onTrack => (
-          mode == ReminderMode.gentle ? CopyKey.gentle : CopyKey.neutral,
-          variant
-        ),
+        mode == ReminderMode.gentle ? CopyKey.gentle : CopyKey.neutral,
+        variant,
+      ),
       PaceState.slightlyBehind => (CopyKey.behind, variant),
       _ => (CopyKey.neutral, variant),
     };

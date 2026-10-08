@@ -71,8 +71,15 @@ class _NextReminderCardState extends ConsumerState<NextReminderCard> {
     } else if (d.nextReminder == null) {
       headline = l.nextReminderNone;
     } else {
-      final time = Formatters.time(d.nextReminder!, s.ctx.location, locale, use24h: use24);
-      headline = d.deferredToTomorrow ? l.nextReminderTomorrowAt(time) : l.nextReminderAt(time);
+      final time = Formatters.time(
+        d.nextReminder!,
+        s.ctx.location,
+        locale,
+        use24h: use24,
+      );
+      headline = d.deferredToTomorrow
+          ? l.nextReminderTomorrowAt(time)
+          : l.nextReminderAt(time);
     }
     if (s.ctx.paused && d.nextReminder != null) sub = l.nextReminderPaused;
 
@@ -83,26 +90,56 @@ class _NextReminderCardState extends ConsumerState<NextReminderCard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(children: [
-            Icon(Icons.notifications_none, size: 20, color: t.accent),
-            const SizedBox(width: 8),
-            Expanded(child: Text(l.nextReminderTitle, style: context.text.labelMedium)),
-            PopupMenuButton<String>(
-              tooltip: l.a11yRemindersMenu,
-              icon: Icon(Icons.more_horiz, color: t.inkMuted),
-              onSelected: _pause,
-              itemBuilder: (_) => [
-                if (s.ctx.paused) PopupMenuItem(value: 'resume', child: Text(l.nextReminderResume)),
-                if (!s.ctx.paused) ...[
-                  PopupMenuItem(value: '15', child: Text('${l.nextReminderPause} · ${l.pause15}')),
-                  PopupMenuItem(value: '30', child: Text('${l.nextReminderPause} · ${l.pause30}')),
-                  PopupMenuItem(value: '60', child: Text('${l.nextReminderPause} · ${l.pause60}')),
-                  PopupMenuItem(value: '3pm', child: Text('${l.nextReminderPause} · ${l.pauseUntil3pm}')),
-                  PopupMenuItem(value: 'log', child: Text('${l.nextReminderPause} · ${l.pauseUntilLog}')),
+          Row(
+            children: [
+              Icon(Icons.notifications_none, size: 20, color: t.accent),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  l.nextReminderTitle,
+                  style: context.text.labelMedium,
+                ),
+              ),
+              PopupMenuButton<String>(
+                tooltip: l.a11yRemindersMenu,
+                icon: Icon(Icons.more_horiz, color: t.inkMuted),
+                onSelected: _pause,
+                itemBuilder: (_) => [
+                  if (s.ctx.paused)
+                    PopupMenuItem(
+                      value: 'resume',
+                      child: Text(l.nextReminderResume),
+                    ),
+                  if (!s.ctx.paused) ...[
+                    PopupMenuItem(
+                      value: '15',
+                      child: Text('${l.nextReminderPause} · ${l.pause15}'),
+                    ),
+                    PopupMenuItem(
+                      value: '30',
+                      child: Text('${l.nextReminderPause} · ${l.pause30}'),
+                    ),
+                    PopupMenuItem(
+                      value: '60',
+                      child: Text('${l.nextReminderPause} · ${l.pause60}'),
+                    ),
+                    PopupMenuItem(
+                      value: '3pm',
+                      child: Text(
+                        '${l.nextReminderPause} · ${l.pauseUntil3pm}',
+                      ),
+                    ),
+                    PopupMenuItem(
+                      value: 'log',
+                      child: Text(
+                        '${l.nextReminderPause} · ${l.pauseUntilLog}',
+                      ),
+                    ),
+                  ],
                 ],
-              ],
-            ),
-          ]),
+              ),
+            ],
+          ),
           Text(headline, style: context.text.headlineSmall),
           if (sub != null) Text(sub, style: context.text.bodySmall),
           if (whyOn) ...[
@@ -115,25 +152,44 @@ class _NextReminderCardState extends ConsumerState<NextReminderCard> {
                 borderRadius: BorderRadius.circular(Radii.sm),
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(minHeight: kMinTap - 8),
-                  child: Row(children: [
-                    Text(_why ? l.dashWhyHide : l.nextReminderWhy,
-                        style: context.text.labelLarge?.copyWith(color: t.accent)),
-                    Icon(_why ? Icons.expand_less : Icons.expand_more, color: t.accent, size: 20),
-                  ]),
+                  child: Row(
+                    children: [
+                      Text(
+                        _why ? l.dashWhyHide : l.nextReminderWhy,
+                        style: context.text.labelLarge?.copyWith(
+                          color: t.accent,
+                        ),
+                      ),
+                      Icon(
+                        _why ? Icons.expand_less : Icons.expand_more,
+                        color: t.accent,
+                        size: 20,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
             if (_why)
               Padding(
                 padding: const EdgeInsets.only(top: 2),
-                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text(NotificationCopy.explain(l, d.explanation), style: context.text.bodyMedium),
-                  if (minutes != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4),
-                      child: Text(l.nextReminderLastDrink('$minutes'), style: context.text.bodySmall),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      NotificationCopy.explain(l, d.explanation),
+                      style: context.text.bodyMedium,
                     ),
-                ]),
+                    if (minutes != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Text(
+                          l.nextReminderLastDrink('$minutes'),
+                          style: context.text.bodySmall,
+                        ),
+                      ),
+                  ],
+                ),
               ),
           ],
         ],
@@ -143,7 +199,11 @@ class _NextReminderCardState extends ConsumerState<NextReminderCard> {
 }
 
 /// Maps pace state to chip text/kind (symbol + text, never colour alone).
-({StatusKind kind, String label}) paceChipFor(AppLocalizations l, PaceSnapshot s, {bool firstDayEmpty = false}) {
+({StatusKind kind, String label}) paceChipFor(
+  AppLocalizations l,
+  PaceSnapshot s, {
+  bool firstDayEmpty = false,
+}) {
   // A brand-new user with nothing logged yet is not "behind": stay neutral.
   if (firstDayEmpty) return (kind: StatusKind.neutral, label: l.paceFirstDay);
   if (s.goalReached) return (kind: StatusKind.good, label: l.paceGoalReached);
@@ -151,8 +211,14 @@ class _NextReminderCardState extends ConsumerState<NextReminderCard> {
   return switch (s.state) {
     PaceState.ahead => (kind: StatusKind.good, label: l.paceAhead),
     PaceState.onTrack => (kind: StatusKind.good, label: l.paceOnTrack),
-    PaceState.slightlyBehind => (kind: StatusKind.adjust, label: l.paceSlightlyBehind),
-    PaceState.significantlyBehind => (kind: StatusKind.attention, label: l.paceNeedsAttention),
+    PaceState.slightlyBehind => (
+      kind: StatusKind.adjust,
+      label: l.paceSlightlyBehind,
+    ),
+    PaceState.significantlyBehind => (
+      kind: StatusKind.attention,
+      label: l.paceNeedsAttention,
+    ),
     PaceState.dayClosing => (kind: StatusKind.adjust, label: l.paceDayClosing),
   };
 }

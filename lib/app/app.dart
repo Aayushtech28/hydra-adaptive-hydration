@@ -19,7 +19,8 @@ class HydraApp extends ConsumerStatefulWidget {
   ConsumerState<HydraApp> createState() => _HydraAppState();
 }
 
-class _HydraAppState extends ConsumerState<HydraApp> with WidgetsBindingObserver {
+class _HydraAppState extends ConsumerState<HydraApp>
+    with WidgetsBindingObserver {
   StreamSubscription<NotificationAction>? _actions;
 
   @override
@@ -36,7 +37,10 @@ class _HydraAppState extends ConsumerState<HydraApp> with WidgetsBindingObserver
 
     // After first frame: launch action, then network/SDK work (never blocks UI).
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final launch = await svc.errors.guard(ErrorArea.notifications, svc.notifications.launchAction);
+      final launch = await svc.errors.guard(
+        ErrorArea.notifications,
+        svc.notifications.launchAction,
+      );
       if (launch != null) await svc.core.handleNotificationAction(launch);
       await svc.core.onResume();
       _refreshState();
@@ -56,7 +60,8 @@ class _HydraAppState extends ConsumerState<HydraApp> with WidgetsBindingObserver
     if (state != AppLifecycleState.resumed) return;
     final svc = ref.read(servicesProvider);
     unawaited(() async {
-      await svc.core.onResume(); // rolls over the day, resolves reminders, reschedules
+      await svc.core
+          .onResume(); // rolls over the day, resolves reminders, reschedules
       _refreshState();
       // Opportunistic health sync (Pro, enabled, flag on); failures are silent.
       if (ref.read(isProProvider) && svc.flags.isOn(Flag.healthSync)) {

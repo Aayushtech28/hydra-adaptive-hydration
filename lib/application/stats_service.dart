@@ -35,9 +35,15 @@ class StatsService {
     final profile = (await profiles.get())!;
     final rs = await routines.getAll();
     final entries = await hydration.entriesForDay(date);
-    final zone = entries.isNotEmpty ? entries.first.timezone : await timezoneName();
+    final zone = entries.isNotEmpty
+        ? entries.first.timezone
+        : await timezoneName();
     final loc = locationFor(zone);
-    final resolved = RoutineResolver.resolve(profile: profile, routines: rs, date: date);
+    final resolved = RoutineResolver.resolve(
+      profile: profile,
+      routines: rs,
+      date: date,
+    );
     final window = DayWindow.build(
       date: date,
       location: loc,
@@ -45,17 +51,23 @@ class StatsService {
       sleepMinute: resolved.sleepMinute,
     );
     final events = await reminders.forDate(date);
-    final traj = PlanTrajectory(targetMl: profile.dailyTargetMl, window: window);
+    final traj = PlanTrajectory(
+      targetMl: profile.dailyTargetMl,
+      window: window,
+    );
     return DayStatsBuilder.build(
       date: date,
       trajectory: traj,
       logs: [for (final e in entries) LogPoint(e.timestampUtc, e.volumeMl)],
       reminders: [
         for (final e in events)
-          if (e.outcome != ReminderOutcome.pending || (now != null && now.difference(e.scheduledAt).inMinutes >= 45))
+          if (e.outcome != ReminderOutcome.pending ||
+              (now != null && now.difference(e.scheduledAt).inMinutes >= 45))
             ReminderPoint(
               e.scheduledAt,
-              e.outcome == ReminderOutcome.pending ? ReminderOutcome.ignored : e.outcome,
+              e.outcome == ReminderOutcome.pending
+                  ? ReminderOutcome.ignored
+                  : e.outcome,
             ),
       ],
       routineKind: resolved.kind,
@@ -64,7 +76,12 @@ class StatsService {
 
   /// Stats for an arbitrary inclusive range (cached for closed days, live for
   /// today). Missing days are returned as empty stats so calendars are dense.
-  Future<List<DayStats>> rangeStats(LocalDate from, LocalDate to, {required LocalDate today, DateTime? now}) async {
+  Future<List<DayStats>> rangeStats(
+    LocalDate from,
+    LocalDate to, {
+    required LocalDate today,
+    DateTime? now,
+  }) async {
     final profile = (await profiles.get())!;
     final cached = await summaries.range(from, to);
     final out = <DayStats>[];
@@ -79,7 +96,9 @@ class StatsService {
         s = cached[d];
         if (s == null) {
           final entries = await hydration.entriesForDay(d);
-          s = entries.isEmpty ? DayStats.empty(d, profile.dailyTargetMl) : await computeDay(d, now: now);
+          s = entries.isEmpty
+              ? DayStats.empty(d, profile.dailyTargetMl)
+              : await computeDay(d, now: now);
           await summaries.put(s, now: now ?? DateTime.now());
         }
       }
@@ -94,9 +113,15 @@ class StatsService {
     final profile = (await profiles.get())!;
     final rs = await routines.getAll();
     final entries = await hydration.entriesForDay(date);
-    final zone = entries.isNotEmpty ? entries.first.timezone : await timezoneName();
+    final zone = entries.isNotEmpty
+        ? entries.first.timezone
+        : await timezoneName();
     final loc = locationFor(zone);
-    final resolved = RoutineResolver.resolve(profile: profile, routines: rs, date: date);
+    final resolved = RoutineResolver.resolve(
+      profile: profile,
+      routines: rs,
+      date: date,
+    );
     final window = DayWindow.build(
       date: date,
       location: loc,
@@ -106,7 +131,10 @@ class StatsService {
     return DayDetail(
       date: date,
       entries: entries,
-      trajectory: PlanTrajectory(targetMl: profile.dailyTargetMl, window: window),
+      trajectory: PlanTrajectory(
+        targetMl: profile.dailyTargetMl,
+        window: window,
+      ),
       stats: await computeDay(date, now: now),
       routineName: resolved.name,
     );
@@ -125,7 +153,11 @@ class StatsService {
 
   /// Contiguous completed days (up to yesterday) from the first day of use,
   /// each with stats (missed days are empty stats). Cached for closed days.
-  Future<List<DayStats>> completedDays(LocalDate today, {DateTime? now, int maxDays = 120}) async {
+  Future<List<DayStats>> completedDays(
+    LocalDate today, {
+    DateTime? now,
+    int maxDays = 120,
+  }) async {
     final profile = (await profiles.get())!;
     var first = await firstDay(today);
     final yesterday = today.addDays(-1);

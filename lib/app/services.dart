@@ -2,7 +2,8 @@ import 'dart:async';
 import 'dart:ui' as ui;
 
 import 'package:flutter/widgets.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart' show NotificationResponse;
+import 'package:flutter_local_notifications/flutter_local_notifications.dart'
+    show NotificationResponse;
 import 'package:flutter_timezone/flutter_timezone.dart';
 
 import '../application/composition.dart';
@@ -14,6 +15,7 @@ import '../core/logging/log.dart';
 import '../core/time/hydra_time.dart';
 import '../data/database/app_database.dart';
 import '../data/repositories/misc_repositories.dart';
+import '../domain/models/enums.dart';
 import '../services/ads/ad_coordinator.dart';
 import '../services/ads/ad_service.dart';
 import '../services/ads/consent_service.dart';
@@ -76,15 +78,18 @@ class AppServices {
     return _cachedZone;
   }
 
-  static String get systemLocaleCode => ui.PlatformDispatcher.instance.locale.toLanguageTag();
+  static String get systemLocaleCode =>
+      ui.PlatformDispatcher.instance.locale.toLanguageTag();
 
   /// Local-data-only startup. No network, no ad/consent/purchase SDKs: the
   /// dashboard can render as soon as this returns.
   static Future<AppServices> create() async => assemble(
-        db: await AppDatabase.openOnDevice(),
-        notifications: LocalNotificationService(backgroundHandler: hydraBackgroundNotificationHandler),
-        widgets: HomeWidgetPublisher(),
-      );
+    db: await AppDatabase.openOnDevice(),
+    notifications: LocalNotificationService(
+      backgroundHandler: hydraBackgroundNotificationHandler,
+    ),
+    widgets: HomeWidgetPublisher(),
+  );
 
   /// Builds the graph from injectable parts (used by [create] and by tests).
   /// Optional platform services that fail to initialise degrade silently.
@@ -119,7 +124,12 @@ class AppServices {
       await _initNotifications(core, notifications);
     } catch (e, st) {
       // Notifications unavailable: tracking and everything else still works.
-      Log.error('notifications', 'init failed; continuing without', error: e, stack: st);
+      Log.error(
+        'notifications',
+        'init failed; continuing without',
+        error: e,
+        stack: st,
+      );
     }
 
     final subscription = RevenueCatSubscriptionService(settings);
@@ -181,7 +191,9 @@ class AppServices {
       // Diagnostics/analytics defaults follow the privacy region.
       final settings = core.settings;
       final stored = await settings.getString(SettingKeys.analyticsEnabled);
-      final enabled = stored == null ? !consent.regionRequiresConsent : stored == '1';
+      final enabled = stored == null
+          ? !consent.regionRequiresConsent
+          : stored == '1';
       await analytics.setEnabled(enabled);
       await errors.setRemoteEnabled(enabled);
       if (consent.canRequestAds && !subscription.current.isPro) {
@@ -194,7 +206,10 @@ class AppServices {
     analytics.log(AnalyticsEvent.appOpen);
   }
 
-  static Future<void> _initNotifications(HydraCore core, NotificationService n) async {
+  static Future<void> _initNotifications(
+    HydraCore core,
+    NotificationService n,
+  ) async {
     final ctx = await core.plans.load(core.clock.now().toUtc());
     final l = localizationsFor(ctx.profile.locale);
     await n.init(
@@ -215,13 +230,11 @@ class AppServices {
   FeatureFlags get flags => remote.current.flags;
 }
 
-/// Entry point for notification responses delivered when the app is not in
-/// the foreground (including terminated). Runs the *same* [HydraCore] logic
-/// — persist, recompute, reschedule, widget — without opening the UI.
-@pragma('vm:entry-point')
-Future<void> hydraBackgroundNotificationHandler(NotificationResponse r) async {
-  final action = NotificationAction.parse(actionId: r.actionId, payload: r.payload);
-  if (action == null) return;
+/// Runs [body] against a freshly built, UI-less [HydraCore] (own DB
+/// connection, own plugin instances) and always tears it down. Used by
+/// background notification actions and home-screen widget taps so they follow
+/// the exact same pipeline as the UI.
+Future<void> runHeadless(Future<void> Function(HydraCore core) body) async {
   WidgetsFlutterBinding.ensureInitialized();
   AppDatabase? db;
   try {
@@ -237,13 +250,40 @@ Future<void> hydraBackgroundNotificationHandler(NotificationResponse r) async {
       timezoneName: AppServices.deviceTimezone,
     );
     await core.bootstrap();
-    await AppServices._initNotifications(core, notifications);
-    await core.handleNotificationAction(action);
-    // Let the post-log reschedule finish before the isolate is torn down.
-    await core.reschedule(reason: 'background_action');
+    try {
+      await AppServices._initNotifications(core, notifications);
+    } catch (e, st) {
+      Log.error('notifications', 'headless init failed', error: e, stack: st);
+    }
+    await body(core);
+    // Let the post-action reschedule finish before the isolate is torn down.
+    await core.reschedule(reason: 'headless');
   } catch (e, st) {
-    Log.error('notifications', 'background handler failed', error: e, stack: st);
+    Log.error('startup', 'headless run failed', error: e, stack: st);
   } finally {
     await db?.close();
   }
+}
+
+/// Entry point for notification responses delivered when the app is not in
+/// the foreground (including terminated).
+@pragma('vm:entry-point')
+Future<void> hydraBackgroundNotificationHandler(NotificationResponse r) async {
+  final action = NotificationAction.parse(
+    actionId: r.actionId,
+    payload: r.payload,
+  );
+  if (action == null) return;
+  await runHeadless((core) => core.handleNotificationAction(action));
+}
+
+/// Entry point for home-screen widget taps (`hydra://log?ml=250`).
+@pragma('vm:entry-point')
+Future<void> hydraWidgetCallback(Uri? uri) async {
+  if (uri == null || uri.scheme != 'hydra' || uri.host != 'log') return;
+  final ml = int.tryParse(uri.queryParameters['ml'] ?? '');
+  if (ml == null || ml <= 0 || ml > 5000) return;
+  await runHeadless((core) async {
+    await core.log(volumeMl: ml, source: EntrySource.widget);
+  });
 }

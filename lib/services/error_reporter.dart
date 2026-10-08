@@ -8,7 +8,16 @@ import '../core/config/app_config.dart';
 import '../core/logging/log.dart';
 
 /// Error categories surfaced in dashboards (see docs: severity mapping).
-enum ErrorArea { flutter, native, notifications, health, purchases, widgets, database, other }
+enum ErrorArea {
+  flutter,
+  native,
+  notifications,
+  health,
+  purchases,
+  widgets,
+  database,
+  other,
+}
 
 /// Central crash/error pipeline. Always records locally (redacted ring
 /// buffer for support diagnostics); forwards to Crashlytics only when
@@ -27,7 +36,11 @@ class ErrorReporter {
       await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
       _crashlyticsReady = true;
     } catch (e) {
-      Log.info('crash', 'crashlytics unavailable', fields: {'type': e.runtimeType.toString()});
+      Log.info(
+        'crash',
+        'crashlytics unavailable',
+        fields: {'type': e.runtimeType.toString()},
+      );
     }
   }
 
@@ -50,15 +63,29 @@ class ErrorReporter {
     };
   }
 
-  void record(Object error, StackTrace? stack, ErrorArea area, {bool fatal = false}) {
-    Log.error(area.name, Redactor.scrub(error.toString()), error: error, stack: stack);
+  void record(
+    Object error,
+    StackTrace? stack,
+    ErrorArea area, {
+    bool fatal = false,
+  }) {
+    Log.error(
+      area.name,
+      Redactor.scrub(error.toString()),
+      error: error,
+      stack: stack,
+    );
     if (_remoteEnabled && _crashlyticsReady) {
-      unawaited(FirebaseCrashlytics.instance.recordError(
-        Exception('${error.runtimeType}: ${Redactor.scrub(error.toString())}'),
-        stack,
-        reason: area.name,
-        fatal: fatal,
-      ));
+      unawaited(
+        FirebaseCrashlytics.instance.recordError(
+          Exception(
+            '${error.runtimeType}: ${Redactor.scrub(error.toString())}',
+          ),
+          stack,
+          reason: area.name,
+          fatal: fatal,
+        ),
+      );
     }
   }
 

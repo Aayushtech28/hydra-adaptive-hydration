@@ -103,11 +103,13 @@ abstract final class HealthReconciler {
 
     final toExport = canExport
         ? local
-            .where((e) =>
-                e.externalRecordId == null &&
-                !e.source.isExternal &&
-                !claimedLocal.contains(e.id))
-            .toList()
+              .where(
+                (e) =>
+                    e.externalRecordId == null &&
+                    !e.source.isExternal &&
+                    !claimedLocal.contains(e.id),
+              )
+              .toList()
         : <HydrationEntry>[];
 
     final externalIds = {for (final x in external) x.id};
@@ -115,7 +117,8 @@ abstract final class HealthReconciler {
     if (canImport) {
       for (final e in local) {
         if (e.source != platform || e.externalRecordId == null) continue;
-        final inWindow = !e.timestampUtc.isBefore(windowStart) &&
+        final inWindow =
+            !e.timestampUtc.isBefore(windowStart) &&
             !e.timestampUtc.isAfter(windowEnd);
         if (inWindow && !externalIds.contains(e.externalRecordId)) {
           toRemove.add(e.id);

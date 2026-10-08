@@ -95,13 +95,16 @@ class AdPolicyManager {
 
   AdDecision decide(AdPolicyInput i) {
     if (i.isPro) return const AdDecision(false, AdDenyReason.pro);
-    if (!i.canRequestAds) return const AdDecision(false, AdDenyReason.noConsent);
-    if (!i.adUnitAvailable) return const AdDecision(false, AdDenyReason.unavailable);
+    if (!i.canRequestAds)
+      return const AdDecision(false, AdDenyReason.noConsent);
+    if (!i.adUnitAvailable)
+      return const AdDecision(false, AdDenyReason.unavailable);
     if (!i.online) return const AdDecision(false, AdDenyReason.offline);
 
     final fmt = i.placement.format;
     if (fmt == AdFormat.rewarded) {
-      if (!i.rewardedEnabled) return const AdDecision(false, AdDenyReason.flagOff);
+      if (!i.rewardedEnabled)
+        return const AdDecision(false, AdDenyReason.flagOff);
       if (i.rewardedToday >= maxRewardedPerDay) {
         return const AdDecision(false, AdDenyReason.rewardedCap);
       }
@@ -112,10 +115,12 @@ class AdPolicyManager {
     if (i.totalLogs < minLogsBeforeAnyAd) {
       return const AdDecision(false, AdDenyReason.notActivated);
     }
-    if (i.installAgeDays < 1) return const AdDecision(false, AdDenyReason.tooNew);
+    if (i.installAgeDays < 1)
+      return const AdDecision(false, AdDenyReason.tooNew);
 
     if (fmt == AdFormat.interstitial) {
-      if (!i.interstitialsEnabled) return const AdDecision(false, AdDenyReason.flagOff);
+      if (!i.interstitialsEnabled)
+        return const AdDecision(false, AdDenyReason.flagOff);
       if (i.installAgeDays < minInstallDaysForInterstitial) {
         return const AdDecision(false, AdDenyReason.tooNew);
       }

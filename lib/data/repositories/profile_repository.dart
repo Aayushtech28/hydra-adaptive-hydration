@@ -15,15 +15,15 @@ class ProfileRepository {
 
   static const int _id = 1;
 
-  Stream<UserProfile?> watch() => (_db.select(_db.userProfileRows)
-        ..where((t) => t.id.equals(_id)))
-      .watchSingleOrNull()
-      .map((r) => r == null ? null : _map(r));
+  Stream<UserProfile?> watch() =>
+      (_db.select(_db.userProfileRows)..where((t) => t.id.equals(_id)))
+          .watchSingleOrNull()
+          .map((r) => r == null ? null : _map(r));
 
   Future<UserProfile?> get() async {
-    final r = await (_db.select(_db.userProfileRows)
-          ..where((t) => t.id.equals(_id)))
-        .getSingleOrNull();
+    final r = await (_db.select(
+      _db.userProfileRows,
+    )..where((t) => t.id.equals(_id))).getSingleOrNull();
     return r == null ? null : _map(r);
   }
 
@@ -65,13 +65,23 @@ class ProfileRepository {
         p.dailyTargetMl > VolumeLimits.maxTargetMl) {
       throw const ValidationException(ValidationCode.targetInvalid);
     }
-    for (final m in [p.wakeMinute, p.sleepMinute, p.weekendWakeMinute, p.weekendSleepMinute]) {
-      if (m < 0 || m > 1439) throw const ValidationException(ValidationCode.timeInvalid);
+    for (final m in [
+      p.wakeMinute,
+      p.sleepMinute,
+      p.weekendWakeMinute,
+      p.weekendSleepMinute,
+    ]) {
+      if (m < 0 || m > 1439)
+        throw const ValidationException(ValidationCode.timeInvalid);
     }
     final qa = p.quickAddsMl
-        .where((v) => v >= VolumeLimits.minEntryMl && v <= VolumeLimits.maxEntryMl)
+        .where(
+          (v) => v >= VolumeLimits.minEntryMl && v <= VolumeLimits.maxEntryMl,
+        )
         .toList();
-    await _db.into(_db.userProfileRows).insertOnConflictUpdate(
+    await _db
+        .into(_db.userProfileRows)
+        .insertOnConflictUpdate(
           UserProfileRowsCompanion(
             id: const Value(_id),
             createdAt: Value(p.createdAt.millisecondsSinceEpoch),
@@ -87,7 +97,9 @@ class ProfileRepository {
             weekendDifferent: Value(p.weekendDifferent),
             weekendWakeMinute: Value(p.weekendWakeMinute),
             weekendSleepMinute: Value(p.weekendSleepMinute),
-            quickAddsJson: Value(jsonEncode(qa.isEmpty ? const [250, 350, 500] : qa)),
+            quickAddsJson: Value(
+              jsonEncode(qa.isEmpty ? const [250, 350, 500] : qa),
+            ),
             onboardingComplete: Value(p.onboardingComplete),
             remindersEnabled: Value(p.remindersEnabled),
             theme: Value(p.theme.name),
@@ -116,7 +128,10 @@ class ProfileRepository {
       quickAddsMl: qa.isEmpty ? const [250, 350, 500] : qa,
       onboardingComplete: r.onboardingComplete,
       remindersEnabled: r.remindersEnabled,
-      theme: ThemeChoice.values.firstWhere((t) => t.name == r.theme, orElse: () => ThemeChoice.system),
+      theme: ThemeChoice.values.firstWhere(
+        (t) => t.name == r.theme,
+        orElse: () => ThemeChoice.system,
+      ),
       activeRoutineId: r.activeRoutineId,
       environmentHot: r.environmentHot,
     );

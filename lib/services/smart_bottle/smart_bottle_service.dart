@@ -4,14 +4,23 @@ import 'dart:async';
 /// would enter through [HydrationEvent]s with `EntrySource.smartBottle` and
 /// external ids, and flow through the same reconciliation as health records.
 class BottleDevice {
-  const BottleDevice({required this.id, required this.name, this.batteryPercent});
+  const BottleDevice({
+    required this.id,
+    required this.name,
+    this.batteryPercent,
+  });
   final String id;
   final String name;
   final int? batteryPercent;
 }
 
 class BottleHydrationEvent {
-  const BottleHydrationEvent({required this.deviceId, required this.eventId, required this.at, required this.ml});
+  const BottleHydrationEvent({
+    required this.deviceId,
+    required this.eventId,
+    required this.at,
+    required this.ml,
+  });
   final String deviceId;
   final String eventId;
   final DateTime at;
@@ -41,7 +50,8 @@ class UnsupportedSmartBottleService implements SmartBottleService {
   @override
   Stream<List<BottleDevice>> discover() => const Stream.empty();
   @override
-  Future<void> connect(BottleDevice d) async => throw UnsupportedError('Smart bottles are not supported yet');
+  Future<void> connect(BottleDevice d) async =>
+      throw UnsupportedError('Smart bottles are not supported yet');
   @override
   Future<void> disconnect() async {}
   @override

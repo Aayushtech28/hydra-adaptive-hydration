@@ -58,6 +58,7 @@ class AnalyticsService {
     _sinks.add(s);
     unawaited(s.setEnabled(_enabled));
   }
+
   bool _enabled = false;
 
   bool get enabled => _enabled;
@@ -75,7 +76,8 @@ class AnalyticsService {
     params.forEach((k, v) {
       final t = kAllowedAnalyticsParams[k];
       if (t == null || v == null) return;
-      if (t == String && v is String) out[k] = v.length > 40 ? v.substring(0, 40) : v;
+      if (t == String && v is String)
+        out[k] = v.length > 40 ? v.substring(0, 40) : v;
       if (t == bool && v is bool) out[k] = v;
     });
     return out;
@@ -105,7 +107,11 @@ class FirebaseAnalyticsSink implements AnalyticsSink {
       await s._fa!.setAnalyticsCollectionEnabled(false);
       return s;
     } catch (e) {
-      Log.info('analytics', 'firebase unavailable', fields: {'type': e.runtimeType.toString()});
+      Log.info(
+        'analytics',
+        'firebase unavailable',
+        fields: {'type': e.runtimeType.toString()},
+      );
       return null;
     }
   }
@@ -115,7 +121,8 @@ class FirebaseAnalyticsSink implements AnalyticsSink {
       _fa?.logEvent(name: name, parameters: params);
 
   @override
-  Future<void> setEnabled(bool enabled) async => _fa?.setAnalyticsCollectionEnabled(enabled);
+  Future<void> setEnabled(bool enabled) async =>
+      _fa?.setAnalyticsCollectionEnabled(enabled);
 }
 
 /// Development sink: prints events to the structured log.

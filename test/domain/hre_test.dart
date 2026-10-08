@@ -20,17 +20,16 @@ DayContext _ctx(
   int sleep = 23 * 60,
   List<TimeSpan> quiet = const [],
   List<TimeSpan> workout = const [],
-}) =>
-    DayContext(
-      window: DayWindow.build(
-        date: d,
-        location: loc ?? _loc(),
-        wakeMinute: wake,
-        sleepMinute: sleep,
-      ),
-      quietSpans: quiet,
-      workoutSpans: workout,
-    );
+}) => DayContext(
+  window: DayWindow.build(
+    date: d,
+    location: loc ?? _loc(),
+    wakeMinute: wake,
+    sleepMinute: sleep,
+  ),
+  quietSpans: quiet,
+  workoutSpans: workout,
+);
 
 SchedulerInput _in(
   tz.TZDateTime now, {
@@ -54,8 +53,22 @@ SchedulerInput _in(
   final d = logicalDateOf(now, loc);
   return SchedulerInput(
     now: now,
-    today: _ctx(d, loc: loc, quiet: quiet, workout: workout, wake: wake, sleep: sleep),
-    tomorrow: _ctx(d.addDays(1), loc: loc, quiet: quiet, workout: workout, wake: wake, sleep: sleep),
+    today: _ctx(
+      d,
+      loc: loc,
+      quiet: quiet,
+      workout: workout,
+      wake: wake,
+      sleep: sleep,
+    ),
+    tomorrow: _ctx(
+      d.addDays(1),
+      loc: loc,
+      quiet: quiet,
+      workout: workout,
+      wake: wake,
+      sleep: sleep,
+    ),
     targetMl: target,
     consumedMl: consumed,
     policy: ReminderPolicy.forMode(mode),
@@ -70,8 +83,13 @@ SchedulerInput _in(
   );
 }
 
-tz.TZDateTime _t(int h, int m, {String zone = 'Asia/Kolkata', int day = 7, int month = 10}) =>
-    tz.TZDateTime(_loc(zone), 2026, month, day, h, m);
+tz.TZDateTime _t(
+  int h,
+  int m, {
+  String zone = 'Asia/Kolkata',
+  int day = 7,
+  int month = 10,
+}) => tz.TZDateTime(_loc(zone), 2026, month, day, h, m);
 
 void main() {
   setUpAll(ensureTimeZonesInitialized);
@@ -112,7 +130,8 @@ void main() {
   group('PaceCalculator', () {
     final today = _ctx(const LocalDate(2026, 10, 7));
     final traj = PlanTrajectory(targetMl: 2400, window: today.window);
-    PaceSnapshot snap(int consumed, tz.TZDateTime now) => PaceCalculator.compute(
+    PaceSnapshot snap(int consumed, tz.TZDateTime now) =>
+        PaceCalculator.compute(
           trajectory: traj,
           consumedMl: consumed,
           now: now,
@@ -147,7 +166,10 @@ void main() {
       expect(snap(800, _t(21, 30)).state, PaceState.dayClosing);
       // on-track near the end is NOT closing
       final near = _t(21, 30);
-      expect(snap(traj.expectedMlAt(near).round(), near).state, PaceState.onTrack);
+      expect(
+        snap(traj.expectedMlAt(near).round(), near).state,
+        PaceState.onTrack,
+      );
     });
 
     test('never suggests a panic catch-up', () {
@@ -155,7 +177,8 @@ void main() {
       expect(s.suggestedPerCheckInMl, isNull);
       for (var h = 8; h < 22; h++) {
         final p = snap(0, _t(h, 0)).suggestedPerCheckInMl;
-        if (p != null) expect(p, lessThanOrEqualTo(PaceCalculator.maxSuggestedMl));
+        if (p != null)
+          expect(p, lessThanOrEqualTo(PaceCalculator.maxSuggestedMl));
       }
     });
 
@@ -185,7 +208,9 @@ void main() {
       final now = _t(14, 0);
       final last = _t(11, 0);
       final onTrack = _sched.decide(_in(now, consumed: 1350, lastLog: last));
-      final behind = _sched.decide(_in(now, consumed: 700, lastLog: last, lastReminder: _t(13, 0)));
+      final behind = _sched.decide(
+        _in(now, consumed: 700, lastLog: last, lastReminder: _t(13, 0)),
+      );
       expect(behind.state, PaceState.significantlyBehind);
       expect(behind.reasons, contains(ReasonCode.paceGap));
       expect(behind.explanation, ExplanationKey.significantlyBehindSpread);
@@ -208,9 +233,13 @@ void main() {
       for (final mode in ReminderMode.values) {
         final policy = ReminderPolicy.forMode(mode);
         final now = _t(15, 0);
-        final d = _sched.decide(_in(now, consumed: 100, lastLog: now, lastReminder: now, mode: mode));
-        expect(d.nextReminder!.difference(now).inMinutes,
-            greaterThanOrEqualTo(policy.minGapMin));
+        final d = _sched.decide(
+          _in(now, consumed: 100, lastLog: now, lastReminder: now, mode: mode),
+        );
+        expect(
+          d.nextReminder!.difference(now).inMinutes,
+          greaterThanOrEqualTo(policy.minGapMin),
+        );
       }
     });
 
@@ -221,24 +250,31 @@ void main() {
       expect(d.nextReminder, _t(8, 15, day: 8));
     });
 
-    test('day closing: past plan end defers to tomorrow, no forced catch-up', () {
-      final d = _sched.decide(_in(_t(22, 10), consumed: 900, lastLog: _t(18, 0)));
-      expect(d.state, PaceState.dayClosing);
-      expect(d.explanation, ExplanationKey.dayClosingTomorrow);
-      expect(d.nextReminder!.day, 8);
-      expect(d.copy, CopyKey.closing);
-    });
+    test(
+      'day closing: past plan end defers to tomorrow, no forced catch-up',
+      () {
+        final d = _sched.decide(
+          _in(_t(22, 10), consumed: 900, lastLog: _t(18, 0)),
+        );
+        expect(d.state, PaceState.dayClosing);
+        expect(d.explanation, ExplanationKey.dayClosingTomorrow);
+        expect(d.nextReminder!.day, 8);
+        expect(d.copy, CopyKey.closing);
+      },
+    );
 
     test('quiet hours: reminder inside span moves to span end', () {
       final quiet = [const TimeSpan(14 * 60, 15 * 60)];
-      final d = _sched.decide(_in(
-        _t(12, 40),
-        consumed: 900,
-        lastLog: _t(12, 40),
-        lastReminder: _t(12, 40),
-        quiet: quiet,
-        mode: ReminderMode.focus,
-      ));
+      final d = _sched.decide(
+        _in(
+          _t(12, 40),
+          consumed: 900,
+          lastLog: _t(12, 40),
+          lastReminder: _t(12, 40),
+          quiet: quiet,
+          mode: ReminderMode.focus,
+        ),
+      );
       // focus: ~75*0.8.. falls near 13:40-14:00 region; assert never inside quiet
       final t = d.nextReminder!;
       final mins = t.hour * 60 + t.minute;
@@ -247,12 +283,9 @@ void main() {
 
     test('quiet span covering the candidate pushes to its end with reason', () {
       final quiet = [const TimeSpan(13 * 60, 16 * 60)];
-      final d = _sched.decide(_in(
-        _t(12, 0),
-        consumed: 1000,
-        lastLog: _t(12, 0),
-        quiet: quiet,
-      ));
+      final d = _sched.decide(
+        _in(_t(12, 0), consumed: 1000, lastLog: _t(12, 0), quiet: quiet),
+      );
       expect(d.nextReminder, _t(16, 0));
       expect(d.reasons, contains(ReasonCode.quietHoursExit));
       expect(d.explanation, ExplanationKey.quietHoursExit);
@@ -267,14 +300,16 @@ void main() {
 
     test('workout window suppresses reminders and resumes after it', () {
       final workout = [const TimeSpan(18 * 60, 19 * 60 + 15)];
-      final d = _sched.decide(_in(
-        _t(17, 0),
-        consumed: 1500,
-        lastLog: _t(17, 0),
-        lastReminder: _t(17, 0),
-        workout: workout,
-        mode: ReminderMode.focus,
-      ));
+      final d = _sched.decide(
+        _in(
+          _t(17, 0),
+          consumed: 1500,
+          lastLog: _t(17, 0),
+          lastReminder: _t(17, 0),
+          workout: workout,
+          mode: ReminderMode.focus,
+        ),
+      );
       final t = d.nextReminder!;
       final mins = t.hour * 60 + t.minute;
       expect(mins >= 18 * 60 && mins < 19 * 60 + 15, isFalse);
@@ -282,13 +317,15 @@ void main() {
 
     test('snooze is honoured exactly and explained', () {
       final now = _t(14, 0);
-      final d = _sched.decide(_in(
-        now,
-        consumed: 1200,
-        lastLog: _t(12, 0),
-        lastReminder: now,
-        snooze: now.add(const Duration(minutes: 30)),
-      ));
+      final d = _sched.decide(
+        _in(
+          now,
+          consumed: 1200,
+          lastLog: _t(12, 0),
+          lastReminder: now,
+          snooze: now.add(const Duration(minutes: 30)),
+        ),
+      );
       expect(d.nextReminder, _t(14, 30));
       expect(d.explanation, ExplanationKey.snoozedUntil);
       expect(d.reasons, contains(ReasonCode.snoozed));
@@ -322,38 +359,60 @@ void main() {
 
     test('too many unanswered reminders go quiet until tomorrow', () {
       final now = _t(15, 0);
-      final d = _sched.decide(_in(now, consumed: 500, lastReminder: now, unanswered: 3));
+      final d = _sched.decide(
+        _in(now, consumed: 500, lastReminder: now, unanswered: 3),
+      );
       expect(d.deferredToTomorrow, isTrue);
       expect(d.explanation, ExplanationKey.fatigueQuiet);
     });
 
     test('high fatigue widens spacing, never tightens it', () {
       final now = _t(15, 0);
-      final base = _sched.decide(_in(now, consumed: 1000, lastLog: now, lastReminder: now));
+      final base = _sched.decide(
+        _in(now, consumed: 1000, lastLog: now, lastReminder: now),
+      );
       const tired = FatigueState(
         index: 0.7,
         level: FatigueLevel.high,
         sampleSize: 12,
         sufficient: true,
       );
-      final fat = _sched.decide(_in(now, consumed: 1000, lastLog: now, lastReminder: now, fatigue: tired));
-      expect(fat.nextReminder!.isAfter(base.nextReminder!) ||
-          fat.deferredToTomorrow, isTrue);
+      final fat = _sched.decide(
+        _in(
+          now,
+          consumed: 1000,
+          lastLog: now,
+          lastReminder: now,
+          fatigue: tired,
+        ),
+      );
+      expect(
+        fat.nextReminder!.isAfter(base.nextReminder!) || fat.deferredToTomorrow,
+        isTrue,
+      );
       expect(fat.reasons, contains(ReasonCode.fatigue));
     });
 
     test('overdue reminder after long idle is not instant', () {
       final now = _t(17, 0);
-      final d = _sched.decide(_in(now, consumed: 400, lastLog: _t(8, 30), lastReminder: _t(8, 30)));
-      expect(d.nextReminder!.difference(now).inMinutes,
-          greaterThanOrEqualTo(HydrationScheduler.overdueLeadMin));
+      final d = _sched.decide(
+        _in(now, consumed: 400, lastLog: _t(8, 30), lastReminder: _t(8, 30)),
+      );
+      expect(
+        d.nextReminder!.difference(now).inMinutes,
+        greaterThanOrEqualTo(HydrationScheduler.overdueLeadMin),
+      );
     });
 
     test('fresh start mid-day does not ping immediately', () {
       final now = _t(15, 0);
       final d = _sched.decide(_in(now));
-      expect(d.nextReminder!.difference(now).inMinutes,
-          greaterThanOrEqualTo(ReminderPolicy.forMode(ReminderMode.balanced).minGapMin));
+      expect(
+        d.nextReminder!.difference(now).inMinutes,
+        greaterThanOrEqualTo(
+          ReminderPolicy.forMode(ReminderMode.balanced).minGapMin,
+        ),
+      );
     });
 
     test('invariant: decisions are never in the past or inside sleep', () {
@@ -361,15 +420,26 @@ void main() {
         for (final consumed in [0, 600, 1500, 2399, 2400]) {
           for (final mode in ReminderMode.values) {
             final now = _t(h, 17, day: 7);
-            final d = _sched.decide(_in(now, consumed: consumed, mode: mode,
-                lastLog: consumed > 0 ? now.subtract(const Duration(minutes: 70)) : null));
+            final d = _sched.decide(
+              _in(
+                now,
+                consumed: consumed,
+                mode: mode,
+                lastLog: consumed > 0
+                    ? now.subtract(const Duration(minutes: 70))
+                    : null,
+              ),
+            );
             final n = d.nextReminder!;
             expect(n.isAfter(now), isTrue, reason: 'h=$h c=$consumed $mode');
             final local = tz.TZDateTime.from(n, _loc());
             final m = local.hour * 60 + local.minute;
             // never during sleep (23:00–07:30)
-            expect(m >= 7 * 60 + 30 && m <= 22 * 60, isTrue,
-                reason: 'h=$h c=$consumed $mode got $local');
+            expect(
+              m >= 7 * 60 + 30 && m <= 22 * 60,
+              isTrue,
+              reason: 'h=$h c=$consumed $mode got $local',
+            );
           }
         }
       }
@@ -378,111 +448,193 @@ void main() {
 
   group('planChain', () {
     test('chain is increasing, bounded and ends with tomorrow', () {
-      final chain = _sched.planChain(_in(_t(9, 0), consumed: 250, lastLog: _t(9, 0)));
+      final chain = _sched.planChain(
+        _in(_t(9, 0), consumed: 250, lastLog: _t(9, 0)),
+      );
       expect(chain, isNotEmpty);
       for (var i = 1; i < chain.length; i++) {
-        expect(chain[i].nextReminder!.isAfter(chain[i - 1].nextReminder!), isTrue);
+        expect(
+          chain[i].nextReminder!.isAfter(chain[i - 1].nextReminder!),
+          isTrue,
+        );
       }
       expect(chain.last.deferredToTomorrow, isTrue);
       expect(chain.length, lessThanOrEqualTo(6));
       // never more unanswered reminders than the policy allows today
       final today = chain.where((d) => !d.deferredToTomorrow).length;
-      expect(today, lessThanOrEqualTo(ReminderPolicy.forMode(ReminderMode.balanced).maxUnanswered));
+      expect(
+        today,
+        lessThanOrEqualTo(
+          ReminderPolicy.forMode(ReminderMode.balanced).maxUnanswered,
+        ),
+      );
     });
 
     test('unanswered spacing widens, never tightens', () {
       final chain = _sched.planChain(_in(_t(8, 0), mode: ReminderMode.focus));
       final todays = chain.where((d) => !d.deferredToTomorrow).toList();
       for (var i = 2; i < todays.length; i++) {
-        final prevGap = todays[i - 1].nextReminder!.difference(todays[i - 2].nextReminder!);
-        final gap = todays[i].nextReminder!.difference(todays[i - 1].nextReminder!);
+        final prevGap = todays[i - 1].nextReminder!.difference(
+          todays[i - 2].nextReminder!,
+        );
+        final gap = todays[i].nextReminder!.difference(
+          todays[i - 1].nextReminder!,
+        );
         // pace may shorten base spacing, but the unanswered widening keeps
         // it from collapsing below the policy floor
-        expect(gap.inMinutes, greaterThanOrEqualTo(ReminderPolicy.forMode(ReminderMode.focus).minGapMin));
+        expect(
+          gap.inMinutes,
+          greaterThanOrEqualTo(
+            ReminderPolicy.forMode(ReminderMode.focus).minGapMin,
+          ),
+        );
         expect(prevGap.inMinutes, greaterThan(0));
       }
     });
   });
 
   group('time handling', () {
-    test('DST spring-forward: window and reminders stay valid (America/New_York)', () {
-      final loc = _loc('America/New_York');
-      final d = const LocalDate(2026, 3, 8);
-      final w = DayWindow.build(date: d, location: loc, wakeMinute: 7 * 60, sleepMinute: 23 * 60);
-      // 23h day: 07:00→23:00 EDT is 15h wall-clock minus nothing after 2am; window length 16h-0
-      expect(w.lengthMinutes, 16 * 60);
-      final now = tz.TZDateTime(loc, 2026, 3, 8, 9, 0);
-      final input = SchedulerInput(
-        now: now,
-        today: DayContext(window: w),
-        tomorrow: DayContext(window: DayWindow.build(date: d.addDays(1), location: loc, wakeMinute: 7 * 60, sleepMinute: 23 * 60)),
-        targetMl: 2400,
-        consumedMl: 300,
-        policy: ReminderPolicy.forMode(ReminderMode.balanced),
-        lastLogAt: now,
-      );
-      final dec = _sched.decide(input);
-      expect(dec.nextReminder!.isAfter(now), isTrue);
-    });
+    test(
+      'DST spring-forward: window and reminders stay valid (America/New_York)',
+      () {
+        final loc = _loc('America/New_York');
+        final d = const LocalDate(2026, 3, 8);
+        final w = DayWindow.build(
+          date: d,
+          location: loc,
+          wakeMinute: 7 * 60,
+          sleepMinute: 23 * 60,
+        );
+        // 23h day: 07:00→23:00 EDT is 15h wall-clock minus nothing after 2am; window length 16h-0
+        expect(w.lengthMinutes, 16 * 60);
+        final now = tz.TZDateTime(loc, 2026, 3, 8, 9, 0);
+        final input = SchedulerInput(
+          now: now,
+          today: DayContext(window: w),
+          tomorrow: DayContext(
+            window: DayWindow.build(
+              date: d.addDays(1),
+              location: loc,
+              wakeMinute: 7 * 60,
+              sleepMinute: 23 * 60,
+            ),
+          ),
+          targetMl: 2400,
+          consumedMl: 300,
+          policy: ReminderPolicy.forMode(ReminderMode.balanced),
+          lastLogAt: now,
+        );
+        final dec = _sched.decide(input);
+        expect(dec.nextReminder!.isAfter(now), isTrue);
+      },
+    );
 
-    test('DST overnight window spanning the change has correct absolute length', () {
-      final loc = _loc('America/New_York');
-      // overnight 22:00 → 03:00 on spring-forward night: only 4 real hours
-      final w = DayWindow.build(date: const LocalDate(2026, 3, 7), location: loc, wakeMinute: 22 * 60, sleepMinute: 3 * 60);
-      expect(w.lengthMinutes, 4 * 60);
-    });
+    test(
+      'DST overnight window spanning the change has correct absolute length',
+      () {
+        final loc = _loc('America/New_York');
+        // overnight 22:00 → 03:00 on spring-forward night: only 4 real hours
+        final w = DayWindow.build(
+          date: const LocalDate(2026, 3, 7),
+          location: loc,
+          wakeMinute: 22 * 60,
+          sleepMinute: 3 * 60,
+        );
+        expect(w.lengthMinutes, 4 * 60);
+      },
+    );
 
     test('logical date rolls over at 04:00 local, not midnight', () {
       final loc = _loc('Asia/Kolkata');
-      expect(logicalDateOf(tz.TZDateTime(loc, 2026, 10, 8, 0, 30), loc), const LocalDate(2026, 10, 7));
-      expect(logicalDateOf(tz.TZDateTime(loc, 2026, 10, 8, 4, 0), loc), const LocalDate(2026, 10, 8));
+      expect(
+        logicalDateOf(tz.TZDateTime(loc, 2026, 10, 8, 0, 30), loc),
+        const LocalDate(2026, 10, 7),
+      );
+      expect(
+        logicalDateOf(tz.TZDateTime(loc, 2026, 10, 8, 4, 0), loc),
+        const LocalDate(2026, 10, 8),
+      );
     });
 
     test('same instant maps to different logical dates by zone', () {
       final instant = DateTime.utc(2026, 10, 7, 23, 0);
-      expect(logicalDateOf(instant, _loc('Asia/Kolkata')), const LocalDate(2026, 10, 8));
-      expect(logicalDateOf(instant, _loc('America/New_York')), const LocalDate(2026, 10, 7));
+      expect(
+        logicalDateOf(instant, _loc('Asia/Kolkata')),
+        const LocalDate(2026, 10, 8),
+      );
+      expect(
+        logicalDateOf(instant, _loc('America/New_York')),
+        const LocalDate(2026, 10, 7),
+      );
     });
 
     test('wake/sleep validation', () {
       expect(validateWakeSleep(7 * 60, 23 * 60), isNull);
       expect(validateWakeSleep(7 * 60, 1 * 60), isNull); // overnight to 01:00
       expect(validateWakeSleep(7 * 60, 9 * 60), RoutineTimeError.tooShort);
-      expect(validateWakeSleep(2 * 60, 23 * 60), RoutineTimeError.wakeBeforeRollover);
-      expect(validateWakeSleep(7 * 60, 6 * 60), RoutineTimeError.overnightPastRollover);
+      expect(
+        validateWakeSleep(2 * 60, 23 * 60),
+        RoutineTimeError.wakeBeforeRollover,
+      );
+      expect(
+        validateWakeSleep(7 * 60, 6 * 60),
+        RoutineTimeError.overnightPastRollover,
+      );
     });
 
     test('local-date arithmetic is calendar-pure', () {
-      expect(const LocalDate(2026, 3, 8).addDays(1), const LocalDate(2026, 3, 9));
-      expect(const LocalDate(2026, 12, 31).addDays(1), const LocalDate(2027, 1, 1));
+      expect(
+        const LocalDate(2026, 3, 8).addDays(1),
+        const LocalDate(2026, 3, 9),
+      );
+      expect(
+        const LocalDate(2026, 12, 31).addDays(1),
+        const LocalDate(2027, 1, 1),
+      );
       expect(LocalDate.tryParse('2026-02-30'), isNull);
     });
   });
 
   group('FatigueCalculator', () {
     test('insufficient sample yields no fatigue', () {
-      final f = FatigueCalculator.compute(List.filled(4, ReminderOutcome.ignored));
+      final f = FatigueCalculator.compute(
+        List.filled(4, ReminderOutcome.ignored),
+      );
       expect(f.sufficient, isFalse);
       expect(f.level, FatigueLevel.low);
     });
     test('mostly ignored becomes high and suggests fewer reminders', () {
       final f = FatigueCalculator.compute(
-          List.filled(12, ReminderOutcome.ignored) + List.filled(2, ReminderOutcome.logged));
+        List.filled(12, ReminderOutcome.ignored) +
+            List.filled(2, ReminderOutcome.logged),
+      );
       expect(f.level, FatigueLevel.high);
       expect(f.suggestFewerReminders, isTrue);
-      expect(FatigueCalculator.compute(List.filled(12, ReminderOutcome.ignored),
-          alreadyAskedRecently: true).suggestFewerReminders, isFalse);
+      expect(
+        FatigueCalculator.compute(
+          List.filled(12, ReminderOutcome.ignored),
+          alreadyAskedRecently: true,
+        ).suggestFewerReminders,
+        isFalse,
+      );
     });
     test('engaged user stays low', () {
-      final f = FatigueCalculator.compute(List.filled(10, ReminderOutcome.logged));
+      final f = FatigueCalculator.compute(
+        List.filled(10, ReminderOutcome.logged),
+      );
       expect(f.level, FatigueLevel.low);
       expect(f.index, 0);
     });
     test('trailing unanswered counts only the trailing run', () {
-      expect(FatigueCalculator.trailingUnanswered([
-        ReminderOutcome.ignored, ReminderOutcome.logged,
-        ReminderOutcome.ignored, ReminderOutcome.ignored,
-      ]), 2);
+      expect(
+        FatigueCalculator.trailingUnanswered([
+          ReminderOutcome.ignored,
+          ReminderOutcome.logged,
+          ReminderOutcome.ignored,
+          ReminderOutcome.ignored,
+        ]),
+        2,
+      );
     });
   });
 }

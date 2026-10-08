@@ -6,15 +6,18 @@ analyzer:
     - android/**
     - ios/**
     - "**/*.g.dart"
+    - lib/l10n/gen/**
   language:
     strict-casts: true
     strict-raw-types: true
 
 linter:
   rules:
-    - prefer_final_locals
-    - prefer_const_constructors
-    - avoid_print
-    - unawaited_futures
-    - always_declare_return_types
-    - directives_ordering
+    # One-line guards (`if (x) return;`) are used deliberately.
+    curly_braces_in_flow_control_structures: false
+    prefer_final_locals: true
+    prefer_const_constructors: true
+    avoid_print: true
+    unawaited_futures: true
+    always_declare_return_types: true
+    directives_ordering: true

@@ -26,7 +26,9 @@ abstract final class ResponsePatternAnalyzer {
   }) {
     final byHour = <int, List<ReminderSample>>{};
     for (final s in samples) {
-      if (s.outcome == ReminderOutcome.pending || s.outcome == ReminderOutcome.cancelled) continue;
+      if (s.outcome == ReminderOutcome.pending ||
+          s.outcome == ReminderOutcome.cancelled)
+        continue;
       byHour.putIfAbsent(s.minuteOfDay ~/ 60, () => []).add(s);
     }
     final bad = <int>[];
@@ -35,7 +37,11 @@ abstract final class ResponsePatternAnalyzer {
       final days = list.map((s) => s.date).toSet().length;
       if (list.length < minSent || days < minDays) continue;
       final b = list
-          .where((s) => s.outcome == ReminderOutcome.ignored || s.outcome == ReminderOutcome.snoozed)
+          .where(
+            (s) =>
+                s.outcome == ReminderOutcome.ignored ||
+                s.outcome == ReminderOutcome.snoozed,
+          )
           .length;
       if (b / list.length >= badShare) bad.add(e.key);
     }
@@ -44,7 +50,9 @@ abstract final class ResponsePatternAnalyzer {
     var i = 0;
     while (i < bad.length) {
       var j = i;
-      while (j + 1 < bad.length && bad[j + 1] == bad[j] + 1 && (j + 1 - i) < 3) {
+      while (j + 1 < bad.length &&
+          bad[j + 1] == bad[j] + 1 &&
+          (j + 1 - i) < 3) {
         j++;
       }
       spans.add(TimeSpan(bad[i] * 60, ((bad[j] + 1) * 60) % 1440));

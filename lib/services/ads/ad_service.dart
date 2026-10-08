@@ -32,12 +32,14 @@ class AdMobService implements AdService {
   bool get isInitialized => _initialized;
 
   @override
-  bool unitAvailable(String kind) => AppConfig.adUnit(kind, android: _android) != null;
+  bool unitAvailable(String kind) =>
+      AppConfig.adUnit(kind, android: _android) != null;
 
   /// Every request is contextual: no keywords, no content URL, no custom
   /// targeting, and personalization is off. Hydration/health state is not an
   /// input to this class — enforced by its (lack of) dependencies.
-  AdRequest get _request => const AdRequest(nonPersonalizedAds: AppConfig.forceContextualAds);
+  AdRequest get _request =>
+      const AdRequest(nonPersonalizedAds: AppConfig.forceContextualAds);
 
   @override
   Future<void> initialize() async {
@@ -81,10 +83,13 @@ class AdMobService implements AdService {
       ),
     );
     await ad.load();
-    return done.future.timeout(const Duration(seconds: 15), onTimeout: () {
-      ad.dispose();
-      return null;
-    });
+    return done.future.timeout(
+      const Duration(seconds: 15),
+      onTimeout: () {
+        ad.dispose();
+        return null;
+      },
+    );
   }
 
   @override
@@ -95,7 +100,9 @@ class AdMobService implements AdService {
     final ad = NativeAd(
       adUnitId: unit,
       request: _request,
-      nativeTemplateStyle: NativeTemplateStyle(templateType: TemplateType.small),
+      nativeTemplateStyle: NativeTemplateStyle(
+        templateType: TemplateType.small,
+      ),
       listener: NativeAdListener(
         onAdLoaded: (a) => done.complete(a as NativeAd),
         onAdFailedToLoad: (a, err) {
@@ -106,10 +113,13 @@ class AdMobService implements AdService {
       ),
     );
     await ad.load();
-    return done.future.timeout(const Duration(seconds: 15), onTimeout: () {
-      ad.dispose();
-      return null;
-    });
+    return done.future.timeout(
+      const Duration(seconds: 15),
+      onTimeout: () {
+        ad.dispose();
+        return null;
+      },
+    );
   }
 
   @override
@@ -125,7 +135,10 @@ class AdMobService implements AdService {
         onAdFailedToLoad: (e) => loaded.complete(null),
       ),
     );
-    final ad = await loaded.future.timeout(const Duration(seconds: 10), onTimeout: () => null);
+    final ad = await loaded.future.timeout(
+      const Duration(seconds: 10),
+      onTimeout: () => null,
+    );
     if (ad == null) return false;
     final dismissed = Completer<void>();
     ad.fullScreenContentCallback = FullScreenContentCallback(
@@ -156,7 +169,10 @@ class AdMobService implements AdService {
         onAdFailedToLoad: (e) => loaded.complete(null),
       ),
     );
-    final ad = await loaded.future.timeout(const Duration(seconds: 10), onTimeout: () => null);
+    final ad = await loaded.future.timeout(
+      const Duration(seconds: 10),
+      onTimeout: () => null,
+    );
     if (ad == null) return false;
     var earned = false;
     final dismissed = Completer<void>();

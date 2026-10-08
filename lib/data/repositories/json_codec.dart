@@ -16,7 +16,10 @@ List<Map<String, Object?>> decodeMapList(String? raw) {
   try {
     final v = jsonDecode(raw);
     if (v is List) {
-      return v.whereType<Map<dynamic, dynamic>>().map((m) => m.cast<String, Object?>()).toList();
+      return v
+          .whereType<Map<dynamic, dynamic>>()
+          .map((m) => m.cast<String, Object?>())
+          .toList();
     }
   } catch (_) {}
   return const [];

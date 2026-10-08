@@ -11,34 +11,34 @@ enum VolumeUnit {
   /// Millilitres per one display unit. Fluid ounce and cup are US customary
   /// (1 US fl oz = 29.5735295625 ml, 1 US cup = 8 US fl oz).
   double get mlPerUnit => switch (this) {
-        VolumeUnit.ml => 1,
-        VolumeUnit.l => 1000,
-        VolumeUnit.flOzUs => 29.5735295625,
-        VolumeUnit.cups => 236.588236500,
-      };
+    VolumeUnit.ml => 1,
+    VolumeUnit.l => 1000,
+    VolumeUnit.flOzUs => 29.5735295625,
+    VolumeUnit.cups => 236.588236500,
+  };
 
   String get storageKey => name;
 
   static VolumeUnit fromStorage(String? v) => VolumeUnit.values.firstWhere(
-        (u) => u.name == v,
-        orElse: () => VolumeUnit.ml,
-      );
+    (u) => u.name == v,
+    orElse: () => VolumeUnit.ml,
+  );
 
   /// Number of decimals shown for this unit.
   int get displayDecimals => switch (this) {
-        VolumeUnit.ml => 0,
-        VolumeUnit.l => 2,
-        VolumeUnit.flOzUs => 0,
-        VolumeUnit.cups => 1,
-      };
+    VolumeUnit.ml => 0,
+    VolumeUnit.l => 2,
+    VolumeUnit.flOzUs => 0,
+    VolumeUnit.cups => 1,
+  };
 
   /// Short symbol. Not localized: unit symbols are internationally stable.
   String get symbol => switch (this) {
-        VolumeUnit.ml => 'ml',
-        VolumeUnit.l => 'L',
-        VolumeUnit.flOzUs => 'fl oz',
-        VolumeUnit.cups => 'cups',
-      };
+    VolumeUnit.ml => 'ml',
+    VolumeUnit.l => 'L',
+    VolumeUnit.flOzUs => 'fl oz',
+    VolumeUnit.cups => 'cups',
+  };
 
   double fromMl(double ml) => ml / mlPerUnit;
   double toMl(double value) => value * mlPerUnit;

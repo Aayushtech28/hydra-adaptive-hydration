@@ -1,1 +1,6 @@
 #include "Generated.xcconfig"
+
+// Google's public iOS *test* AdMob app id. Production: set ADMOB_APP_ID in
+// Flutter/Hydra.local.xcconfig (git-ignored). Never commit the real value.
+ADMOB_APP_ID=ca-app-pub-3940256099942544~1458002511
+#include? "Hydra.local.xcconfig"

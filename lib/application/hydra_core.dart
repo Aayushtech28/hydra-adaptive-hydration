@@ -96,7 +96,11 @@ class HydraCore {
     // widget labels), where no localization delegate has initialised intl.
     await initializeDateFormatting();
     final tz = await timezoneName();
-    final p = await profiles.ensure(now: clock.now().toUtc(), timezone: tz, locale: locale);
+    final p = await profiles.ensure(
+      now: clock.now().toUtc(),
+      timezone: tz,
+      locale: locale,
+    );
     if (await settings.getTime(SettingKeys.firstLaunchAt) == null) {
       await settings.setTime(SettingKeys.firstLaunchAt, clock.now());
     }
@@ -158,8 +162,8 @@ class HydraCore {
       'source': source == EntrySource.notificationAction
           ? 'notification'
           : source == EntrySource.widget
-              ? 'widget'
-              : 'manual',
+          ? 'widget'
+          : 'manual',
       'has_vessel': vesselId != null,
     });
     final total = await hydration.totalForDay(entry.localDate);
@@ -242,18 +246,37 @@ class HydraCore {
     try {
       switch (a.kind) {
         case NotificationActionKind.log:
-          final r = await log(volumeMl: a.ml!, source: EntrySource.notificationAction);
-          await coordinator.recordInteraction(a.eventId, ReminderOutcome.logged);
+          final r = await log(
+            volumeMl: a.ml!,
+            source: EntrySource.notificationAction,
+          );
+          await coordinator.recordInteraction(
+            a.eventId,
+            ReminderOutcome.logged,
+          );
           analytics.log(AnalyticsEvent.reminderActionUsed, {'source': 'log'});
-          Log.debug('notifications', 'action logged', fields: {'count': r.entry.volumeMl > 0 ? 1 : 0});
+          Log.debug(
+            'notifications',
+            'action logged',
+            fields: {'count': r.entry.volumeMl > 0 ? 1 : 0},
+          );
         case NotificationActionKind.snooze:
           await snooze(const Duration(minutes: 30), eventId: a.eventId);
-          analytics.log(AnalyticsEvent.reminderActionUsed, {'source': 'snooze'});
+          analytics.log(AnalyticsEvent.reminderActionUsed, {
+            'source': 'snooze',
+          });
         case NotificationActionKind.open:
-          await coordinator.recordInteraction(a.eventId, ReminderOutcome.opened);
+          await coordinator.recordInteraction(
+            a.eventId,
+            ReminderOutcome.opened,
+          );
       }
     } on ValidationException catch (e) {
-      Log.warning('notifications', 'invalid action ignored', fields: {'code': e.code.name});
+      Log.warning(
+        'notifications',
+        'invalid action ignored',
+        fields: {'code': e.code.name},
+      );
     } catch (e, st) {
       errors.record(e, st, ErrorArea.notifications);
     }
@@ -312,20 +335,24 @@ class HydraCore {
       final unit = ctx.profile.unit;
       final hide = await settings.getBool('privacy.widgetHideAmounts');
       final next = d.nextReminder;
-      await widgets.publish(WidgetSnapshot(
-        percent: (d.snapshot.percent * 100).round().clamp(0, 100),
-        progressLabel:
-            '${Formatters.volumeValue(ctx.consumedMl, unit, loc)} / ${Formatters.volume(ctx.profile.dailyTargetMl, unit, loc)}',
-        nextReminderLabel: next == null ? '' : Formatters.time(next, ctx.location, loc),
-        quickAddsMl: ctx.today.quickAddsMl.take(3).toList(),
-        stateSymbol: switch (d.state) {
-          PaceState.ahead || PaceState.onTrack => '✓',
-          PaceState.slightlyBehind => '→',
-          PaceState.significantlyBehind || PaceState.dayClosing => '!',
-        },
-        updatedAtMs: clock.now().millisecondsSinceEpoch,
-        hideAmounts: hide,
-      ));
+      await widgets.publish(
+        WidgetSnapshot(
+          percent: (d.snapshot.percent * 100).round().clamp(0, 100),
+          progressLabel:
+              '${Formatters.volumeValue(ctx.consumedMl, unit, loc)} / ${Formatters.volume(ctx.profile.dailyTargetMl, unit, loc)}',
+          nextReminderLabel: next == null
+              ? ''
+              : Formatters.time(next, ctx.location, loc),
+          quickAddsMl: ctx.today.quickAddsMl.take(3).toList(),
+          stateSymbol: switch (d.state) {
+            PaceState.ahead || PaceState.onTrack => '✓',
+            PaceState.slightlyBehind => '→',
+            PaceState.significantlyBehind || PaceState.dayClosing => '!',
+          },
+          updatedAtMs: clock.now().millisecondsSinceEpoch,
+          hideAmounts: hide,
+        ),
+      );
     } catch (e, st) {
       errors.record(e, st, ErrorArea.widgets);
     }
@@ -345,7 +372,9 @@ class HydraCore {
     final p = await profiles.get();
     if (p == null) return;
     await profiles.save(change(p));
-    await summaries.invalidate(logicalDateOf(clock.now(), locationFor(await timezoneName())));
+    await summaries.invalidate(
+      logicalDateOf(clock.now(), locationFor(await timezoneName())),
+    );
     await reschedule(reason: 'settings');
   }
 
@@ -367,15 +396,17 @@ class HydraCore {
   Future<void> deleteAllData() async {
     await notifications.cancelAll();
     await db.deleteEverything();
-    await widgets.publish(const WidgetSnapshot(
-      percent: 0,
-      progressLabel: '',
-      nextReminderLabel: '',
-      quickAddsMl: [],
-      stateSymbol: '',
-      updatedAtMs: 0,
-      hideAmounts: true,
-    ));
+    await widgets.publish(
+      const WidgetSnapshot(
+        percent: 0,
+        progressLabel: '',
+        nextReminderLabel: '',
+        quickAddsMl: [],
+        stateSymbol: '',
+        updatedAtMs: 0,
+        hideAmounts: true,
+      ),
+    );
     analytics.log(AnalyticsEvent.dataDeleted);
   }
 
@@ -385,7 +416,11 @@ class HydraCore {
 }
 
 /// Unit helper for validated user input at the UI boundary.
-int? parseVolumeInput(String text, VolumeUnit unit, {String decimalSeparator = '.'}) {
+int? parseVolumeInput(
+  String text,
+  VolumeUnit unit, {
+  String decimalSeparator = '.',
+}) {
   final v = parseLocalizedNumber(text, decimalSeparator: decimalSeparator);
   final r = validateVolume(v, unit);
   return r is VolumeOk ? r.ml : null;

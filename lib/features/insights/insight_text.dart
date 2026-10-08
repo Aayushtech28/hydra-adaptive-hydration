@@ -14,8 +14,14 @@ String insightText(AppLocalizations l, Insight i) {
     InsightType.eveningDrift => l.insightEveningDrift(p('percent')),
     InsightType.earlyFirstDrink => l.insightEarlyFirstDrink(p('minutes')),
     InsightType.weekdayStable => l.insightWeekdayStable,
-    InsightType.weekendVariance => l.insightWeekendVariance(p('weekday'), p('weekend')),
-    InsightType.reminderResponse => l.insightReminderResponse(p('percent'), p('count')),
+    InsightType.weekendVariance => l.insightWeekendVariance(
+      p('weekday'),
+      p('weekend'),
+    ),
+    InsightType.reminderResponse => l.insightReminderResponse(
+      p('percent'),
+      p('count'),
+    ),
     InsightType.routineImprovement => l.insightRoutineImprovement(p('points')),
     InsightType.recoveryAfterMiss => l.insightRecovery,
   };

@@ -21,15 +21,28 @@ typedef LogSink = void Function(LogRecord);
 /// numbers followed by volume units and ISO dates.
 abstract final class Redactor {
   static const Set<String> allowedFieldKeys = {
-    'area', 'code', 'state', 'count', 'durationMs', 'version', 'platform',
-    'reason', 'status', 'permission', 'algorithm', 'attempt', 'type',
+    'area',
+    'code',
+    'state',
+    'count',
+    'durationMs',
+    'version',
+    'platform',
+    'reason',
+    'status',
+    'permission',
+    'algorithm',
+    'attempt',
+    'type',
   };
 
   static final RegExp _volume = RegExp(
     r'\b\d+(?:[.,]\d+)?\s?(?:ml|l|fl\s?oz|oz|cups?)\b',
     caseSensitive: false,
   );
-  static final RegExp _isoDate = RegExp(r'\b\d{4}-\d{2}-\d{2}(?:[T ]\d{2}:\d{2}(?::\d{2})?)?\b');
+  static final RegExp _isoDate = RegExp(
+    r'\b\d{4}-\d{2}-\d{2}(?:[T ]\d{2}:\d{2}(?::\d{2})?)?\b',
+  );
   static final RegExp _email = RegExp(r'[\w.+-]+@[\w-]+\.[\w.-]+');
 
   static String scrub(String s) => s
@@ -38,11 +51,11 @@ abstract final class Redactor {
       .replaceAll(_email, '‹email›');
 
   static Map<String, Object?> fields(Map<String, Object?> f) => {
-        for (final e in f.entries)
-          if (allowedFieldKeys.contains(e.key) &&
-              (e.value is num || e.value is bool || e.value is String))
-            e.key: e.value is String ? scrub(e.value! as String) : e.value,
-      };
+    for (final e in f.entries)
+      if (allowedFieldKeys.contains(e.key) &&
+          (e.value is num || e.value is bool || e.value is String))
+        e.key: e.value is String ? scrub(e.value! as String) : e.value,
+  };
 }
 
 /// App-wide structured logger. Never log hydration history, health records or
@@ -60,23 +73,57 @@ abstract final class Log {
 
   static List<LogRecord> get recent => List.unmodifiable(_ring);
 
-  static void debug(String area, String message, {Map<String, Object?> fields = const {}}) =>
-      _emit(LogLevel.debug, area, message, fields);
-  static void info(String area, String message, {Map<String, Object?> fields = const {}}) =>
-      _emit(LogLevel.info, area, message, fields);
-  static void warning(String area, String message, {Map<String, Object?> fields = const {}}) =>
-      _emit(LogLevel.warning, area, message, fields);
-  static void error(String area, String message,
-          {Object? error, StackTrace? stack, Map<String, Object?> fields = const {}}) =>
-      _emit(LogLevel.error, area, message, {...fields, if (error != null) 'type': error.runtimeType.toString()}, stack: stack);
-  static void critical(String area, String message,
-          {Object? error, StackTrace? stack, Map<String, Object?> fields = const {}}) =>
-      _emit(LogLevel.critical, area, message, {...fields, if (error != null) 'type': error.runtimeType.toString()}, stack: stack);
+  static void debug(
+    String area,
+    String message, {
+    Map<String, Object?> fields = const {},
+  }) => _emit(LogLevel.debug, area, message, fields);
+  static void info(
+    String area,
+    String message, {
+    Map<String, Object?> fields = const {},
+  }) => _emit(LogLevel.info, area, message, fields);
+  static void warning(
+    String area,
+    String message, {
+    Map<String, Object?> fields = const {},
+  }) => _emit(LogLevel.warning, area, message, fields);
+  static void error(
+    String area,
+    String message, {
+    Object? error,
+    StackTrace? stack,
+    Map<String, Object?> fields = const {},
+  }) => _emit(LogLevel.error, area, message, {
+    ...fields,
+    if (error != null) 'type': error.runtimeType.toString(),
+  }, stack: stack);
+  static void critical(
+    String area,
+    String message, {
+    Object? error,
+    StackTrace? stack,
+    Map<String, Object?> fields = const {},
+  }) => _emit(LogLevel.critical, area, message, {
+    ...fields,
+    if (error != null) 'type': error.runtimeType.toString(),
+  }, stack: stack);
 
-  static void _emit(LogLevel level, String area, String message, Map<String, Object?> fields,
-      {StackTrace? stack}) {
+  static void _emit(
+    LogLevel level,
+    String area,
+    String message,
+    Map<String, Object?> fields, {
+    StackTrace? stack,
+  }) {
     if (level.index < minLevel.index) return;
-    final rec = LogRecord(level, area, Redactor.scrub(message), Redactor.fields(fields), DateTime.now());
+    final rec = LogRecord(
+      level,
+      area,
+      Redactor.scrub(message),
+      Redactor.fields(fields),
+      DateTime.now(),
+    );
     _ring.add(rec);
     if (_ring.length > ringSize) _ring.removeAt(0);
     for (final s in _sinks) {
@@ -85,7 +132,9 @@ abstract final class Log {
       } catch (_) {}
     }
     if (!kReleaseMode) {
-      debugPrint('[${level.name.toUpperCase()}][$area] ${rec.message} ${rec.fields.isEmpty ? '' : rec.fields}');
+      debugPrint(
+        '[${level.name.toUpperCase()}][$area] ${rec.message} ${rec.fields.isEmpty ? '' : rec.fields}',
+      );
     }
   }
 }

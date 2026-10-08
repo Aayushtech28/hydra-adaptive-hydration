@@ -46,20 +46,19 @@ class HydrationEntry {
     bool clearVessel = false,
     String? externalRecordId,
     DateTime? updatedAt,
-  }) =>
-      HydrationEntry(
-        id: id,
-        timestampUtc: timestampUtc ?? this.timestampUtc,
-        timezone: timezone ?? this.timezone,
-        localDate: localDate ?? this.localDate,
-        volumeMl: volumeMl ?? this.volumeMl,
-        beverage: beverage,
-        vesselId: clearVessel ? null : (vesselId ?? this.vesselId),
-        source: source,
-        externalRecordId: externalRecordId ?? this.externalRecordId,
-        createdAt: createdAt,
-        updatedAt: updatedAt ?? this.updatedAt,
-      );
+  }) => HydrationEntry(
+    id: id,
+    timestampUtc: timestampUtc ?? this.timestampUtc,
+    timezone: timezone ?? this.timezone,
+    localDate: localDate ?? this.localDate,
+    volumeMl: volumeMl ?? this.volumeMl,
+    beverage: beverage,
+    vesselId: clearVessel ? null : (vesselId ?? this.vesselId),
+    source: source,
+    externalRecordId: externalRecordId ?? this.externalRecordId,
+    createdAt: createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
 }
 
 class Vessel {
@@ -85,15 +84,14 @@ class Vessel {
     String? icon,
     bool? isFavorite,
     int? sortOrder,
-  }) =>
-      Vessel(
-        id: id,
-        name: name ?? this.name,
-        volumeMl: volumeMl ?? this.volumeMl,
-        icon: icon ?? this.icon,
-        isFavorite: isFavorite ?? this.isFavorite,
-        sortOrder: sortOrder ?? this.sortOrder,
-      );
+  }) => Vessel(
+    id: id,
+    name: name ?? this.name,
+    volumeMl: volumeMl ?? this.volumeMl,
+    icon: icon ?? this.icon,
+    isFavorite: isFavorite ?? this.isFavorite,
+    sortOrder: sortOrder ?? this.sortOrder,
+  );
 }
 
 /// A wall-clock span within a day, possibly crossing midnight.
@@ -169,21 +167,20 @@ class Routine {
     List<TimeSpan>? workoutSpans,
     List<int>? quickAddsMl,
     bool? enabled,
-  }) =>
-      Routine(
-        id: id,
-        name: name ?? this.name,
-        kind: kind ?? this.kind,
-        weekdays: weekdays ?? this.weekdays,
-        wakeMinute: wakeMinute ?? this.wakeMinute,
-        sleepMinute: sleepMinute ?? this.sleepMinute,
-        mode: mode ?? this.mode,
-        quietSpans: quietSpans ?? this.quietSpans,
-        workoutSpans: workoutSpans ?? this.workoutSpans,
-        quickAddsMl: quickAddsMl ?? this.quickAddsMl,
-        enabled: enabled ?? this.enabled,
-        isDefault: isDefault,
-      );
+  }) => Routine(
+    id: id,
+    name: name ?? this.name,
+    kind: kind ?? this.kind,
+    weekdays: weekdays ?? this.weekdays,
+    wakeMinute: wakeMinute ?? this.wakeMinute,
+    sleepMinute: sleepMinute ?? this.sleepMinute,
+    mode: mode ?? this.mode,
+    quietSpans: quietSpans ?? this.quietSpans,
+    workoutSpans: workoutSpans ?? this.workoutSpans,
+    quickAddsMl: quickAddsMl ?? this.quickAddsMl,
+    enabled: enabled ?? this.enabled,
+    isDefault: isDefault,
+  );
 }
 
 class UserProfile {
@@ -255,29 +252,29 @@ class UserProfile {
     String? activeRoutineId,
     bool clearActiveRoutine = false,
     bool? environmentHot,
-  }) =>
-      UserProfile(
-        createdAt: createdAt,
-        locale: locale ?? this.locale,
-        timezone: timezone ?? this.timezone,
-        unit: unit ?? this.unit,
-        dailyTargetMl: dailyTargetMl ?? this.dailyTargetMl,
-        targetIsUserChosen: targetIsUserChosen ?? this.targetIsUserChosen,
-        wakeMinute: wakeMinute ?? this.wakeMinute,
-        sleepMinute: sleepMinute ?? this.sleepMinute,
-        mode: mode ?? this.mode,
-        tone: tone ?? this.tone,
-        weekendDifferent: weekendDifferent ?? this.weekendDifferent,
-        weekendWakeMinute: weekendWakeMinute ?? this.weekendWakeMinute,
-        weekendSleepMinute: weekendSleepMinute ?? this.weekendSleepMinute,
-        quickAddsMl: quickAddsMl ?? this.quickAddsMl,
-        onboardingComplete: onboardingComplete ?? this.onboardingComplete,
-        remindersEnabled: remindersEnabled ?? this.remindersEnabled,
-        theme: theme ?? this.theme,
-        activeRoutineId:
-            clearActiveRoutine ? null : (activeRoutineId ?? this.activeRoutineId),
-        environmentHot: environmentHot ?? this.environmentHot,
-      );
+  }) => UserProfile(
+    createdAt: createdAt,
+    locale: locale ?? this.locale,
+    timezone: timezone ?? this.timezone,
+    unit: unit ?? this.unit,
+    dailyTargetMl: dailyTargetMl ?? this.dailyTargetMl,
+    targetIsUserChosen: targetIsUserChosen ?? this.targetIsUserChosen,
+    wakeMinute: wakeMinute ?? this.wakeMinute,
+    sleepMinute: sleepMinute ?? this.sleepMinute,
+    mode: mode ?? this.mode,
+    tone: tone ?? this.tone,
+    weekendDifferent: weekendDifferent ?? this.weekendDifferent,
+    weekendWakeMinute: weekendWakeMinute ?? this.weekendWakeMinute,
+    weekendSleepMinute: weekendSleepMinute ?? this.weekendSleepMinute,
+    quickAddsMl: quickAddsMl ?? this.quickAddsMl,
+    onboardingComplete: onboardingComplete ?? this.onboardingComplete,
+    remindersEnabled: remindersEnabled ?? this.remindersEnabled,
+    theme: theme ?? this.theme,
+    activeRoutineId: clearActiveRoutine
+        ? null
+        : (activeRoutineId ?? this.activeRoutineId),
+    environmentHot: environmentHot ?? this.environmentHot,
+  );
 }
 
 /// A reminder the app scheduled and later resolved.

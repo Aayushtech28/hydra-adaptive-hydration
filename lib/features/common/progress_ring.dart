@@ -32,14 +32,23 @@ class ProgressRing extends StatefulWidget {
   State<ProgressRing> createState() => _ProgressRingState();
 }
 
-class _ProgressRingState extends State<ProgressRing> with TickerProviderStateMixin {
-  late final AnimationController _wave =
-      AnimationController(vsync: this, duration: const Duration(seconds: 6));
-  late final AnimationController _ripple =
-      AnimationController(vsync: this, duration: const Duration(milliseconds: 900));
-  late final AnimationController _level =
-      AnimationController(vsync: this, duration: const Duration(milliseconds: 700));
-  late Animation<double> _levelAnim = AlwaysStoppedAnimation(widget.fraction.clamp(0, 1));
+class _ProgressRingState extends State<ProgressRing>
+    with TickerProviderStateMixin {
+  late final AnimationController _wave = AnimationController(
+    vsync: this,
+    duration: const Duration(seconds: 6),
+  );
+  late final AnimationController _ripple = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 900),
+  );
+  late final AnimationController _level = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 700),
+  );
+  late Animation<double> _levelAnim = AlwaysStoppedAnimation(
+    widget.fraction.clamp(0, 1),
+  );
   double _shown = 0;
   bool _started = false;
 
@@ -71,8 +80,10 @@ class _ProgressRingState extends State<ProgressRing> with TickerProviderStateMix
         _levelAnim = AlwaysStoppedAnimation(target);
         _shown = target;
       } else {
-        _levelAnim = Tween<double>(begin: _shown, end: target)
-            .animate(CurvedAnimation(parent: _level, curve: Curves.easeOutCubic));
+        _levelAnim = Tween<double>(
+          begin: _shown,
+          end: target,
+        ).animate(CurvedAnimation(parent: _level, curve: Curves.easeOutCubic));
         _shown = target;
         _level
           ..reset()
@@ -118,17 +129,21 @@ class _ProgressRingState extends State<ProgressRing> with TickerProviderStateMix
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(widget.centerTop,
-                        style: context.text.displayMedium?.copyWith(
-                          color: _levelAnim.value > 0.52 ? Colors.white : t.ink,
-                        )),
+                    Text(
+                      widget.centerTop,
+                      style: context.text.displayMedium?.copyWith(
+                        color: _levelAnim.value > 0.52 ? Colors.white : t.ink,
+                      ),
+                    ),
                     const SizedBox(height: 2),
-                    Text(widget.centerBottom,
-                        style: context.text.bodyMedium?.copyWith(
-                          color: _levelAnim.value > 0.40
-                              ? Colors.white.withValues(alpha: 0.92)
-                              : t.inkMuted,
-                        )),
+                    Text(
+                      widget.centerBottom,
+                      style: context.text.bodyMedium?.copyWith(
+                        color: _levelAnim.value > 0.40
+                            ? Colors.white.withValues(alpha: 0.92)
+                            : t.inkMuted,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -141,7 +156,12 @@ class _ProgressRingState extends State<ProgressRing> with TickerProviderStateMix
 }
 
 class _RingPainter extends CustomPainter {
-  _RingPainter({required this.level, required this.wave, required this.ripple, required this.tokens});
+  _RingPainter({
+    required this.level,
+    required this.wave,
+    required this.ripple,
+    required this.tokens,
+  });
 
   final double level;
   final double wave;
@@ -198,7 +218,9 @@ class _RingPainter extends CustomPainter {
         final p = Path()..moveTo(c.dx - inner, c.dy + inner);
         p.lineTo(c.dx - inner, top);
         for (double x = 0; x <= 2 * inner; x += 4) {
-          final y = top + math.sin((x / (2 * inner)) * 2 * math.pi * 1.4 + phase) * amp;
+          final y =
+              top +
+              math.sin((x / (2 * inner)) * 2 * math.pi * 1.4 + phase) * amp;
           p.lineTo(c.dx - inner + x, y);
         }
         p.lineTo(c.dx + inner, c.dy + inner);
@@ -234,5 +256,8 @@ class _RingPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_RingPainter o) =>
-      o.level != level || o.wave != wave || o.ripple != ripple || o.tokens != tokens;
+      o.level != level ||
+      o.wave != wave ||
+      o.ripple != ripple ||
+      o.tokens != tokens;
 }

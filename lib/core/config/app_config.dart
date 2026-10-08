@@ -5,10 +5,8 @@ enum AppEnv {
   staging,
   prod;
 
-  static AppEnv parse(String v) => AppEnv.values.firstWhere(
-        (e) => e.name == v,
-        orElse: () => AppEnv.dev,
-      );
+  static AppEnv parse(String v) =>
+      AppEnv.values.firstWhere((e) => e.name == v, orElse: () => AppEnv.dev);
 }
 
 /// Build-time configuration, supplied with `--dart-define`. **No secret ever
@@ -22,7 +20,10 @@ enum AppEnv {
 class AppConfig {
   const AppConfig._();
 
-  static const String _env = String.fromEnvironment('HYDRA_ENV', defaultValue: 'dev');
+  static const String _env = String.fromEnvironment(
+    'HYDRA_ENV',
+    defaultValue: 'dev',
+  );
   static AppEnv get env => AppEnv.parse(_env);
   static bool get isProd => env == AppEnv.prod;
 
@@ -31,7 +32,9 @@ class AppConfig {
 
   // ---- Subscriptions (RevenueCat public SDK keys; safe to ship, but still
   // injected per environment) -------------------------------------------
-  static const String revenueCatKeyAndroid = String.fromEnvironment('RC_KEY_ANDROID');
+  static const String revenueCatKeyAndroid = String.fromEnvironment(
+    'RC_KEY_ANDROID',
+  );
   static const String revenueCatKeyIos = String.fromEnvironment('RC_KEY_IOS');
   static const String proEntitlementId = 'hydra_pro';
 
@@ -48,14 +51,30 @@ class AppConfig {
     'rewarded_ios': 'ca-app-pub-3940256099942544/1712485313',
   };
 
-  static const String _prodBannerAndroid = String.fromEnvironment('ADMOB_BANNER_ANDROID');
-  static const String _prodBannerIos = String.fromEnvironment('ADMOB_BANNER_IOS');
-  static const String _prodNativeAndroid = String.fromEnvironment('ADMOB_NATIVE_ANDROID');
-  static const String _prodNativeIos = String.fromEnvironment('ADMOB_NATIVE_IOS');
-  static const String _prodInterstitialAndroid = String.fromEnvironment('ADMOB_INTERSTITIAL_ANDROID');
-  static const String _prodInterstitialIos = String.fromEnvironment('ADMOB_INTERSTITIAL_IOS');
-  static const String _prodRewardedAndroid = String.fromEnvironment('ADMOB_REWARDED_ANDROID');
-  static const String _prodRewardedIos = String.fromEnvironment('ADMOB_REWARDED_IOS');
+  static const String _prodBannerAndroid = String.fromEnvironment(
+    'ADMOB_BANNER_ANDROID',
+  );
+  static const String _prodBannerIos = String.fromEnvironment(
+    'ADMOB_BANNER_IOS',
+  );
+  static const String _prodNativeAndroid = String.fromEnvironment(
+    'ADMOB_NATIVE_ANDROID',
+  );
+  static const String _prodNativeIos = String.fromEnvironment(
+    'ADMOB_NATIVE_IOS',
+  );
+  static const String _prodInterstitialAndroid = String.fromEnvironment(
+    'ADMOB_INTERSTITIAL_ANDROID',
+  );
+  static const String _prodInterstitialIos = String.fromEnvironment(
+    'ADMOB_INTERSTITIAL_IOS',
+  );
+  static const String _prodRewardedAndroid = String.fromEnvironment(
+    'ADMOB_REWARDED_ANDROID',
+  );
+  static const String _prodRewardedIos = String.fromEnvironment(
+    'ADMOB_REWARDED_IOS',
+  );
 
   /// Ad unit id for [kind] (`banner`, `native`, `interstitial`, `rewarded`) on
   /// the current platform. Returns null in prod when the id was not injected,
@@ -83,7 +102,9 @@ class AppConfig {
   static const bool forceContextualAds = true;
 
   // ---- Services ----------------------------------------------------------
-  static const String remoteConfigUrl = String.fromEnvironment('REMOTE_CONFIG_URL');
+  static const String remoteConfigUrl = String.fromEnvironment(
+    'REMOTE_CONFIG_URL',
+  );
   static const bool firebaseEnabled = bool.fromEnvironment('FIREBASE_ENABLED');
   static const String privacyPolicyUrl = String.fromEnvironment(
     'PRIVACY_URL',

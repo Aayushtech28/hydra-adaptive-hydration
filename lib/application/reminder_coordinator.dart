@@ -20,7 +20,9 @@ import 'plan_service.dart';
 /// same code runs in the UI isolate and in background notification handlers.
 AppLocalizations localizationsFor(String? code) {
   final lang = (code ?? 'en').split(RegExp('[-_]')).first;
-  final supported = AppLocalizations.supportedLocales.map((l) => l.languageCode);
+  final supported = AppLocalizations.supportedLocales.map(
+    (l) => l.languageCode,
+  );
   return lookupAppLocalizations(Locale(supported.contains(lang) ? lang : 'en'));
 }
 
@@ -53,10 +55,15 @@ class ReminderCoordinator {
     final pending = await reminders.pendingBefore(now);
     if (pending.isEmpty) return;
     for (final e in pending) {
-      final windowEnd = e.scheduledAt.add(const Duration(minutes: PlanService.responseWindowMin));
+      final windowEnd = e.scheduledAt.add(
+        const Duration(minutes: PlanService.responseWindowMin),
+      );
       final logs = await hydration.entriesForDay(e.localDate);
-      final responded = logs.any((l) =>
-          !l.timestampUtc.isBefore(e.scheduledAt) && !l.timestampUtc.isAfter(windowEnd));
+      final responded = logs.any(
+        (l) =>
+            !l.timestampUtc.isBefore(e.scheduledAt) &&
+            !l.timestampUtc.isAfter(windowEnd),
+      );
       if (responded) {
         await reminders.resolve(e.id, ReminderOutcome.logged, now);
       } else if (!now.isBefore(windowEnd)) {
@@ -75,7 +82,12 @@ class ReminderCoordinator {
     return ActionLabels(
       logActions: [
         for (final ml in picks)
-          (ml: ml, label: l.notifActionAdd(Formatters.volume(ml, ctx.profile.unit, locale))),
+          (
+            ml: ml,
+            label: l.notifActionAdd(
+              Formatters.volume(ml, ctx.profile.unit, locale),
+            ),
+          ),
       ],
       snooze: l.notifActionSnooze,
     );
@@ -111,7 +123,8 @@ class ReminderCoordinator {
     });
 
     final permission = await notifications.permission();
-    if (permission != NotificationPermission.granted || !ctx.profile.remindersEnabled) {
+    if (permission != NotificationPermission.granted ||
+        !ctx.profile.remindersEnabled) {
       await reminders.cancelFuturePending(now);
       await notifications.cancelAll();
       return summary;
@@ -126,22 +139,35 @@ class ReminderCoordinator {
       if (at == null) continue;
       final id = newId();
       final percent = (d.snapshot.percent * 100).round().clamp(0, 100);
-      events.add(ReminderEvent(
-        id: id,
-        scheduledAt: at.toUtc(),
-        localDate: ctx.date,
-        type: d.deferredToTomorrow ? ReminderType.firstOfDay : (d.reasons.contains(ReasonCode.recovery) ? ReminderType.recovery : ReminderType.adaptive),
-        outcome: ReminderOutcome.pending,
-        reason: d.reasons.map((r) => r.name).join(','),
-        algorithmVersion: d.algorithmVersion,
-      ));
-      scheduled.add(ScheduledReminder(
-        id: _idBase + i,
-        eventId: id,
-        at: at,
-        title: l.notifTitle,
-        body: NotificationCopy.body(l, d.copy, d.copyVariant, percent: percent),
-      ));
+      events.add(
+        ReminderEvent(
+          id: id,
+          scheduledAt: at.toUtc(),
+          localDate: ctx.date,
+          type: d.deferredToTomorrow
+              ? ReminderType.firstOfDay
+              : (d.reasons.contains(ReasonCode.recovery)
+                    ? ReminderType.recovery
+                    : ReminderType.adaptive),
+          outcome: ReminderOutcome.pending,
+          reason: d.reasons.map((r) => r.name).join(','),
+          algorithmVersion: d.algorithmVersion,
+        ),
+      );
+      scheduled.add(
+        ScheduledReminder(
+          id: _idBase + i,
+          eventId: id,
+          at: at,
+          title: l.notifTitle,
+          body: NotificationCopy.body(
+            l,
+            d.copy,
+            d.copyVariant,
+            percent: percent,
+          ),
+        ),
+      );
     }
 
     try {
@@ -156,7 +182,10 @@ class ReminderCoordinator {
   }
 
   /// Records the user's interaction with a specific reminder.
-  Future<void> recordInteraction(String? eventId, ReminderOutcome outcome) async {
+  Future<void> recordInteraction(
+    String? eventId,
+    ReminderOutcome outcome,
+  ) async {
     if (eventId == null) return;
     final e = await reminders.getById(eventId);
     if (e == null) return;
@@ -165,11 +194,15 @@ class ReminderCoordinator {
     await reminders.resolve(eventId, outcome, _now());
   }
 
-  static String encode(SchedulerSummary s) => jsonEncode({'count': s.scheduledCount});
+  static String encode(SchedulerSummary s) =>
+      jsonEncode({'count': s.scheduledCount});
 }
 
 class SchedulerSummary {
-  const SchedulerSummary({required this.decision, required this.scheduledCount});
+  const SchedulerSummary({
+    required this.decision,
+    required this.scheduledCount,
+  });
   final SchedulerDecision decision;
   final int scheduledCount;
 }

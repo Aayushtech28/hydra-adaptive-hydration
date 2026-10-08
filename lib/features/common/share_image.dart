@@ -8,9 +8,13 @@ import 'package:share_plus/share_plus.dart';
 
 /// Renders the widget under [key] (wrapped in a [RepaintBoundary]) to a PNG
 /// and opens the platform share sheet. Returns false if capture failed.
-Future<bool> shareBoundaryAsImage(GlobalKey key, {String name = 'hydra-recap'}) async {
+Future<bool> shareBoundaryAsImage(
+  GlobalKey key, {
+  String name = 'hydra-recap',
+}) async {
   try {
-    final boundary = key.currentContext?.findRenderObject() as RenderRepaintBoundary?;
+    final boundary =
+        key.currentContext?.findRenderObject() as RenderRepaintBoundary?;
     if (boundary == null) return false;
     final image = await boundary.toImage(pixelRatio: 3);
     final data = await image.toByteData(format: ui.ImageByteFormat.png);

@@ -25,8 +25,8 @@ class AdCoordinator {
     DateTime Function()? now,
     this._policy = const AdPolicyManager(),
     Future<bool> Function()? isOnline,
-  })  : _now = now ?? DateTime.now,
-        _isOnline = isOnline ?? _defaultOnline;
+  }) : _now = now ?? DateTime.now,
+       _isOnline = isOnline ?? _defaultOnline;
 
   final AdService service;
   final ConsentService consent;
@@ -54,10 +54,12 @@ class AdCoordinator {
     final now = _now();
     final today = '${now.year}-${now.month}-${now.day}';
     final counterDate = await settings.getString(SettingKeys.adCounterDate);
-    final interstitialsToday =
-        counterDate == today ? (await settings.getInt(SettingKeys.adInterstitialsToday) ?? 0) : 0;
-    final rewardedToday =
-        counterDate == today ? (await settings.getInt('${SettingKeys.adInterstitialsToday}.rw') ?? 0) : 0;
+    final interstitialsToday = counterDate == today
+        ? (await settings.getInt(SettingKeys.adInterstitialsToday) ?? 0)
+        : 0;
+    final rewardedToday = counterDate == today
+        ? (await settings.getInt('${SettingKeys.adInterstitialsToday}.rw') ?? 0)
+        : 0;
     final cfg = remote.current;
     final kind = switch (placement.format) {
       AdFormat.banner => 'banner',
@@ -65,24 +67,26 @@ class AdCoordinator {
       AdFormat.interstitial => 'interstitial',
       AdFormat.rewarded => 'rewarded',
     };
-    return _policy.decide(AdPolicyInput(
-      placement: placement,
-      now: now,
-      isPro: subscription.current.isPro,
-      canRequestAds: consent.canRequestAds,
-      online: await _isOnline(),
-      installAgeDays: await installAgeDays(),
-      totalLogs: await totalLogs(),
-      interstitialsToday: interstitialsToday,
-      interstitialsThisSession: _interstitialsThisSession,
-      rewardedToday: rewardedToday,
-      lastAdShownAt: await settings.getTime(SettingKeys.adLastShown),
-      rewardedEnabled: cfg.flags.isOn(Flag.rewardedAds),
-      interstitialsEnabled: cfg.flags.isOn(Flag.interstitials),
-      maxInterstitialsPerDay: cfg.maxInterstitialsPerDay,
-      minMinutesBetweenAds: cfg.minMinutesBetweenAds,
-      adUnitAvailable: service.unitAvailable(kind),
-    ));
+    return _policy.decide(
+      AdPolicyInput(
+        placement: placement,
+        now: now,
+        isPro: subscription.current.isPro,
+        canRequestAds: consent.canRequestAds,
+        online: await _isOnline(),
+        installAgeDays: await installAgeDays(),
+        totalLogs: await totalLogs(),
+        interstitialsToday: interstitialsToday,
+        interstitialsThisSession: _interstitialsThisSession,
+        rewardedToday: rewardedToday,
+        lastAdShownAt: await settings.getTime(SettingKeys.adLastShown),
+        rewardedEnabled: cfg.flags.isOn(Flag.rewardedAds),
+        interstitialsEnabled: cfg.flags.isOn(Flag.interstitials),
+        maxInterstitialsPerDay: cfg.maxInterstitialsPerDay,
+        minMinutesBetweenAds: cfg.minMinutesBetweenAds,
+        adUnitAvailable: service.unitAvailable(kind),
+      ),
+    );
   }
 
   Future<void> _record(AdFormat f) async {
@@ -96,13 +100,18 @@ class AdCoordinator {
     }
     if (f == AdFormat.interstitial) {
       _interstitialsThisSession++;
-      await settings.setInt(SettingKeys.adInterstitialsToday,
-          (await settings.getInt(SettingKeys.adInterstitialsToday) ?? 0) + 1);
+      await settings.setInt(
+        SettingKeys.adInterstitialsToday,
+        (await settings.getInt(SettingKeys.adInterstitialsToday) ?? 0) + 1,
+      );
       await settings.setTime(SettingKeys.adLastShown, now);
     }
     if (f == AdFormat.rewarded) {
-      await settings.setInt('${SettingKeys.adInterstitialsToday}.rw',
-          (await settings.getInt('${SettingKeys.adInterstitialsToday}.rw') ?? 0) + 1);
+      await settings.setInt(
+        '${SettingKeys.adInterstitialsToday}.rw',
+        (await settings.getInt('${SettingKeys.adInterstitialsToday}.rw') ?? 0) +
+            1,
+      );
     }
   }
 

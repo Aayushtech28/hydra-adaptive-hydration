@@ -64,12 +64,18 @@ class HomeWidgetPublisher implements WidgetPublisher {
     try {
       await _ensure();
       await HomeWidget.saveWidgetData<int>('percent', s.percent);
-      await HomeWidget.saveWidgetData<String>('progress', s.hideAmounts ? '' : s.progressLabel);
+      await HomeWidget.saveWidgetData<String>(
+        'progress',
+        s.hideAmounts ? '' : s.progressLabel,
+      );
       await HomeWidget.saveWidgetData<String>('next', s.nextReminderLabel);
       await HomeWidget.saveWidgetData<String>('symbol', s.stateSymbol);
       await HomeWidget.saveWidgetData<int>('updatedAt', s.updatedAtMs);
       for (var i = 0; i < 3; i++) {
-        await HomeWidget.saveWidgetData<int>('qa$i', i < s.quickAddsMl.length ? s.quickAddsMl[i] : 0);
+        await HomeWidget.saveWidgetData<int>(
+          'qa$i',
+          i < s.quickAddsMl.length ? s.quickAddsMl[i] : 0,
+        );
       }
       await HomeWidget.updateWidget(
         androidName: androidProvider,

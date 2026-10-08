@@ -28,12 +28,21 @@ void main() {
   group('validation', () {
     test('rejects NaN, infinity, zero, negative, huge', () {
       expect(validateVolume(double.nan, VolumeUnit.ml), isA<VolumeInvalid>());
-      expect(validateVolume(double.infinity, VolumeUnit.ml), isA<VolumeInvalid>());
+      expect(
+        validateVolume(double.infinity, VolumeUnit.ml),
+        isA<VolumeInvalid>(),
+      );
       expect(validateVolume(0, VolumeUnit.ml), isA<VolumeInvalid>());
       expect(validateVolume(-5, VolumeUnit.ml), isA<VolumeInvalid>());
       expect(validateVolume(null, VolumeUnit.ml), isA<VolumeInvalid>());
-      expect((validateVolume(9, VolumeUnit.l) as VolumeInvalid).error, VolumeError.tooLarge);
-      expect((validateVolume(0.2, VolumeUnit.ml) as VolumeInvalid).error, VolumeError.tooSmall);
+      expect(
+        (validateVolume(9, VolumeUnit.l) as VolumeInvalid).error,
+        VolumeError.tooLarge,
+      );
+      expect(
+        (validateVolume(0.2, VolumeUnit.ml) as VolumeInvalid).error,
+        VolumeError.tooSmall,
+      );
     });
     test('accepts decimals in other units', () {
       expect((validateVolume(1.5, VolumeUnit.l) as VolumeOk).ml, 1500);

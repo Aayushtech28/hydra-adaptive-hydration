@@ -4,7 +4,12 @@ import '../../l10n/gen/app_localizations.dart';
 /// Resolves structured engine output to localized sentences. The text always
 /// derives from the decision's own keys, so it cannot drift from the logic.
 abstract final class NotificationCopy {
-  static String body(AppLocalizations l, CopyKey key, int variant, {required int percent}) {
+  static String body(
+    AppLocalizations l,
+    CopyKey key,
+    int variant, {
+    required int percent,
+  }) {
     final v = variant.abs() % 2;
     switch (key) {
       case CopyKey.firstOfDay:
@@ -30,12 +35,14 @@ abstract final class NotificationCopy {
     }
   }
 
-  static String explain(AppLocalizations l, ExplanationKey key) => switch (key) {
+  static String explain(AppLocalizations l, ExplanationKey key) =>
+      switch (key) {
         ExplanationKey.firstOfDay => l.whyFirstOfDay,
         ExplanationKey.onTrackScheduled => l.whyOnTrackScheduled,
         ExplanationKey.aheadStayQuiet => l.whyAheadStayQuiet,
         ExplanationKey.slightlyBehindEarlier => l.whySlightlyBehindEarlier,
-        ExplanationKey.significantlyBehindSpread => l.whySignificantlyBehindSpread,
+        ExplanationKey.significantlyBehindSpread =>
+          l.whySignificantlyBehindSpread,
         ExplanationKey.snoozedUntil => l.whySnoozedUntil,
         ExplanationKey.quietHoursExit => l.whyQuietHoursExit,
         ExplanationKey.workoutEnded => l.whyWorkoutEnded,

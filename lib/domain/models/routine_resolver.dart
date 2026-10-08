@@ -54,14 +54,15 @@ abstract final class RoutineResolver {
           .firstOrNull;
       viaOverride = chosen != null;
     }
-    chosen ??= (routines
-            .where((r) => r.enabled && r.weekdays.contains(date.weekday))
-            .toList()
-          ..sort((a, b) {
-            final c = a.weekdays.length.compareTo(b.weekdays.length);
-            return c != 0 ? c : a.name.compareTo(b.name);
-          }))
-        .firstOrNull;
+    chosen ??=
+        (routines
+                .where((r) => r.enabled && r.weekdays.contains(date.weekday))
+                .toList()
+              ..sort((a, b) {
+                final c = a.weekdays.length.compareTo(b.weekdays.length);
+                return c != 0 ? c : a.name.compareTo(b.name);
+              }))
+            .firstOrNull;
 
     if (chosen != null) {
       return ResolvedDay(
@@ -71,7 +72,9 @@ abstract final class RoutineResolver {
         mode: chosen.mode,
         quietSpans: chosen.quietSpans,
         workoutSpans: chosen.workoutSpans,
-        quickAddsMl: chosen.quickAddsMl.isEmpty ? profile.quickAddsMl : chosen.quickAddsMl,
+        quickAddsMl: chosen.quickAddsMl.isEmpty
+            ? profile.quickAddsMl
+            : chosen.quickAddsMl,
         name: chosen.name,
         kind: chosen.kind,
         routineId: chosen.id,
@@ -81,8 +84,12 @@ abstract final class RoutineResolver {
     final weekendVariant = profile.weekendDifferent && date.isWeekend;
     return ResolvedDay(
       date: date,
-      wakeMinute: weekendVariant ? profile.weekendWakeMinute : profile.wakeMinute,
-      sleepMinute: weekendVariant ? profile.weekendSleepMinute : profile.sleepMinute,
+      wakeMinute: weekendVariant
+          ? profile.weekendWakeMinute
+          : profile.wakeMinute,
+      sleepMinute: weekendVariant
+          ? profile.weekendSleepMinute
+          : profile.sleepMinute,
       mode: profile.mode,
       quietSpans: const [],
       workoutSpans: const [],

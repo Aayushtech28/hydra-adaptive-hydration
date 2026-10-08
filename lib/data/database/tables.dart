@@ -13,19 +13,28 @@ class UserProfileRows extends Table {
       integer().check(dailyTargetMl.isBetweenValues(500, 8000))();
   BoolColumn get targetIsUserChosen =>
       boolean().withDefault(const Constant(false))();
-  IntColumn get wakeMinute => integer().check(wakeMinute.isBetweenValues(0, 1439))();
-  IntColumn get sleepMinute => integer().check(sleepMinute.isBetweenValues(0, 1439))();
+  IntColumn get wakeMinute =>
+      integer().check(wakeMinute.isBetweenValues(0, 1439))();
+  IntColumn get sleepMinute =>
+      integer().check(sleepMinute.isBetweenValues(0, 1439))();
   TextColumn get mode => text().withDefault(const Constant('balanced'))();
   TextColumn get tone => text().withDefault(const Constant('auto'))();
-  BoolColumn get weekendDifferent => boolean().withDefault(const Constant(false))();
-  IntColumn get weekendWakeMinute => integer().withDefault(const Constant(480))();
-  IntColumn get weekendSleepMinute => integer().withDefault(const Constant(1410))();
-  TextColumn get quickAddsJson => text().withDefault(const Constant('[250,350,500]'))();
-  BoolColumn get onboardingComplete => boolean().withDefault(const Constant(false))();
-  BoolColumn get remindersEnabled => boolean().withDefault(const Constant(true))();
+  BoolColumn get weekendDifferent =>
+      boolean().withDefault(const Constant(false))();
+  IntColumn get weekendWakeMinute =>
+      integer().withDefault(const Constant(480))();
+  IntColumn get weekendSleepMinute =>
+      integer().withDefault(const Constant(1410))();
+  TextColumn get quickAddsJson =>
+      text().withDefault(const Constant('[250,350,500]'))();
+  BoolColumn get onboardingComplete =>
+      boolean().withDefault(const Constant(false))();
+  BoolColumn get remindersEnabled =>
+      boolean().withDefault(const Constant(true))();
   TextColumn get theme => text().withDefault(const Constant('system'))();
   TextColumn get activeRoutineId => text().nullable()();
-  BoolColumn get environmentHot => boolean().withDefault(const Constant(false))();
+  BoolColumn get environmentHot =>
+      boolean().withDefault(const Constant(false))();
 
   @override
   Set<Column<Object>> get primaryKey => {id};
@@ -41,7 +50,8 @@ class HydrationEntries extends Table {
   IntColumn get timestampUtc => integer()();
   TextColumn get timezone => text()();
   TextColumn get localDate => text().withLength(min: 10, max: 10)();
-  IntColumn get volumeMl => integer().check(volumeMl.isBetweenValues(1, 5000))();
+  IntColumn get volumeMl =>
+      integer().check(volumeMl.isBetweenValues(1, 5000))();
   TextColumn get beverage => text().withDefault(const Constant('water'))();
   TextColumn get vesselId => text().nullable()();
   TextColumn get source => text()();
@@ -57,7 +67,8 @@ class HydrationEntries extends Table {
 class Vessels extends Table {
   TextColumn get id => text()();
   TextColumn get name => text().withLength(min: 1, max: 40)();
-  IntColumn get volumeMl => integer().check(volumeMl.isBetweenValues(1, 5000))();
+  IntColumn get volumeMl =>
+      integer().check(volumeMl.isBetweenValues(1, 5000))();
   TextColumn get icon => text().withDefault(const Constant('glass'))();
   BoolColumn get isFavorite => boolean().withDefault(const Constant(false))();
   IntColumn get sortOrder => integer().withDefault(const Constant(0))();
@@ -72,8 +83,10 @@ class Routines extends Table {
   TextColumn get name => text().withLength(min: 1, max: 40)();
   TextColumn get kind => text()();
   TextColumn get weekdaysJson => text().withDefault(const Constant('[]'))();
-  IntColumn get wakeMinute => integer().check(wakeMinute.isBetweenValues(0, 1439))();
-  IntColumn get sleepMinute => integer().check(sleepMinute.isBetweenValues(0, 1439))();
+  IntColumn get wakeMinute =>
+      integer().check(wakeMinute.isBetweenValues(0, 1439))();
+  IntColumn get sleepMinute =>
+      integer().check(sleepMinute.isBetweenValues(0, 1439))();
   TextColumn get mode => text().withDefault(const Constant('balanced'))();
   TextColumn get quietJson => text().withDefault(const Constant('[]'))();
   TextColumn get workoutJson => text().withDefault(const Constant('[]'))();

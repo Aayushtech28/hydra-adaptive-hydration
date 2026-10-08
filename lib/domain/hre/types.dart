@@ -75,28 +75,28 @@ class ReminderPolicy {
   });
 
   factory ReminderPolicy.forMode(ReminderMode mode) => switch (mode) {
-        ReminderMode.gentle => const ReminderPolicy(
-            mode: ReminderMode.gentle,
-            baseIntervalMin: 150,
-            minGapMin: 90,
-            firstOffsetMin: 90,
-            maxUnanswered: 2,
-          ),
-        ReminderMode.balanced => const ReminderPolicy(
-            mode: ReminderMode.balanced,
-            baseIntervalMin: 105,
-            minGapMin: 60,
-            firstOffsetMin: 45,
-            maxUnanswered: 3,
-          ),
-        ReminderMode.focus => const ReminderPolicy(
-            mode: ReminderMode.focus,
-            baseIntervalMin: 75,
-            minGapMin: 40,
-            firstOffsetMin: 30,
-            maxUnanswered: 4,
-          ),
-      };
+    ReminderMode.gentle => const ReminderPolicy(
+      mode: ReminderMode.gentle,
+      baseIntervalMin: 150,
+      minGapMin: 90,
+      firstOffsetMin: 90,
+      maxUnanswered: 2,
+    ),
+    ReminderMode.balanced => const ReminderPolicy(
+      mode: ReminderMode.balanced,
+      baseIntervalMin: 105,
+      minGapMin: 60,
+      firstOffsetMin: 45,
+      maxUnanswered: 3,
+    ),
+    ReminderMode.focus => const ReminderPolicy(
+      mode: ReminderMode.focus,
+      baseIntervalMin: 75,
+      minGapMin: 40,
+      firstOffsetMin: 30,
+      maxUnanswered: 4,
+    ),
+  };
 
   final ReminderMode mode;
 
@@ -139,10 +139,10 @@ class FatigueState {
   final bool suggestFewerReminders;
 
   double get intervalMultiplier => switch (level) {
-        FatigueLevel.low => 1.0,
-        FatigueLevel.moderate => 1.3,
-        FatigueLevel.high => 1.7,
-      };
+    FatigueLevel.low => 1.0,
+    FatigueLevel.moderate => 1.3,
+    FatigueLevel.high => 1.7,
+  };
 }
 
 /// The planned cumulative-hydration curve for one logical day.
@@ -154,9 +154,9 @@ class FatigueState {
 /// plan end so people are not nudged to drink right before sleep.
 class PlanTrajectory {
   PlanTrajectory({required this.targetMl, required this.window})
-      : planEnd = window.sleep.subtract(
-          Duration(minutes: _windDownMinutes(window)),
-        );
+    : planEnd = window.sleep.subtract(
+        Duration(minutes: _windDownMinutes(window)),
+      );
 
   final int targetMl;
   final DayWindow window;
@@ -191,10 +191,8 @@ class PlanTrajectory {
       targetMl * fractionForProgress(progressAt(t));
 
   DateTime timeAtFraction(double f) => window.wake.add(
-        Duration(
-          seconds: (progressForFraction(f) * planLength.inSeconds).round(),
-        ),
-      );
+    Duration(seconds: (progressForFraction(f) * planLength.inSeconds).round()),
+  );
 }
 
 /// A snapshot of "where am I versus my plan" at one instant.
@@ -319,28 +317,26 @@ class SchedulerInput {
     int? consecutiveUnanswered,
     DateTime? snoozeUntil,
     bool clearSnooze = false,
-  }) =>
-      SchedulerInput(
-        now: now ?? this.now,
-        today: today,
-        tomorrow: tomorrow,
-        targetMl: targetMl,
-        consumedMl: consumedMl ?? this.consumedMl,
-        policy: policy,
-        lastLogAt: lastLogAt ?? this.lastLogAt,
-        lastReminderAt: lastReminderAt ?? this.lastReminderAt,
-        consecutiveUnanswered:
-            consecutiveUnanswered ?? this.consecutiveUnanswered,
-        fatigue: fatigue,
-        snoozeUntil: clearSnooze ? null : (snoozeUntil ?? this.snoozeUntil),
-        pausedUntil: pausedUntil,
-        pausedUntilNextLog: pausedUntilNextLog,
-        remindersEnabled: remindersEnabled,
-        tone: tone,
-        historyDays: historyDays,
-        hotEnvironment: hotEnvironment,
-        copySeed: copySeed,
-      );
+  }) => SchedulerInput(
+    now: now ?? this.now,
+    today: today,
+    tomorrow: tomorrow,
+    targetMl: targetMl,
+    consumedMl: consumedMl ?? this.consumedMl,
+    policy: policy,
+    lastLogAt: lastLogAt ?? this.lastLogAt,
+    lastReminderAt: lastReminderAt ?? this.lastReminderAt,
+    consecutiveUnanswered: consecutiveUnanswered ?? this.consecutiveUnanswered,
+    fatigue: fatigue,
+    snoozeUntil: clearSnooze ? null : (snoozeUntil ?? this.snoozeUntil),
+    pausedUntil: pausedUntil,
+    pausedUntilNextLog: pausedUntilNextLog,
+    remindersEnabled: remindersEnabled,
+    tone: tone,
+    historyDays: historyDays,
+    hotEnvironment: hotEnvironment,
+    copySeed: copySeed,
+  );
 }
 
 class SchedulerDecision {

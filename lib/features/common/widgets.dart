@@ -31,9 +31,14 @@ class HCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: onTap == null
           ? Padding(padding: padding, child: child)
-          : InkWell(onTap: onTap, child: Padding(padding: padding, child: child)),
+          : InkWell(
+              onTap: onTap,
+              child: Padding(padding: padding, child: child),
+            ),
     );
-    return semanticsLabel == null ? card : Semantics(label: semanticsLabel, child: card);
+    return semanticsLabel == null
+        ? card
+        : Semantics(label: semanticsLabel, child: card);
   }
 }
 
@@ -44,19 +49,19 @@ class SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.fromLTRB(0, Gap.xl, 0, Gap.sm),
-        child: Row(
-          children: [
-            Expanded(
-              child: Semantics(
-                header: true,
-                child: Text(title, style: context.text.titleMedium),
-              ),
-            ),
-            if (trailing != null) trailing!,
-          ],
+    padding: const EdgeInsets.fromLTRB(0, Gap.xl, 0, Gap.sm),
+    child: Row(
+      children: [
+        Expanded(
+          child: Semantics(
+            header: true,
+            child: Text(title, style: context.text.titleMedium),
+          ),
         ),
-      );
+        ?trailing,
+      ],
+    ),
+  );
 }
 
 enum StatusKind { good, adjust, attention, neutral }
@@ -87,10 +92,18 @@ class StatusChip extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           ExcludeSemantics(
-            child: Text(sym, style: context.text.labelLarge?.copyWith(color: c)),
+            child: Text(
+              sym,
+              style: context.text.labelLarge?.copyWith(color: c),
+            ),
           ),
           const SizedBox(width: 6),
-          Flexible(child: Text(label, style: context.text.labelLarge?.copyWith(color: c))),
+          Flexible(
+            child: Text(
+              label,
+              style: context.text.labelLarge?.copyWith(color: c),
+            ),
+          ),
         ],
       ),
     );
@@ -126,15 +139,24 @@ class EmptyState extends StatelessWidget {
             Container(
               width: 56,
               height: 56,
-              decoration: BoxDecoration(color: t.accentSoft, shape: BoxShape.circle),
+              decoration: BoxDecoration(
+                color: t.accentSoft,
+                shape: BoxShape.circle,
+              ),
               child: Icon(icon, color: t.accent, semanticLabel: ''),
             ),
             const SizedBox(height: Gap.md),
-            Text(title, style: context.text.titleMedium, textAlign: TextAlign.center),
+            Text(
+              title,
+              style: context.text.titleMedium,
+              textAlign: TextAlign.center,
+            ),
             const SizedBox(height: Gap.xs),
-            Text(message,
-                style: context.text.bodyMedium?.copyWith(color: t.inkMuted),
-                textAlign: TextAlign.center),
+            Text(
+              message,
+              style: context.text.bodyMedium?.copyWith(color: t.inkMuted),
+              textAlign: TextAlign.center,
+            ),
             if (action != null) ...[const SizedBox(height: Gap.lg), action!],
           ],
         ),
@@ -170,21 +192,38 @@ class ErrorNotice extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(children: [
-            Text('!', style: context.text.titleMedium?.copyWith(color: t.attention)),
-            const SizedBox(width: 8),
-            Expanded(child: Text(title, style: context.text.titleSmall)),
-          ]),
+          Row(
+            children: [
+              Text(
+                '!',
+                style: context.text.titleMedium?.copyWith(color: t.attention),
+              ),
+              const SizedBox(width: 8),
+              Expanded(child: Text(title, style: context.text.titleSmall)),
+            ],
+          ),
           const SizedBox(height: 4),
-          Text(message, style: context.text.bodyMedium?.copyWith(color: t.inkMuted)),
+          Text(
+            message,
+            style: context.text.bodyMedium?.copyWith(color: t.inkMuted),
+          ),
           if (primaryLabel != null || secondaryLabel != null) ...[
             const SizedBox(height: Gap.md),
-            Wrap(spacing: 8, children: [
-              if (primaryLabel != null)
-                FilledButton(onPressed: onPrimary, child: Text(primaryLabel!)),
-              if (secondaryLabel != null)
-                TextButton(onPressed: onSecondary, child: Text(secondaryLabel!)),
-            ]),
+            Wrap(
+              spacing: 8,
+              children: [
+                if (primaryLabel != null)
+                  FilledButton(
+                    onPressed: onPrimary,
+                    child: Text(primaryLabel!),
+                  ),
+                if (secondaryLabel != null)
+                  TextButton(
+                    onPressed: onSecondary,
+                    child: Text(secondaryLabel!),
+                  ),
+              ],
+            ),
           ],
         ],
       ),
@@ -201,13 +240,13 @@ class SkeletonBox extends StatelessWidget {
   final double radius;
   @override
   Widget build(BuildContext context) => Container(
-        height: height,
-        width: width,
-        decoration: BoxDecoration(
-          color: context.hx.surfaceRaised,
-          borderRadius: BorderRadius.circular(radius),
-        ),
-      );
+    height: height,
+    width: width,
+    decoration: BoxDecoration(
+      color: context.hx.surfaceRaised,
+      borderRadius: BorderRadius.circular(radius),
+    ),
+  );
 }
 
 /// Settings-style row.
@@ -237,7 +276,10 @@ class HTile extends StatelessWidget {
       child: ConstrainedBox(
         constraints: const BoxConstraints(minHeight: kMinTap + 8),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: Gap.lg, vertical: Gap.md),
+          padding: const EdgeInsets.symmetric(
+            horizontal: Gap.lg,
+            vertical: Gap.md,
+          ),
           child: Row(
             children: [
               if (leading != null) ...[
@@ -248,20 +290,32 @@ class HTile extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(children: [
-                      Flexible(child: Text(title, style: context.text.bodyLarge)),
-                      if (badge != null) ...[
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: t.accentSoft,
-                            borderRadius: BorderRadius.circular(Radii.pill),
-                          ),
-                          child: Text(badge!, style: context.text.labelSmall?.copyWith(color: t.accent)),
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(title, style: context.text.bodyLarge),
                         ),
+                        if (badge != null) ...[
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: t.accentSoft,
+                              borderRadius: BorderRadius.circular(Radii.pill),
+                            ),
+                            child: Text(
+                              badge!,
+                              style: context.text.labelSmall?.copyWith(
+                                color: t.accent,
+                              ),
+                            ),
+                          ),
+                        ],
                       ],
-                    ]),
+                    ),
                     if (subtitle != null)
                       Text(subtitle!, style: context.text.bodySmall),
                   ],
@@ -315,7 +369,7 @@ class PageBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ListView(
-        padding: EdgeInsets.fromLTRB(Gap.screen, Gap.sm, Gap.screen, bottom),
-        children: children,
-      );
+    padding: EdgeInsets.fromLTRB(Gap.screen, Gap.sm, Gap.screen, bottom),
+    children: children,
+  );
 }

@@ -86,8 +86,7 @@ class HydrationScheduler {
     // Floor imposed by snooze / timed pause.
     var floor = i.now.add(const Duration(minutes: minLeadMin));
     var floorReason = _Binding.none;
-    final snoozeActive =
-        i.snoozeUntil != null && i.snoozeUntil!.isAfter(i.now);
+    final snoozeActive = i.snoozeUntil != null && i.snoozeUntil!.isAfter(i.now);
     if (i.pausedUntil != null && i.pausedUntil!.isAfter(floor)) {
       floor = i.pausedUntil!;
       floorReason = _Binding.pause;
@@ -108,16 +107,14 @@ class HydrationScheduler {
     }
 
     if (snap.goalReached) {
-      return tomorrowFirst(
-        const [ReasonCode.goalReached],
-        ExplanationKey.goalReachedTomorrow,
-      );
+      return tomorrowFirst(const [
+        ReasonCode.goalReached,
+      ], ExplanationKey.goalReachedTomorrow);
     }
     if (i.consecutiveUnanswered >= i.policy.maxUnanswered) {
-      return tomorrowFirst(
-        const [ReasonCode.fatigue],
-        ExplanationKey.fatigueQuiet,
-      );
+      return tomorrowFirst(const [
+        ReasonCode.fatigue,
+      ], ExplanationKey.fatigueQuiet);
     }
 
     final reasons = <ReasonCode>[];
@@ -127,8 +124,9 @@ class HydrationScheduler {
     var adjustment = Adjustment.none;
 
     final window = i.today.window;
-    final firstOfDayTime = window.wake
-        .add(Duration(minutes: i.policy.firstOffsetMin));
+    final firstOfDayTime = window.wake.add(
+      Duration(minutes: i.policy.firstOffsetMin),
+    );
 
     if (i.now.isBefore(firstOfDayTime) &&
         i.lastLogAt == null &&

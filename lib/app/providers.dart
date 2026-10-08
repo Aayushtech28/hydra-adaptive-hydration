@@ -7,33 +7,46 @@ import '../application/hydra_core.dart';
 import '../application/plan_service.dart';
 import '../application/stats_bundle.dart';
 import '../core/time/local_date.dart';
+import '../data/repositories/misc_repositories.dart';
 import '../domain/hre/types.dart';
 import '../domain/models/entities.dart';
 import '../domain/models/enums.dart';
 import '../services/notifications/notification_service.dart';
-import '../data/repositories/misc_repositories.dart';
 import '../services/purchase/entitlement.dart';
 import 'services.dart';
 import 'theme/tokens.dart';
 
 /// Overridden in `main()` with the already-initialised services so screens
 /// can read synchronously (no loading spinner for local data).
-final servicesProvider = Provider<AppServices>((ref) => throw UnimplementedError('servicesProvider not overridden'));
+final servicesProvider = Provider<AppServices>(
+  (ref) => throw UnimplementedError('servicesProvider not overridden'),
+);
 
-final coreProvider = Provider<HydraCore>((ref) => ref.watch(servicesProvider).core);
+final coreProvider = Provider<HydraCore>(
+  (ref) => ref.watch(servicesProvider).core,
+);
 
 // ---- raw data streams -------------------------------------------------------
 
-final profileProvider = StreamProvider<UserProfile?>((ref) => ref.watch(coreProvider).profiles.watch());
-final vesselsProvider = StreamProvider<List<Vessel>>((ref) => ref.watch(coreProvider).vessels.watchAll());
-final routinesProvider = StreamProvider<List<Routine>>((ref) => ref.watch(coreProvider).routines.watchAll());
+final profileProvider = StreamProvider<UserProfile?>(
+  (ref) => ref.watch(coreProvider).profiles.watch(),
+);
+final vesselsProvider = StreamProvider<List<Vessel>>(
+  (ref) => ref.watch(coreProvider).vessels.watchAll(),
+);
+final routinesProvider = StreamProvider<List<Routine>>(
+  (ref) => ref.watch(coreProvider).routines.watchAll(),
+);
 
 /// Fires once a minute while the app is in the foreground so "next reminder"
 /// and pace stay fresh. No timers run in the background.
 final tickProvider = StreamProvider<int>((ref) {
   final controller = StreamController<int>()..add(0);
   var n = 0;
-  final timer = Timer.periodic(const Duration(minutes: 1), (_) => controller.add(++n));
+  final timer = Timer.periodic(
+    const Duration(minutes: 1),
+    (_) => controller.add(++n),
+  );
   ref.onDispose(() {
     timer.cancel();
     controller.close();
@@ -49,7 +62,9 @@ class RevisionNotifier extends Notifier<int> {
   void bump() => state++;
 }
 
-final revisionProvider = NotifierProvider<RevisionNotifier, int>(RevisionNotifier.new);
+final revisionProvider = NotifierProvider<RevisionNotifier, int>(
+  RevisionNotifier.new,
+);
 
 final todayDateProvider = FutureProvider<LocalDate>((ref) async {
   ref.watch(tickProvider);
@@ -88,7 +103,9 @@ class DashboardState {
   PaceSnapshot get snapshot => decision.snapshot;
 }
 
-final notificationPermissionProvider = FutureProvider<NotificationPermission>((ref) {
+final notificationPermissionProvider = FutureProvider<NotificationPermission>((
+  ref,
+) {
   ref.watch(revisionProvider);
   return ref.watch(servicesProvider).notifications.permission();
 });
@@ -161,13 +178,16 @@ class ProOverride extends Notifier<bool?> {
   void set(bool? v) => state = v;
 }
 
-final proOverrideProvider = NotifierProvider<ProOverride, bool?>(ProOverride.new);
+final proOverrideProvider = NotifierProvider<ProOverride, bool?>(
+  ProOverride.new,
+);
 
 final isProProvider = Provider<bool>((ref) {
   final svc = ref.watch(servicesProvider);
   final o = svc.debugToolsAvailable ? ref.watch(proOverrideProvider) : null;
   if (o != null) return o;
-  return ref.watch(entitlementProvider).value?.isPro ?? svc.subscription.current.isPro;
+  return ref.watch(entitlementProvider).value?.isPro ??
+      svc.subscription.current.isPro;
 });
 
 // ---- appearance / locale ----------------------------------------------------
@@ -197,7 +217,9 @@ class SimulatedDays extends Notifier<int> {
   void set(int v) => state = v;
 }
 
-final simulatedDaysProvider = NotifierProvider<SimulatedDays, int>(SimulatedDays.new);
+final simulatedDaysProvider = NotifierProvider<SimulatedDays, int>(
+  SimulatedDays.new,
+);
 
 // ---- palette (premium themes) -------------------------------------------------
 
@@ -210,7 +232,9 @@ final paletteProvider = StreamProvider<HydraPalette>((ref) async* {
     var p = HydraPalette.parse(raw);
     if (p != HydraPalette.ocean && !isPro) {
       // Pro lapsed: Aurora survives only while a rewarded unlock is active.
-      final until = await svc.core.settings.getTime(SettingKeys.rewardedThemeUntil);
+      final until = await svc.core.settings.getTime(
+        SettingKeys.rewardedThemeUntil,
+      );
       final active = until != null && until.isAfter(svc.clock.now());
       if (!(p == HydraPalette.aurora && active)) p = HydraPalette.ocean;
     }

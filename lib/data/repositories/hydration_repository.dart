@@ -11,7 +11,7 @@ import '../database/app_database.dart';
 
 class HydrationRepository {
   HydrationRepository(this._db, {DateTime Function()? now})
-      : _now = now ?? DateTime.now;
+    : _now = now ?? DateTime.now;
   final AppDatabase _db;
   final DateTime Function() _now;
 
@@ -50,11 +50,13 @@ class HydrationRepository {
     );
     return _db.transaction(() async {
       if (externalRecordId != null) {
-        final dup = await (_db.select(_db.hydrationEntries)
-              ..where((t) =>
-                  t.source.equals(source.name) &
-                  t.externalRecordId.equals(externalRecordId)))
-            .getSingleOrNull();
+        final dup =
+            await (_db.select(_db.hydrationEntries)..where(
+                  (t) =>
+                      t.source.equals(source.name) &
+                      t.externalRecordId.equals(externalRecordId),
+                ))
+                .getSingleOrNull();
         if (dup != null) return _map(dup);
       }
       await _db.into(_db.hydrationEntries).insert(_toCompanion(entry));
@@ -67,13 +69,16 @@ class HydrationRepository {
     _validateVolume(e.volumeMl);
     await _db.transaction(() async {
       if (e.externalRecordId != null) {
-        await (_db.delete(_db.importTombstones)
-              ..where((t) =>
+        await (_db.delete(_db.importTombstones)..where(
+              (t) =>
                   t.source.equals(e.source.name) &
-                  t.externalId.equals(e.externalRecordId!)))
+                  t.externalId.equals(e.externalRecordId!),
+            ))
             .go();
       }
-      await _db.into(_db.hydrationEntries).insertOnConflictUpdate(_toCompanion(e));
+      await _db
+          .into(_db.hydrationEntries)
+          .insertOnConflictUpdate(_toCompanion(e));
     });
   }
 
@@ -85,8 +90,9 @@ class HydrationRepository {
     String? vesselId,
     bool clearVessel = false,
   }) async {
-    final row = await (_db.select(_db.hydrationEntries)..where((t) => t.id.equals(id)))
-        .getSingleOrNull();
+    final row = await (_db.select(
+      _db.hydrationEntries,
+    )..where((t) => t.id.equals(id))).getSingleOrNull();
     if (row == null) throw const ValidationException(ValidationCode.notFound);
     if (volumeMl != null) _validateVolume(volumeMl);
     final cur = _map(row);
@@ -101,41 +107,50 @@ class HydrationRepository {
       clearVessel: clearVessel,
       updatedAt: _now().toUtc(),
     );
-    await _db.into(_db.hydrationEntries).insertOnConflictUpdate(_toCompanion(updated));
+    await _db
+        .into(_db.hydrationEntries)
+        .insertOnConflictUpdate(_toCompanion(updated));
     return updated;
   }
 
   /// Deletes an entry. External-sourced entries leave a tombstone so a later
   /// health sync does not re-import them.
   Future<HydrationEntry?> delete(String id) => _db.transaction(() async {
-        final row = await (_db.select(_db.hydrationEntries)..where((t) => t.id.equals(id)))
-            .getSingleOrNull();
-        if (row == null) return null;
-        final e = _map(row);
-        if (e.externalRecordId != null && e.source.isExternal) {
-          await _db.into(_db.importTombstones).insertOnConflictUpdate(
-                ImportTombstonesCompanion.insert(
-                  source: e.source.name,
-                  externalId: e.externalRecordId!,
-                  createdAt: _now().toUtc().millisecondsSinceEpoch,
-                ),
-              );
-        }
-        await (_db.delete(_db.hydrationEntries)..where((t) => t.id.equals(id))).go();
-        return e;
-      });
+    final row = await (_db.select(
+      _db.hydrationEntries,
+    )..where((t) => t.id.equals(id))).getSingleOrNull();
+    if (row == null) return null;
+    final e = _map(row);
+    if (e.externalRecordId != null && e.source.isExternal) {
+      await _db
+          .into(_db.importTombstones)
+          .insertOnConflictUpdate(
+            ImportTombstonesCompanion.insert(
+              source: e.source.name,
+              externalId: e.externalRecordId!,
+              createdAt: _now().toUtc().millisecondsSinceEpoch,
+            ),
+          );
+    }
+    await (_db.delete(
+      _db.hydrationEntries,
+    )..where((t) => t.id.equals(id))).go();
+    return e;
+  });
 
   Future<HydrationEntry?> getById(String id) async {
-    final r = await (_db.select(_db.hydrationEntries)..where((t) => t.id.equals(id)))
-        .getSingleOrNull();
+    final r = await (_db.select(
+      _db.hydrationEntries,
+    )..where((t) => t.id.equals(id))).getSingleOrNull();
     return r == null ? null : _map(r);
   }
 
-  Stream<List<HydrationEntry>> watchDay(LocalDate d) => (_db.select(_db.hydrationEntries)
-        ..where((t) => t.localDate.equals(d.toIso()))
-        ..orderBy([(t) => OrderingTerm.asc(t.timestampUtc)]))
-      .watch()
-      .map((l) => l.map(_map).toList());
+  Stream<List<HydrationEntry>> watchDay(LocalDate d) =>
+      (_db.select(_db.hydrationEntries)
+            ..where((t) => t.localDate.equals(d.toIso()))
+            ..orderBy([(t) => OrderingTerm.asc(t.timestampUtc)]))
+          .watch()
+          .map((l) => l.map(_map).toList());
 
   Future<List<HydrationEntry>> entriesForDay(LocalDate d) async =>
       (await (_db.select(_db.hydrationEntries)
@@ -145,21 +160,27 @@ class HydrationRepository {
           .map(_map)
           .toList();
 
-  Future<List<HydrationEntry>> entriesBetween(LocalDate from, LocalDate to) async =>
+  Future<List<HydrationEntry>> entriesBetween(
+    LocalDate from,
+    LocalDate to,
+  ) async =>
       (await (_db.select(_db.hydrationEntries)
-                ..where((t) =>
-                    t.localDate.isBiggerOrEqualValue(from.toIso()) &
-                    t.localDate.isSmallerOrEqualValue(to.toIso()))
+                ..where(
+                  (t) =>
+                      t.localDate.isBiggerOrEqualValue(from.toIso()) &
+                      t.localDate.isSmallerOrEqualValue(to.toIso()),
+                )
                 ..orderBy([(t) => OrderingTerm.asc(t.timestampUtc)]))
               .get())
           .map(_map)
           .toList();
 
-  Future<List<HydrationEntry>> all() async => (await (_db.select(_db.hydrationEntries)
-            ..orderBy([(t) => OrderingTerm.asc(t.timestampUtc)]))
-          .get())
-      .map(_map)
-      .toList();
+  Future<List<HydrationEntry>> all() async =>
+      (await (_db.select(
+            _db.hydrationEntries,
+          )..orderBy([(t) => OrderingTerm.asc(t.timestampUtc)])).get())
+          .map(_map)
+          .toList();
 
   Future<int> totalForDay(LocalDate d) async {
     final sum = _db.hydrationEntries.volumeMl.sum();
@@ -184,10 +205,11 @@ class HydrationRepository {
   }
 
   Future<HydrationEntry?> lastEntry() async {
-    final r = await (_db.select(_db.hydrationEntries)
-          ..orderBy([(t) => OrderingTerm.desc(t.timestampUtc)])
-          ..limit(1))
-        .getSingleOrNull();
+    final r =
+        await (_db.select(_db.hydrationEntries)
+              ..orderBy([(t) => OrderingTerm.desc(t.timestampUtc)])
+              ..limit(1))
+            .getSingleOrNull();
     return r == null ? null : _map(r);
   }
 
@@ -197,12 +219,17 @@ class HydrationRepository {
     int minUses = 3,
     int limit = 3,
   }) async {
-    final cutoff = _now().toUtc().subtract(Duration(days: days)).millisecondsSinceEpoch;
+    final cutoff = _now()
+        .toUtc()
+        .subtract(Duration(days: days))
+        .millisecondsSinceEpoch;
     final cnt = _db.hydrationEntries.id.count();
     final q = _db.selectOnly(_db.hydrationEntries)
       ..addColumns([_db.hydrationEntries.volumeMl, cnt])
       ..where(_db.hydrationEntries.timestampUtc.isBiggerOrEqualValue(cutoff))
-      ..groupBy([_db.hydrationEntries.volumeMl], having: cnt.isBiggerOrEqualValue(minUses))
+      ..groupBy([
+        _db.hydrationEntries.volumeMl,
+      ], having: cnt.isBiggerOrEqualValue(minUses))
       ..orderBy([OrderingTerm.desc(cnt)])
       ..limit(limit);
     final rows = await q.get();
@@ -213,12 +240,17 @@ class HydrationRepository {
   }
 
   Future<Map<String, int>> vesselUseCounts({int days = 30}) async {
-    final cutoff = _now().toUtc().subtract(Duration(days: days)).millisecondsSinceEpoch;
+    final cutoff = _now()
+        .toUtc()
+        .subtract(Duration(days: days))
+        .millisecondsSinceEpoch;
     final cnt = _db.hydrationEntries.id.count();
     final q = _db.selectOnly(_db.hydrationEntries)
       ..addColumns([_db.hydrationEntries.vesselId, cnt])
-      ..where(_db.hydrationEntries.vesselId.isNotNull() &
-          _db.hydrationEntries.timestampUtc.isBiggerOrEqualValue(cutoff))
+      ..where(
+        _db.hydrationEntries.vesselId.isNotNull() &
+            _db.hydrationEntries.timestampUtc.isBiggerOrEqualValue(cutoff),
+      )
       ..groupBy([_db.hydrationEntries.vesselId]);
     return {
       for (final r in await q.get())
@@ -229,25 +261,33 @@ class HydrationRepository {
   // ---- external (health) support ----------------------------------------
 
   Future<Set<String>> externalIds(EntrySource source) async {
-    final rows = await (_db.select(_db.hydrationEntries)
-          ..where((t) => t.source.equals(source.name) & t.externalRecordId.isNotNull()))
-        .get();
+    final rows =
+        await (_db.select(_db.hydrationEntries)..where(
+              (t) =>
+                  t.source.equals(source.name) & t.externalRecordId.isNotNull(),
+            ))
+            .get();
     return {for (final r in rows) r.externalRecordId!};
   }
 
   Future<Set<String>> tombstones(EntrySource source) async {
-    final rows = await (_db.select(_db.importTombstones)
-          ..where((t) => t.source.equals(source.name)))
-        .get();
+    final rows = await (_db.select(
+      _db.importTombstones,
+    )..where((t) => t.source.equals(source.name))).get();
     return {for (final r in rows) r.externalId};
   }
 
-  Future<void> linkExternal(String entryId, String externalId, EntrySource platform) async {
+  Future<void> linkExternal(
+    String entryId,
+    String externalId,
+    EntrySource platform,
+  ) async {
     // Unique index guards against two entries claiming one external record.
-    final existing = await (_db.select(_db.hydrationEntries)
-          ..where((t) => t.externalRecordId.equals(externalId)))
-        .get();
-    if (existing.any((e) => e.id != entryId && e.source == platform.name)) return;
+    final existing = await (_db.select(
+      _db.hydrationEntries,
+    )..where((t) => t.externalRecordId.equals(externalId))).get();
+    if (existing.any((e) => e.id != entryId && e.source == platform.name))
+      return;
     await (_db.update(_db.hydrationEntries)..where((t) => t.id.equals(entryId)))
         .write(HydrationEntriesCompanion(externalRecordId: Value(externalId)));
   }
@@ -256,15 +296,21 @@ class HydrationRepository {
   /// not yet linked).
   Future<List<HydrationEntry>> unexported({DateTime? since}) async {
     final q = _db.select(_db.hydrationEntries)
-      ..where((t) =>
-          t.externalRecordId.isNull() &
-          t.source.isIn([
-            EntrySource.manual.name,
-            EntrySource.notificationAction.name,
-            EntrySource.widget.name,
-          ]));
+      ..where(
+        (t) =>
+            t.externalRecordId.isNull() &
+            t.source.isIn([
+              EntrySource.manual.name,
+              EntrySource.notificationAction.name,
+              EntrySource.widget.name,
+            ]),
+      );
     if (since != null) {
-      q.where((t) => t.timestampUtc.isBiggerOrEqualValue(since.toUtc().millisecondsSinceEpoch));
+      q.where(
+        (t) => t.timestampUtc.isBiggerOrEqualValue(
+          since.toUtc().millisecondsSinceEpoch,
+        ),
+      );
     }
     return (await q.get()).map(_map).toList();
   }
@@ -277,7 +323,8 @@ class HydrationRepository {
     }
   }
 
-  HydrationEntriesCompanion _toCompanion(HydrationEntry e) => HydrationEntriesCompanion(
+  HydrationEntriesCompanion _toCompanion(HydrationEntry e) =>
+      HydrationEntriesCompanion(
         id: Value(e.id),
         timestampUtc: Value(e.timestampUtc.millisecondsSinceEpoch),
         timezone: Value(e.timezone),
@@ -292,19 +339,22 @@ class HydrationRepository {
       );
 
   HydrationEntry _map(HydrationEntryRow r) => HydrationEntry(
-        id: r.id,
-        timestampUtc: DateTime.fromMillisecondsSinceEpoch(r.timestampUtc, isUtc: true),
-        timezone: r.timezone,
-        localDate: LocalDate.tryParse(r.localDate) ?? const LocalDate(1970, 1, 1),
-        volumeMl: r.volumeMl,
-        source: EntrySource.parse(r.source),
-        externalRecordId: r.externalRecordId,
-        vesselId: r.vesselId,
-        beverage: BeverageType.values.firstWhere(
-          (b) => b.name == r.beverage,
-          orElse: () => BeverageType.water,
-        ),
-        createdAt: DateTime.fromMillisecondsSinceEpoch(r.createdAt, isUtc: true),
-        updatedAt: DateTime.fromMillisecondsSinceEpoch(r.updatedAt, isUtc: true),
-      );
+    id: r.id,
+    timestampUtc: DateTime.fromMillisecondsSinceEpoch(
+      r.timestampUtc,
+      isUtc: true,
+    ),
+    timezone: r.timezone,
+    localDate: LocalDate.tryParse(r.localDate) ?? const LocalDate(1970, 1, 1),
+    volumeMl: r.volumeMl,
+    source: EntrySource.parse(r.source),
+    externalRecordId: r.externalRecordId,
+    vesselId: r.vesselId,
+    beverage: BeverageType.values.firstWhere(
+      (b) => b.name == r.beverage,
+      orElse: () => BeverageType.water,
+    ),
+    createdAt: DateTime.fromMillisecondsSinceEpoch(r.createdAt, isUtc: true),
+    updatedAt: DateTime.fromMillisecondsSinceEpoch(r.updatedAt, isUtc: true),
+  );
 }

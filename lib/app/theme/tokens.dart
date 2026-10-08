@@ -82,19 +82,19 @@ class HydraTokens extends ThemeExtension<HydraTokens> {
     return switch (palette) {
       HydraPalette.ocean => this,
       HydraPalette.aurora => _recolor(
-          accent: dark ? const Color(0xFFB69CFF) : const Color(0xFF5B3FD0),
-          accentSoft: dark ? const Color(0xFF2A2250) : const Color(0xFFE9E3FB),
-          aqua: dark ? const Color(0xFF5FE0C9) : const Color(0xFF0E9C86),
-          waterTop: dark ? const Color(0xFF8FE3D2) : const Color(0xFF58D6C0),
-          waterBottom: dark ? const Color(0xFF6C54D8) : const Color(0xFF5B3FD0),
-        ),
+        accent: dark ? const Color(0xFFB69CFF) : const Color(0xFF5B3FD0),
+        accentSoft: dark ? const Color(0xFF2A2250) : const Color(0xFFE9E3FB),
+        aqua: dark ? const Color(0xFF5FE0C9) : const Color(0xFF0E9C86),
+        waterTop: dark ? const Color(0xFF8FE3D2) : const Color(0xFF58D6C0),
+        waterBottom: dark ? const Color(0xFF6C54D8) : const Color(0xFF5B3FD0),
+      ),
       HydraPalette.graphite => _recolor(
-          accent: dark ? const Color(0xFFC9D5E2) : const Color(0xFF2B3A4B),
-          accentSoft: dark ? const Color(0xFF1E2C3B) : const Color(0xFFE3E9EF),
-          aqua: dark ? const Color(0xFF9FB4C8) : const Color(0xFF44586C),
-          waterTop: dark ? const Color(0xFFA8BBCE) : const Color(0xFF7C93AA),
-          waterBottom: dark ? const Color(0xFF51677D) : const Color(0xFF2B3A4B),
-        ),
+        accent: dark ? const Color(0xFFC9D5E2) : const Color(0xFF2B3A4B),
+        accentSoft: dark ? const Color(0xFF1E2C3B) : const Color(0xFFE3E9EF),
+        aqua: dark ? const Color(0xFF9FB4C8) : const Color(0xFF44586C),
+        waterTop: dark ? const Color(0xFFA8BBCE) : const Color(0xFF7C93AA),
+        waterBottom: dark ? const Color(0xFF51677D) : const Color(0xFF2B3A4B),
+      ),
     };
   }
 
@@ -104,24 +104,23 @@ class HydraTokens extends ThemeExtension<HydraTokens> {
     required Color aqua,
     required Color waterTop,
     required Color waterBottom,
-  }) =>
-      HydraTokens(
-        bg: bg,
-        surface: surface,
-        surfaceRaised: surfaceRaised,
-        ink: ink,
-        inkMuted: inkMuted,
-        hairline: hairline,
-        accent: accent,
-        accentSoft: accentSoft,
-        aqua: aqua,
-        good: good,
-        adjust: adjust,
-        attention: attention,
-        onAccent: onAccent,
-        waterTop: waterTop,
-        waterBottom: waterBottom,
-      );
+  }) => HydraTokens(
+    bg: bg,
+    surface: surface,
+    surfaceRaised: surfaceRaised,
+    ink: ink,
+    inkMuted: inkMuted,
+    hairline: hairline,
+    accent: accent,
+    accentSoft: accentSoft,
+    aqua: aqua,
+    good: good,
+    adjust: adjust,
+    attention: attention,
+    onAccent: onAccent,
+    waterTop: waterTop,
+    waterBottom: waterBottom,
+  );
 
   @override
   HydraTokens copyWith() => this;
@@ -155,8 +154,10 @@ enum HydraPalette {
   aurora,
   graphite;
 
-  static HydraPalette parse(String? v) =>
-      HydraPalette.values.firstWhere((p) => p.name == v, orElse: () => HydraPalette.ocean);
+  static HydraPalette parse(String? v) => HydraPalette.values.firstWhere(
+    (p) => p.name == v,
+    orElse: () => HydraPalette.ocean,
+  );
 }
 
 /// Spacing scale (4-pt grid).

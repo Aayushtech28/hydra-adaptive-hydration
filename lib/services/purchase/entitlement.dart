@@ -1,4 +1,11 @@
-enum SubscriptionStatus { free, trial, active, gracePeriod, billingProblem, expired }
+enum SubscriptionStatus {
+  free,
+  trial,
+  active,
+  gracePeriod,
+  billingProblem,
+  expired,
+}
 
 /// SDK-independent view of a store customer (mapped from RevenueCat).
 class CustomerSnapshot {
@@ -53,15 +60,16 @@ class Entitlement {
       status == SubscriptionStatus.gracePeriod;
 
   bool get needsBillingAttention =>
-      status == SubscriptionStatus.gracePeriod || status == SubscriptionStatus.billingProblem;
+      status == SubscriptionStatus.gracePeriod ||
+      status == SubscriptionStatus.billingProblem;
 
   Map<String, Object?> toJson() => {
-        's': status.name,
-        'e': expiresAt?.toUtc().millisecondsSinceEpoch,
-        'p': productId,
-        'r': willRenew,
-        'c': checkedAt?.toUtc().millisecondsSinceEpoch,
-      };
+    's': status.name,
+    'e': expiresAt?.toUtc().millisecondsSinceEpoch,
+    'p': productId,
+    'r': willRenew,
+    'c': checkedAt?.toUtc().millisecondsSinceEpoch,
+  };
 
   static Entitlement fromJson(Map<String, Object?> j) {
     final status = SubscriptionStatus.values
@@ -92,8 +100,8 @@ abstract final class EntitlementResolver {
       final status = c.billingIssueAt != null
           ? SubscriptionStatus.gracePeriod
           : c.isTrial
-              ? SubscriptionStatus.trial
-              : SubscriptionStatus.active;
+          ? SubscriptionStatus.trial
+          : SubscriptionStatus.active;
       return Entitlement(
         status: status,
         expiresAt: c.expiresAt,
@@ -111,7 +119,9 @@ abstract final class EntitlementResolver {
       );
     }
     return Entitlement(
-      status: c.everSubscribed ? SubscriptionStatus.expired : SubscriptionStatus.free,
+      status: c.everSubscribed
+          ? SubscriptionStatus.expired
+          : SubscriptionStatus.free,
       expiresAt: c.expiresAt,
       productId: c.productId,
       checkedAt: now,

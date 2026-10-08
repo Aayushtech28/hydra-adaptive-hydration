@@ -5,7 +5,13 @@ import '../models/enums.dart';
 import 'consistency.dart';
 import 'day_stats.dart';
 
-enum MomentumComponent { consistency, stability, response, timing, independence }
+enum MomentumComponent {
+  consistency,
+  stability,
+  response,
+  timing,
+  independence,
+}
 
 enum MomentumTier { building, steady, strong, excellent }
 
@@ -67,10 +73,10 @@ abstract final class MomentumCalculator {
   static MomentumTier tierFor(int score) => score >= 85
       ? MomentumTier.excellent
       : score >= 65
-          ? MomentumTier.strong
-          : score >= 40
-              ? MomentumTier.steady
-              : MomentumTier.building;
+      ? MomentumTier.strong
+      : score >= 40
+      ? MomentumTier.steady
+      : MomentumTier.building;
 
   static Map<MomentumComponent, double>? _components(List<DayStats> win) {
     final active = win.where((d) => d.active).toList();
@@ -82,7 +88,7 @@ abstract final class MomentumCalculator {
         active.fold<double>(0, (s, d) => s + d.timing) / active.length;
     c[MomentumComponent.independence] =
         active.fold<double>(0, (s, d) => s + d.selfInitiatedShare) /
-            active.length;
+        active.length;
     final delays = active
         .map((d) => d.firstLogDelayMin)
         .whereType<int>()
@@ -92,16 +98,18 @@ abstract final class MomentumCalculator {
       final mean = delays.reduce((a, b) => a + b) / delays.length;
       final variance =
           delays.fold<double>(0, (s, v) => s + (v - mean) * (v - mean)) /
-              delays.length;
-      c[MomentumComponent.stability] =
-          (1 - math.sqrt(variance) / 90).clamp(0.0, 1.0);
+          delays.length;
+      c[MomentumComponent.stability] = (1 - math.sqrt(variance) / 90).clamp(
+        0.0,
+        1.0,
+      );
     }
     final resolved = win.fold<int>(0, (s, d) => s + d.remindersResolved);
     if (resolved >= minResolvedReminders) {
       final logged = win.fold<int>(0, (s, d) => s + d.remindersLogged);
       final opened = win.fold<int>(0, (s, d) => s + d.remindersOpened);
-      c[MomentumComponent.response] =
-          ((logged + 0.5 * opened) / resolved).clamp(0.0, 1.0);
+      c[MomentumComponent.response] = ((logged + 0.5 * opened) / resolved)
+          .clamp(0.0, 1.0);
     }
     return c;
   }
@@ -140,16 +148,22 @@ abstract final class MomentumCalculator {
       for (final k in comps.keys) {
         if (!prevComps.containsKey(k)) continue;
         final wSum = comps.keys.fold<double>(0, (s, e) => s + weights[e]!);
-        final delta = (100 * weights[k]! / wSum * (comps[k]! - prevComps[k]!)).round();
+        final delta = (100 * weights[k]! / wSum * (comps[k]! - prevComps[k]!))
+            .round();
         if (delta != 0) reasons.add(MomentumReason(k, delta));
       }
-      reasons.sort((a, b) => b.deltaPoints.abs().compareTo(a.deltaPoints.abs()));
+      reasons.sort(
+        (a, b) => b.deltaPoints.abs().compareTo(a.deltaPoints.abs()),
+      );
     }
     if (reasons.isEmpty) {
       final wSum = comps.keys.fold<double>(0, (s, e) => s + weights[e]!);
       reasons = [
         for (final e in comps.entries)
-          MomentumReason(e.key, (100 * weights[e.key]! / wSum * (e.value - 0.5)).round()),
+          MomentumReason(
+            e.key,
+            (100 * weights[e.key]! / wSum * (e.value - 0.5)).round(),
+          ),
       ]..sort((a, b) => b.deltaPoints.abs().compareTo(a.deltaPoints.abs()));
     }
     return MomentumResult(
@@ -213,7 +227,8 @@ abstract final class ReminderIndependenceCalculator {
     final rRate = recSent / recActive;
     final reduction = ((1 - rRate / bRate) * 100).round();
     final bCons = base.fold<double>(0, (s, d) => s + d.adherence) / base.length;
-    final rCons = recent.fold<double>(0, (s, d) => s + d.adherence) / recent.length;
+    final rCons =
+        recent.fold<double>(0, (s, d) => s + d.adherence) / recent.length;
     return ReminderIndependenceResult(
       reductionPercent: reduction,
       baselinePerDay: bRate,
@@ -252,10 +267,16 @@ abstract final class HabitCalculator {
     if (eligibleDays >= 7 && (response ?? 0) >= 0.5) {
       stage = HabitStage.respond;
     }
-    if (stage == HabitStage.respond && eligibleDays >= 14 && c >= 65 && (stability ?? 0) >= 0.4) {
+    if (stage == HabitStage.respond &&
+        eligibleDays >= 14 &&
+        c >= 65 &&
+        (stability ?? 0) >= 0.4) {
       stage = HabitStage.predict;
     }
-    if (stage == HabitStage.predict && eligibleDays >= 28 && c >= 75 && (stability ?? 0) >= 0.6) {
+    if (stage == HabitStage.predict &&
+        eligibleDays >= 28 &&
+        c >= 75 &&
+        (stability ?? 0) >= 0.6) {
       stage = HabitStage.routine;
     }
     if (stage == HabitStage.routine &&

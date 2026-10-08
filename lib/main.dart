@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:home_widget/home_widget.dart';
 
 import 'app/app.dart';
 import 'app/providers.dart';
@@ -24,12 +25,19 @@ Future<void> main() async {
 /// first frame (`AppServices.deferredInit`) and is individually fault-tolerant.
 Future<Widget> _boot() async {
   try {
+    // Lets widget buttons log a drink without opening the app. Absent on
+    // platforms without widgets; failure is harmless.
+    try {
+      await HomeWidget.registerInteractivityCallback(hydraWidgetCallback);
+    } catch (_) {}
     final services = await AppServices.create();
     final profile = await services.core.profiles.get();
     return ProviderScope(
       overrides: [
         servicesProvider.overrideWithValue(services),
-        initialOnboardedProvider.overrideWithValue(profile?.onboardingComplete ?? false),
+        initialOnboardedProvider.overrideWithValue(
+          profile?.onboardingComplete ?? false,
+        ),
       ],
       child: const HydraApp(),
     );
@@ -57,23 +65,35 @@ class _StartupErrorAppState extends State<StartupErrorApp> {
 
   @override
   Widget build(BuildContext context) => MaterialApp(
-        home: Scaffold(
-          body: SafeArea(
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(mainAxisSize: MainAxisSize.min, children: [
-                  const Icon(Icons.water_drop_outlined, size: 48),
-                  const SizedBox(height: 16),
-                  const Text('HYDRA couldn\'t start', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700)),
-                  const SizedBox(height: 8),
-                  const Text('Your data is safe on this device. Please try again.', textAlign: TextAlign.center),
-                  const SizedBox(height: 24),
-                  FilledButton(onPressed: _retrying ? null : _retry, child: const Text('Try again')),
-                ]),
-              ),
+    home: Scaffold(
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.water_drop_outlined, size: 48),
+                const SizedBox(height: 16),
+                const Text(
+                  'HYDRA couldn\'t start',
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Your data is safe on this device. Please try again.',
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+                FilledButton(
+                  onPressed: _retrying ? null : _retry,
+                  child: const Text('Try again'),
+                ),
+              ],
             ),
           ),
         ),
-      );
+      ),
+    ),
+  );
 }

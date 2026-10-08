@@ -56,8 +56,14 @@ class _TrajectoryPainter extends CustomPainter {
     final w = size.width - pad * 2;
     final h = size.height - pad * 2;
     final start = traj.window.wake;
-    final totalSecs = math.max(1, traj.window.sleep.difference(start).inSeconds);
-    final maxMl = math.max(traj.targetMl.toDouble(), entries.fold<int>(0, (s, e) => s + e.volumeMl).toDouble());
+    final totalSecs = math.max(
+      1,
+      traj.window.sleep.difference(start).inSeconds,
+    );
+    final maxMl = math.max(
+      traj.targetMl.toDouble(),
+      entries.fold<int>(0, (s, e) => s + e.volumeMl).toDouble(),
+    );
     Offset pt(DateTime time, double ml) {
       final x = (time.difference(start).inSeconds / totalSecs).clamp(0.0, 1.0);
       return Offset(pad + x * w, pad + h - (ml / maxMl).clamp(0.0, 1.0) * h);
@@ -92,7 +98,8 @@ class _TrajectoryPainter extends CustomPainter {
     );
 
     // actual (step line)
-    final sorted = [...entries]..sort((a, b) => a.timestampUtc.compareTo(b.timestampUtc));
+    final sorted = [...entries]
+      ..sort((a, b) => a.timestampUtc.compareTo(b.timestampUtc));
     final endT = now ?? traj.window.sleep;
     final actual = Path()..moveTo(pt(start, 0).dx, pt(start, 0).dy);
     var cum = 0.0;
@@ -116,18 +123,30 @@ class _TrajectoryPainter extends CustomPainter {
     var running = 0.0;
     for (final e in sorted) {
       running += e.volumeMl;
-      canvas.drawCircle(pt(e.timestampUtc, running), 3.5, Paint()..color = t.accent);
+      canvas.drawCircle(
+        pt(e.timestampUtc, running),
+        3.5,
+        Paint()..color = t.accent,
+      );
     }
   }
 
   @override
   bool shouldRepaint(_TrajectoryPainter old) =>
-      old.entries != entries || old.traj != traj || old.t != t || old.now != now;
+      old.entries != entries ||
+      old.traj != traj ||
+      old.t != t ||
+      old.now != now;
 }
 
 /// A horizontal progress bar with an accessible text value.
 class MeterBar extends StatelessWidget {
-  const MeterBar({super.key, required this.fraction, this.height = 10, this.color});
+  const MeterBar({
+    super.key,
+    required this.fraction,
+    this.height = 10,
+    this.color,
+  });
   final double fraction;
   final double height;
   final Color? color;

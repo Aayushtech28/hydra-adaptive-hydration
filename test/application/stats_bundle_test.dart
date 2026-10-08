@@ -27,7 +27,11 @@ void main() {
   });
 
   test('six weeks of steady use produces every metric', () {
-    final completed = series(42, (i, d) => day(d, adherence: 0.9, sent: i < 14 ? 8 : 3), start: today.addDays(-42));
+    final completed = series(
+      42,
+      (i, d) => day(d, adherence: 0.9, sent: i < 14 ? 8 : 3),
+      start: today.addDays(-42),
+    );
     final b = buildStatsBundle(
       today: today,
       completed: completed,

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -22,17 +24,26 @@ Future<void> quickLog(
   final core = ref.read(coreProvider);
   final profile = ref.read(profileProvider).value!;
   final messenger = ScaffoldMessenger.of(context);
-  HapticFeedback.lightImpact();
+  unawaited(HapticFeedback.lightImpact());
   try {
     final r = await core.log(volumeMl: ml, vesselId: vessel?.id);
     ref.read(logPulseProvider.notifier).fire();
     messenger
       ..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(
-        content: Text(l.logged(Formatters.volume(ml, profile.unit, profile.locale ?? 'en'))),
-        action: SnackBarAction(label: l.commonUndo, onPressed: () => core.deleteEntry(r.entry.id)),
-        duration: const Duration(seconds: 5),
-      ));
+      ..showSnackBar(
+        SnackBar(
+          content: Text(
+            l.logged(
+              Formatters.volume(ml, profile.unit, profile.locale ?? 'en'),
+            ),
+          ),
+          action: SnackBarAction(
+            label: l.commonUndo,
+            onPressed: () => core.deleteEntry(r.entry.id),
+          ),
+          duration: const Duration(seconds: 5),
+        ),
+      );
   } on ValidationException {
     messenger.showSnackBar(SnackBar(content: Text(l.logFailed)));
   } catch (_) {
@@ -57,57 +68,79 @@ class QuickAddRow extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Semantics(header: true, child: Text(l.quickAddTitle, style: context.text.titleMedium)),
+        Semantics(
+          header: true,
+          child: Text(l.quickAddTitle, style: context.text.titleMedium),
+        ),
         const SizedBox(height: Gap.md),
-        Row(children: [
-          for (var i = 0; i < amounts.length.clamp(0, 3); i++) ...[
-            if (i > 0) const SizedBox(width: Gap.sm),
-            Expanded(
-              child: _AmountButton(
-                label: Formatters.plusVolume(amounts[i], p.unit, locale),
-                semantics: l.a11yLogAmount(Formatters.volume(amounts[i], p.unit, locale)),
-                onTap: () => quickLog(context, ref, ml: amounts[i]),
-                primary: i == 0,
+        Row(
+          children: [
+            for (var i = 0; i < amounts.length.clamp(0, 3); i++) ...[
+              if (i > 0) const SizedBox(width: Gap.sm),
+              Expanded(
+                child: _AmountButton(
+                  label: Formatters.plusVolume(amounts[i], p.unit, locale),
+                  semantics: l.a11yLogAmount(
+                    Formatters.volume(amounts[i], p.unit, locale),
+                  ),
+                  onTap: () => quickLog(context, ref, ml: amounts[i]),
+                  primary: i == 0,
+                ),
               ),
+            ],
+          ],
+        ),
+        const SizedBox(height: Gap.sm),
+        Wrap(
+          spacing: Gap.sm,
+          runSpacing: Gap.sm,
+          children: [
+            for (final v in shownVessels)
+              Semantics(
+                button: true,
+                label: l.a11yVesselLog(
+                  v.name,
+                  Formatters.volume(v.volumeMl, p.unit, locale),
+                ),
+                excludeSemantics: true,
+                child: ActionChip(
+                  avatar: Icon(_iconFor(v.icon), size: 18, color: t.accent),
+                  label: Text(
+                    '${v.name} · ${Formatters.volumeValue(v.volumeMl, p.unit, locale)}',
+                  ),
+                  onPressed: () =>
+                      quickLog(context, ref, ml: v.volumeMl, vessel: v),
+                  materialTapTargetSize: MaterialTapTargetSize.padded,
+                ),
+              ),
+            ActionChip(
+              avatar: Icon(Icons.edit_outlined, size: 18, color: t.accent),
+              label: Text(l.quickAddCustom),
+              onPressed: () => showLogSheet(context),
+              materialTapTargetSize: MaterialTapTargetSize.padded,
             ),
           ],
-        ]),
-        const SizedBox(height: Gap.sm),
-        Wrap(spacing: Gap.sm, runSpacing: Gap.sm, children: [
-          for (final v in shownVessels)
-            Semantics(
-              button: true,
-              label: l.a11yVesselLog(v.name, Formatters.volume(v.volumeMl, p.unit, locale)),
-              excludeSemantics: true,
-              child: ActionChip(
-                avatar: Icon(_iconFor(v.icon), size: 18, color: t.accent),
-                label: Text('${v.name} · ${Formatters.volumeValue(v.volumeMl, p.unit, locale)}'),
-                onPressed: () => quickLog(context, ref, ml: v.volumeMl, vessel: v),
-                materialTapTargetSize: MaterialTapTargetSize.padded,
-              ),
-            ),
-          ActionChip(
-            avatar: Icon(Icons.edit_outlined, size: 18, color: t.accent),
-            label: Text(l.quickAddCustom),
-            onPressed: () => showLogSheet(context),
-            materialTapTargetSize: MaterialTapTargetSize.padded,
-          ),
-        ]),
+        ),
       ],
     );
   }
 
   static IconData _iconFor(String key) => switch (key) {
-        'bottle' || 'bottle_large' => Icons.sports_bar_outlined,
-        'mug' => Icons.coffee_outlined,
-        'travel' => Icons.flight_takeoff,
-        'sun' => Icons.wb_sunny_outlined,
-        _ => Icons.local_drink_outlined,
-      };
+    'bottle' || 'bottle_large' => Icons.sports_bar_outlined,
+    'mug' => Icons.coffee_outlined,
+    'travel' => Icons.flight_takeoff,
+    'sun' => Icons.wb_sunny_outlined,
+    _ => Icons.local_drink_outlined,
+  };
 }
 
 class _AmountButton extends StatelessWidget {
-  const _AmountButton({required this.label, required this.semantics, required this.onTap, required this.primary});
+  const _AmountButton({
+    required this.label,
+    required this.semantics,
+    required this.onTap,
+    required this.primary,
+  });
   final String label;
   final String semantics;
   final VoidCallback onTap;
@@ -138,7 +171,9 @@ class _AmountButton extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 6),
                   child: Text(
                     label,
-                    style: context.text.titleMedium?.copyWith(color: primary ? t.onAccent : t.ink),
+                    style: context.text.titleMedium?.copyWith(
+                      color: primary ? t.onAccent : t.ink,
+                    ),
                   ),
                 ),
               ),

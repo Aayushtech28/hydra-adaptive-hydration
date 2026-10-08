@@ -50,24 +50,24 @@ class DayStats {
 
   /// An eligible day with no data.
   factory DayStats.empty(LocalDate date, int targetMl) => DayStats(
-        date: date,
-        targetMl: targetMl,
-        consumedMl: 0,
-        logCount: 0,
-        completion: 0,
-        timing: 0,
-        adherence: 0,
-        firstLogDelayMin: null,
-        segmentActualMl: const [0, 0, 0],
-        segmentPlannedMl: const [0, 0, 0],
-        remindersSent: 0,
-        remindersLogged: 0,
-        remindersOpened: 0,
-        remindersSnoozed: 0,
-        remindersIgnored: 0,
-        remindedLogs: 0,
-        isWeekend: date.isWeekend,
-      );
+    date: date,
+    targetMl: targetMl,
+    consumedMl: 0,
+    logCount: 0,
+    completion: 0,
+    timing: 0,
+    adherence: 0,
+    firstLogDelayMin: null,
+    segmentActualMl: const [0, 0, 0],
+    segmentPlannedMl: const [0, 0, 0],
+    remindersSent: 0,
+    remindersLogged: 0,
+    remindersOpened: 0,
+    remindersSnoozed: 0,
+    remindersIgnored: 0,
+    remindedLogs: 0,
+    isWeekend: date.isWeekend,
+  );
 
   final LocalDate date;
   final int targetMl;
@@ -109,24 +109,24 @@ class DayStats {
       : (segmentActualMl[i] / segmentPlannedMl[i]).clamp(0.0, 1.5);
 
   Map<String, Object?> toJson() => {
-        'd': date.toIso(),
-        't': targetMl,
-        'c': consumedMl,
-        'n': logCount,
-        'cp': completion,
-        'tm': timing,
-        'ad': adherence,
-        'fl': firstLogDelayMin,
-        'sa': segmentActualMl,
-        'sp': segmentPlannedMl,
-        'rs': remindersSent,
-        'rl': remindersLogged,
-        'ro': remindersOpened,
-        'rz': remindersSnoozed,
-        'ri': remindersIgnored,
-        'rg': remindedLogs,
-        'rk': routineKind?.name,
-      };
+    'd': date.toIso(),
+    't': targetMl,
+    'c': consumedMl,
+    'n': logCount,
+    'cp': completion,
+    'tm': timing,
+    'ad': adherence,
+    'fl': firstLogDelayMin,
+    'sa': segmentActualMl,
+    'sp': segmentPlannedMl,
+    'rs': remindersSent,
+    'rl': remindersLogged,
+    'ro': remindersOpened,
+    'rz': remindersSnoozed,
+    'ri': remindersIgnored,
+    'rg': remindedLogs,
+    'rk': routineKind?.name,
+  };
 
   static DayStats? fromJson(Map<String, Object?> j) {
     try {
@@ -187,13 +187,15 @@ abstract final class DayStatsBuilder {
     checkpoints.add(trajectory.planEnd);
     var behindSum = 0.0;
     for (final c in checkpoints) {
-      final actual =
-          sorted.where((l) => !l.at.isAfter(c)).fold<int>(0, (s, l) => s + l.ml);
+      final actual = sorted
+          .where((l) => !l.at.isAfter(c))
+          .fold<int>(0, (s, l) => s + l.ml);
       final exp = trajectory.expectedMlAt(c);
       behindSum += math.max(0, exp - actual) / target;
     }
-    final timing =
-        sorted.isEmpty ? 0.0 : (1 - behindSum / checkpoints.length).clamp(0.0, 1.0);
+    final timing = sorted.isEmpty
+        ? 0.0
+        : (1 - behindSum / checkpoints.length).clamp(0.0, 1.0);
     final adherence = (0.6 * completion + 0.4 * timing).clamp(0.0, 1.0);
 
     // Segments (thirds of the plan window).
@@ -213,14 +215,17 @@ abstract final class DayStatsBuilder {
       final idx = l.at.isBefore(bounds[1])
           ? 0
           : l.at.isBefore(bounds[2])
-              ? 1
-              : 2;
+          ? 1
+          : 2;
       actual[idx] += l.ml;
     }
 
     final firstDelay = sorted.isEmpty
         ? null
-        : math.max(0, sorted.first.at.difference(trajectory.window.wake).inMinutes);
+        : math.max(
+            0,
+            sorted.first.at.difference(trajectory.window.wake).inMinutes,
+          );
 
     var logged = 0, opened = 0, snoozed = 0, ignored = 0, sent = 0;
     for (final r in reminders) {

@@ -55,15 +55,21 @@ StatsBundle buildStatsBundle({
   String? favoriteVesselName,
   int? favoriteVesselMl,
 }) {
-  final activeDays = completed.where((d) => d.active).length + (todayStats.active ? 1 : 0);
-  final consistency = ConsistencyCalculator.compute(completed, today.addDays(-1));
+  final activeDays =
+      completed.where((d) => d.active).length + (todayStats.active ? 1 : 0);
+  final consistency = ConsistencyCalculator.compute(
+    completed,
+    today.addDays(-1),
+  );
   // Today counts toward the streak only once it is already good.
   final withToday = [...completed, todayStats];
   final streak = StreakCalculator.compute(withToday);
   final momentum = MomentumCalculator.compute(completed);
   final independence = ReminderIndependenceCalculator.compute(completed);
 
-  final recent = completed.length > 14 ? completed.sublist(completed.length - 14) : completed;
+  final recent = completed.length > 14
+      ? completed.sublist(completed.length - 14)
+      : completed;
   final resolved = recent.fold<int>(0, (s, d) => s + d.remindersResolved);
   final logged = recent.fold<int>(0, (s, d) => s + d.remindersLogged);
   final activeRecent = recent.where((d) => d.active).toList();
@@ -74,15 +80,20 @@ StatsBundle buildStatsBundle({
     stability: momentum.components[MomentumComponent.stability],
     selfInitiated: activeRecent.isEmpty
         ? null
-        : activeRecent.fold<double>(0, (s, d) => s + d.selfInitiatedShare) / activeRecent.length,
+        : activeRecent.fold<double>(0, (s, d) => s + d.selfInitiatedShare) /
+              activeRecent.length,
     independenceCelebrated: independence.celebrate,
   );
 
-  final week = completed.length >= 7 ? completed.sublist(completed.length - 7) : completed;
+  final week = completed.length >= 7
+      ? completed.sublist(completed.length - 7)
+      : completed;
   final prev = completed.length >= 14
       ? completed.sublist(completed.length - 14, completed.length - 7)
       : <DayStats>[];
-  final month = completed.length > 30 ? completed.sublist(completed.length - 30) : completed;
+  final month = completed.length > 30
+      ? completed.sublist(completed.length - 30)
+      : completed;
 
   // Challenge evaluation includes today (live) so progress feels immediate.
   final forChallenges = [...completed, todayStats];

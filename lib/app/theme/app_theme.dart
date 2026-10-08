@@ -4,26 +4,31 @@ import 'package:flutter/material.dart';
 import 'tokens.dart';
 
 abstract final class AppTheme {
-  static ThemeData light([HydraPalette p = HydraPalette.ocean]) =>
-      _build(HydraTokens.light.withPalette(p, Brightness.light), Brightness.light);
+  static ThemeData light([HydraPalette p = HydraPalette.ocean]) => _build(
+    HydraTokens.light.withPalette(p, Brightness.light),
+    Brightness.light,
+  );
   static ThemeData dark([HydraPalette p = HydraPalette.ocean]) =>
       _build(HydraTokens.dark.withPalette(p, Brightness.dark), Brightness.dark);
 
   static ThemeData _build(HydraTokens t, Brightness b) {
-    final scheme = ColorScheme.fromSeed(
-      seedColor: t.accent,
+    final scheme = ColorScheme.fromSeed(seedColor: t.accent, brightness: b)
+        .copyWith(
+          primary: t.accent,
+          onPrimary: t.onAccent,
+          surface: t.surface,
+          onSurface: t.ink,
+          surfaceContainerHighest: t.surfaceRaised,
+          outline: t.hairline,
+          error: t.attention,
+        );
+    final base = ThemeData(
       brightness: b,
-    ).copyWith(
-      primary: t.accent,
-      onPrimary: t.onAccent,
-      surface: t.surface,
-      onSurface: t.ink,
-      surfaceContainerHighest: t.surfaceRaised,
-      outline: t.hairline,
-      error: t.attention,
+      useMaterial3: true,
+      colorScheme: scheme,
     );
-    final base = ThemeData(brightness: b, useMaterial3: true, colorScheme: scheme);
-    TextStyle s(double size, FontWeight w, {double? h, double? ls, Color? c}) => TextStyle(
+    TextStyle s(double size, FontWeight w, {double? h, double? ls, Color? c}) =>
+        TextStyle(
           fontSize: size,
           fontWeight: w,
           height: h,
@@ -73,7 +78,9 @@ abstract final class AppTheme {
           foregroundColor: t.onAccent,
           minimumSize: const Size(kMinTap, kMinTap),
           padding: const EdgeInsets.symmetric(horizontal: 22),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Radii.pill)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(Radii.pill),
+          ),
           textStyle: text.labelLarge,
         ),
       ),
@@ -82,7 +89,9 @@ abstract final class AppTheme {
           foregroundColor: t.ink,
           minimumSize: const Size(kMinTap, kMinTap),
           side: BorderSide(color: t.hairline),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Radii.pill)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(Radii.pill),
+          ),
           textStyle: text.labelLarge,
         ),
       ),
@@ -102,35 +111,48 @@ abstract final class AppTheme {
       ),
       dialogTheme: DialogThemeData(
         backgroundColor: t.surface,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Radii.lg)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(Radii.lg),
+        ),
       ),
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
         backgroundColor: t.ink,
         contentTextStyle: text.bodyMedium?.copyWith(color: t.bg),
         actionTextColor: t.waterTop,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Radii.md)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(Radii.md),
+        ),
       ),
       switchTheme: SwitchThemeData(
         thumbColor: WidgetStateProperty.resolveWith(
-            (s) => s.contains(WidgetState.selected) ? t.onAccent : t.inkMuted),
+          (s) => s.contains(WidgetState.selected) ? t.onAccent : t.inkMuted,
+        ),
         trackColor: WidgetStateProperty.resolveWith(
-            (s) => s.contains(WidgetState.selected) ? t.accent : t.hairline),
+          (s) => s.contains(WidgetState.selected) ? t.accent : t.hairline,
+        ),
         trackOutlineColor: const WidgetStatePropertyAll(Colors.transparent),
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: t.surface,
         indicatorColor: t.accentSoft,
         height: 68,
-        labelTextStyle: WidgetStatePropertyAll(text.labelSmall?.copyWith(color: t.ink)),
+        labelTextStyle: WidgetStatePropertyAll(
+          text.labelSmall?.copyWith(color: t.ink),
+        ),
         iconTheme: WidgetStateProperty.resolveWith(
-            (s) => IconThemeData(color: s.contains(WidgetState.selected) ? t.accent : t.inkMuted)),
+          (s) => IconThemeData(
+            color: s.contains(WidgetState.selected) ? t.accent : t.inkMuted,
+          ),
+        ),
       ),
       chipTheme: ChipThemeData(
         backgroundColor: t.surface,
         side: BorderSide(color: t.hairline),
         labelStyle: text.labelMedium?.copyWith(color: t.ink),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Radii.pill)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(Radii.pill),
+        ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
@@ -139,12 +161,17 @@ abstract final class AppTheme {
           borderRadius: BorderRadius.circular(Radii.md),
           borderSide: BorderSide.none,
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
       ),
-      pageTransitionsTheme: const PageTransitionsTheme(builders: {
-        TargetPlatform.android: FadeForwardsPageTransitionsBuilder(),
-        TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-      }),
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: {
+          TargetPlatform.android: FadeForwardsPageTransitionsBuilder(),
+          TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+        },
+      ),
     );
   }
 }

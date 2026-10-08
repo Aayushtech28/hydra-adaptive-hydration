@@ -58,15 +58,40 @@ class ChallengeDefinition {
   /// Built-in defaults (used when remote content is absent or invalid).
   static const List<ChallengeDefinition> defaults = [
     ChallengeDefinition(
-        id: 'morning_momentum', kind: ChallengeKind.morningMomentum, windowDays: 7, goal: 5, threshold: 90),
+      id: 'morning_momentum',
+      kind: ChallengeKind.morningMomentum,
+      windowDays: 7,
+      goal: 5,
+      threshold: 90,
+    ),
     ChallengeDefinition(
-        id: 'quiet_consistency', kind: ChallengeKind.quietConsistency, windowDays: 7, goal: 4, threshold: 0.8),
+      id: 'quiet_consistency',
+      kind: ChallengeKind.quietConsistency,
+      windowDays: 7,
+      goal: 4,
+      threshold: 0.8,
+    ),
     ChallengeDefinition(
-        id: 'weekday_rhythm', kind: ChallengeKind.weekdayRhythm, windowDays: 7, goal: 5, threshold: 0.75),
+      id: 'weekday_rhythm',
+      kind: ChallengeKind.weekdayRhythm,
+      windowDays: 7,
+      goal: 5,
+      threshold: 0.75,
+    ),
     ChallengeDefinition(
-        id: 'afternoon_rescue', kind: ChallengeKind.afternoonRescue, windowDays: 7, goal: 4, threshold: 0.8),
+      id: 'afternoon_rescue',
+      kind: ChallengeKind.afternoonRescue,
+      windowDays: 7,
+      goal: 4,
+      threshold: 0.8,
+    ),
     ChallengeDefinition(
-        id: 'routine_builder', kind: ChallengeKind.routineBuilder, windowDays: 7, goal: 5, threshold: 30),
+      id: 'routine_builder',
+      kind: ChallengeKind.routineBuilder,
+      windowDays: 7,
+      goal: 5,
+      threshold: 30,
+    ),
   ];
 }
 
@@ -86,26 +111,40 @@ abstract final class ChallengeEvaluator {
     LocalDate today,
   ) {
     final window = days
-        .where((d) =>
-            !d.date.isAfter(today) && today.differenceInDays(d.date) < def.windowDays)
+        .where(
+          (d) =>
+              !d.date.isAfter(today) &&
+              today.differenceInDays(d.date) < def.windowDays,
+        )
         .toList();
     final count = switch (def.kind) {
       // First drink within `threshold` minutes of waking (default 90).
-      ChallengeKind.morningMomentum => window
-          .where((d) => d.firstLogDelayMin != null && d.firstLogDelayMin! <= def.threshold)
-          .length,
+      ChallengeKind.morningMomentum =>
+        window
+            .where(
+              (d) =>
+                  d.firstLogDelayMin != null &&
+                  d.firstLogDelayMin! <= def.threshold,
+            )
+            .length,
       // Good adherence with at most 3 reminders sent that day.
-      ChallengeKind.quietConsistency => window
-          .where((d) => d.adherence >= def.threshold && d.remindersSent <= 3 && d.active)
-          .length,
+      ChallengeKind.quietConsistency =>
+        window
+            .where(
+              (d) =>
+                  d.adherence >= def.threshold &&
+                  d.remindersSent <= 3 &&
+                  d.active,
+            )
+            .length,
       // Weekdays only.
-      ChallengeKind.weekdayRhythm => window
-          .where((d) => !d.isWeekend && d.adherence >= def.threshold)
-          .length,
+      ChallengeKind.weekdayRhythm =>
+        window
+            .where((d) => !d.isWeekend && d.adherence >= def.threshold)
+            .length,
       // Afternoon segment hit its plan.
-      ChallengeKind.afternoonRescue => window
-          .where((d) => (d.segmentRatio(1) ?? 0) >= def.threshold)
-          .length,
+      ChallengeKind.afternoonRescue =>
+        window.where((d) => (d.segmentRatio(1) ?? 0) >= def.threshold).length,
       // First drink within ±threshold minutes of the window's median.
       ChallengeKind.routineBuilder => _routineBuilder(window, def.threshold),
     };
@@ -113,7 +152,8 @@ abstract final class ChallengeEvaluator {
   }
 
   static int _routineBuilder(List<DayStats> window, double tolerance) {
-    final delays = window.map((d) => d.firstLogDelayMin).whereType<int>().toList()..sort();
+    final delays =
+        window.map((d) => d.firstLogDelayMin).whereType<int>().toList()..sort();
     if (delays.length < 3) return 0;
     final median = delays[delays.length ~/ 2];
     return delays.where((d) => (d - median).abs() <= tolerance).length;

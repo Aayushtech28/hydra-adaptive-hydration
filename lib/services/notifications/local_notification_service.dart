@@ -29,7 +29,8 @@ class LocalNotificationService implements NotificationService {
 
   final FlutterLocalNotificationsPlugin _plugin;
   final BackgroundResponseHandler? backgroundHandler;
-  final StreamController<NotificationAction> _actions = StreamController.broadcast();
+  final StreamController<NotificationAction> _actions =
+      StreamController.broadcast();
   String _channelName = 'Hydration check-ins';
   String _channelDescription = '';
   bool _initialized = false;
@@ -63,17 +64,27 @@ class LocalNotificationService implements NotificationService {
     _initialized = true;
   }
 
-  DarwinNotificationCategory _category(ActionLabels labels) => DarwinNotificationCategory(
+  DarwinNotificationCategory _category(ActionLabels labels) =>
+      DarwinNotificationCategory(
         kReminderCategory,
         actions: [
           for (final a in labels.logActions)
-            DarwinNotificationAction.plain(NotificationAction.logActionId(a.ml), a.label),
-          DarwinNotificationAction.plain(NotificationAction.snoozeId, labels.snooze),
+            DarwinNotificationAction.plain(
+              NotificationAction.logActionId(a.ml),
+              a.label,
+            ),
+          DarwinNotificationAction.plain(
+            NotificationAction.snoozeId,
+            labels.snooze,
+          ),
         ],
       );
 
   void _onResponse(NotificationResponse r) {
-    final a = NotificationAction.parse(actionId: r.actionId, payload: r.payload);
+    final a = NotificationAction.parse(
+      actionId: r.actionId,
+      payload: r.payload,
+    );
     if (a != null) _actions.add(a);
   }
 
@@ -81,14 +92,20 @@ class LocalNotificationService implements NotificationService {
   Future<NotificationPermission> permission() async {
     try {
       if (defaultTargetPlatform == TargetPlatform.android) {
-        final android = _plugin.resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>();
+        final android = _plugin
+            .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin
+            >();
         final ok = await android?.areNotificationsEnabled();
-        return ok == true ? NotificationPermission.granted : NotificationPermission.denied;
+        return ok == true
+            ? NotificationPermission.granted
+            : NotificationPermission.denied;
       }
       if (defaultTargetPlatform == TargetPlatform.iOS) {
         final ios = _plugin
-            .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>();
+            .resolvePlatformSpecificImplementation<
+              IOSFlutterLocalNotificationsPlugin
+            >();
         final p = await ios?.checkPermissions();
         if (p == null) return NotificationPermission.notDetermined;
         if (p.isEnabled) return NotificationPermission.granted;
@@ -97,7 +114,12 @@ class LocalNotificationService implements NotificationService {
         return NotificationPermission.notDetermined;
       }
     } catch (e, st) {
-      Log.error('notifications', 'permission check failed', error: e, stack: st);
+      Log.error(
+        'notifications',
+        'permission check failed',
+        error: e,
+        stack: st,
+      );
     }
     return NotificationPermission.denied;
   }
@@ -106,25 +128,45 @@ class LocalNotificationService implements NotificationService {
   Future<NotificationPermission> requestPermission() async {
     try {
       if (defaultTargetPlatform == TargetPlatform.android) {
-        final android = _plugin.resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>();
+        final android = _plugin
+            .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin
+            >();
         final ok = await android?.requestNotificationsPermission();
-        return ok == true ? NotificationPermission.granted : NotificationPermission.denied;
+        return ok == true
+            ? NotificationPermission.granted
+            : NotificationPermission.denied;
       }
       if (defaultTargetPlatform == TargetPlatform.iOS) {
         final ios = _plugin
-            .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>();
-        final ok = await ios?.requestPermissions(alert: true, badge: false, sound: true);
-        return ok == true ? NotificationPermission.granted : NotificationPermission.denied;
+            .resolvePlatformSpecificImplementation<
+              IOSFlutterLocalNotificationsPlugin
+            >();
+        final ok = await ios?.requestPermissions(
+          alert: true,
+          badge: false,
+          sound: true,
+        );
+        return ok == true
+            ? NotificationPermission.granted
+            : NotificationPermission.denied;
       }
     } catch (e, st) {
-      Log.error('notifications', 'permission request failed', error: e, stack: st);
+      Log.error(
+        'notifications',
+        'permission request failed',
+        error: e,
+        stack: st,
+      );
     }
     return NotificationPermission.denied;
   }
 
   @override
-  Future<void> replaceAll(List<ScheduledReminder> reminders, {required ActionLabels labels}) async {
+  Future<void> replaceAll(
+    List<ScheduledReminder> reminders, {
+    required ActionLabels labels,
+  }) async {
     if (!_initialized) return;
     await _plugin.cancelAllPendingNotifications();
     final details = NotificationDetails(
@@ -137,7 +179,10 @@ class LocalNotificationService implements NotificationService {
         category: AndroidNotificationCategory.reminder,
         actions: [
           for (final a in labels.logActions)
-            AndroidNotificationAction(NotificationAction.logActionId(a.ml), a.label),
+            AndroidNotificationAction(
+              NotificationAction.logActionId(a.ml),
+              a.label,
+            ),
           AndroidNotificationAction(NotificationAction.snoozeId, labels.snooze),
         ],
       ),
@@ -175,7 +220,11 @@ class LocalNotificationService implements NotificationService {
       title: title,
       body: body,
       notificationDetails: NotificationDetails(
-        android: AndroidNotificationDetails(kReminderChannelId, _channelName, channelDescription: _channelDescription),
+        android: AndroidNotificationDetails(
+          kReminderChannelId,
+          _channelName,
+          channelDescription: _channelDescription,
+        ),
         iOS: const DarwinNotificationDetails(),
       ),
     );
@@ -185,7 +234,8 @@ class LocalNotificationService implements NotificationService {
   Future<void> cancelAll() => _plugin.cancelAllPendingNotifications();
 
   @override
-  Future<int> pendingCount() async => (await _plugin.pendingNotificationRequests()).length;
+  Future<int> pendingCount() async =>
+      (await _plugin.pendingNotificationRequests()).length;
 
   @override
   Future<NotificationAction?> launchAction() async {

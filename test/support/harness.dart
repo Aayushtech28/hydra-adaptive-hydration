@@ -21,13 +21,20 @@ class FakeNotificationService implements NotificationService {
   @override
   Stream<NotificationAction> get actions => _ctrl.stream;
   @override
-  Future<void> init({required ActionLabels labels, required String channelName, required String channelDescription}) async {}
+  Future<void> init({
+    required ActionLabels labels,
+    required String channelName,
+    required String channelDescription,
+  }) async {}
   @override
   Future<NotificationPermission> permission() async => perm;
   @override
   Future<NotificationPermission> requestPermission() async => perm;
   @override
-  Future<void> replaceAll(List<ScheduledReminder> reminders, {required ActionLabels labels}) async {
+  Future<void> replaceAll(
+    List<ScheduledReminder> reminders, {
+    required ActionLabels labels,
+  }) async {
     replaceCalls++;
     lastLabels = labels;
     scheduled = List.of(reminders);
@@ -58,14 +65,21 @@ class FakeWidgets implements WidgetPublisher {
 }
 
 class Harness {
-  Harness._(this.db, this.core, this.notifications, this.widgets, this.nowRef, this.tzRef);
+  Harness._(
+    this.db,
+    this.core,
+    this.notifications,
+    this.widgets,
+    this.nowRef,
+    this.tzRef,
+  );
 
   final AppDatabase db;
   final HydraCore core;
   final FakeNotificationService notifications;
   final FakeWidgets widgets;
-  final _Ref<DateTime> nowRef;
-  final _Ref<String> tzRef;
+  final Ref<DateTime> nowRef;
+  final Ref<String> tzRef;
 
   set now(DateTime t) => nowRef.value = t.toUtc();
   DateTime get now => nowRef.value;
@@ -80,8 +94,8 @@ class Harness {
   }) async {
     ensureTimeZonesInitialized();
     final db = AppDatabase(NativeDatabase.memory());
-    final nowRef = _Ref(start ?? DateTime.utc(2026, 10, 7, 3, 30)); // 09:00 IST
-    final tzRef = _Ref(tz);
+    final nowRef = Ref(start ?? DateTime.utc(2026, 10, 7, 3, 30)); // 09:00 IST
+    final tzRef = Ref(tz);
     final notifications = FakeNotificationService();
     final widgets = FakeWidgets();
     final core = buildCore(
@@ -109,7 +123,7 @@ class Harness {
   Future<void> dispose() => db.close();
 }
 
-class _Ref<T> {
-  _Ref(this.value);
+class Ref<T> {
+  Ref(this.value);
   T value;
 }

@@ -47,7 +47,10 @@ class HealthSyncService {
 
   Future<SyncDirection> direction() async {
     final v = await settings.getString(SettingKeys.healthDirection);
-    return SyncDirection.values.firstWhere((d) => d.name == v, orElse: () => SyncDirection.twoWay);
+    return SyncDirection.values.firstWhere(
+      (d) => d.name == v,
+      orElse: () => SyncDirection.twoWay,
+    );
   }
 
   Future<void> enable(SyncDirection direction) async {
@@ -55,7 +58,8 @@ class HealthSyncService {
     await settings.setString(SettingKeys.healthDirection, direction.name);
   }
 
-  Future<void> disable() => settings.setBool(SettingKeys.healthSyncEnabled, false);
+  Future<void> disable() =>
+      settings.setBool(SettingKeys.healthSyncEnabled, false);
 
   Future<SyncReport> sync() async {
     if (_running) return const SyncReport();
@@ -98,7 +102,11 @@ class HealthSyncService {
       var exported = 0;
       for (final e in plan.toExport) {
         try {
-          final marker = await health.writeWater(ml: e.volumeMl, at: e.timestampUtc, clientId: e.id);
+          final marker = await health.writeWater(
+            ml: e.volumeMl,
+            at: e.timestampUtc,
+            clientId: e.id,
+          );
           await hydration.linkExternal(e.id, marker, EntrySource.manual);
           exported++;
         } on HealthSyncException {

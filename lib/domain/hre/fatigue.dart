@@ -20,8 +20,9 @@ abstract final class FatigueCalculator {
     bool alreadyAskedRecently = false,
   }) {
     final resolved = outcomes
-        .where((o) =>
-            o != ReminderOutcome.pending && o != ReminderOutcome.cancelled)
+        .where(
+          (o) => o != ReminderOutcome.pending && o != ReminderOutcome.cancelled,
+        )
         .toList();
     final recent = resolved.length > window
         ? resolved.sublist(resolved.length - window)
@@ -48,14 +49,15 @@ abstract final class FatigueCalculator {
     final level = idx >= highAt
         ? FatigueLevel.high
         : idx >= moderateAt
-            ? FatigueLevel.moderate
-            : FatigueLevel.low;
+        ? FatigueLevel.moderate
+        : FatigueLevel.low;
     return FatigueState(
       index: idx,
       level: level,
       sampleSize: n,
       sufficient: true,
-      suggestFewerReminders: level == FatigueLevel.high &&
+      suggestFewerReminders:
+          level == FatigueLevel.high &&
           n >= suggestMinSample &&
           !alreadyAskedRecently,
     );
