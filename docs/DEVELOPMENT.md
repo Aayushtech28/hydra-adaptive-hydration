@@ -12,6 +12,8 @@ iOS: `ADMOB_APP_ID` in `ios/Flutter/Hydra.local.xcconfig` (git-ignored). Revenue
 `RC_KEY_ANDROID/IOS`; without them the paywall says purchases are unavailable and the app stays free.
 
 ## Tests
+243 tests. Files: `test/domain`, `test/data`, `test/services` (entitlements, ad policy, config), `test/application` (pipeline, hardening), `test/ui_flows_test.dart` (log sheet, onboarding, settings, paywall states, privacy), `test/accessibility_test.dart`, `test/app_smoke_test.dart`, `test/privacy_boundary_test.dart`. Helpers: `test/support/{harness,fakes,ui}.dart` (`bootApp`, `settle`, `tapVisible`).
+
 `flutter test` — domain (scheduler, DST, analytics, units, reconciliation), data (Drift in-memory),
 `test/application` (full pipeline with fake notifications/widgets), `app_smoke_test` (boots the real
 app: onboarding → dashboard → log → tabs → every settings page), `accessibility_test`

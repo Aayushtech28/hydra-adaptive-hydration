@@ -11,11 +11,14 @@
 * Android: `AD_ID` permission stripped; iOS: no ATT prompt, no `NSUserTrackingUsageDescription`.
 
 **Analytics**: closed event enum + parameter allow-list (`AnalyticsService.sanitize`); no amounts or
-history are representable. Default on only outside consent regions (UMP), otherwise off until opt-in.
+history are representable. On by default only when UMP positively reports consent is *not required*; unknown/required ⇒ off until opt-in.
 **Logs/crashes**: `Redactor` strips volumes, dates and emails; only allow-listed field keys survive.
-**Health**: only water intake (`READ/WRITE_HYDRATION`, HealthKit dietaryWater). Deleting HYDRA data
+**Health**: sync never deletes local entries (a deletion in the health app is not mirrored: iOS hides denied reads, so "missing" can't be told from "no access"); only water intake (`READ/WRITE_HYDRATION`, HealthKit dietaryWater). Deleting HYDRA data
 does not delete Health records (stated in the UI).
 **Export**: CSV `id,date,timestamp_utc,timezone,volume_ml,beverage,vessel,source`; JSON
 `hydra.export.v1` (profile, vessels, routines, entries). **Delete**: `AppDatabase.deleteEverything()`
 in one transaction + cancel reminders + reset widget; then a fresh profile triggers onboarding.
 **Widgets**: percentage + short labels only; optional "hide amounts".
+
+**Export** is available to everyone (data portability), not a Pro feature.
+**Release config**: a prod build with placeholder legal URLs or missing store keys logs a critical message and lists the problem in diagnostics.
