@@ -3681,6 +3681,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Open-source licenses'**
   String get supportLicenses;
+
+  /// No description provided for @startupErrorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'HYDRA couldn\'t start'**
+  String get startupErrorTitle;
+
+  /// No description provided for @startupErrorBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your data is safe on this device. Please try again.'**
+  String get startupErrorBody;
+
+  /// No description provided for @routeNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'That page doesn\'t exist.'**
+  String get routeNotFound;
+
+  /// No description provided for @commonOpenSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Open settings'**
+  String get commonOpenSettings;
+
+  /// No description provided for @paceFirstDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready when you are'**
+  String get paceFirstDay;
+
+  /// No description provided for @paceFirstDayBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your first day. Log a drink and HYDRA starts learning your rhythm.'**
+  String get paceFirstDayBody;
 }
 
 class _AppLocalizationsDelegate

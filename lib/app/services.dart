@@ -80,13 +80,25 @@ class AppServices {
 
   /// Local-data-only startup. No network, no ad/consent/purchase SDKs: the
   /// dashboard can render as soon as this returns.
-  static Future<AppServices> create() async {
+  static Future<AppServices> create() async => assemble(
+        db: await AppDatabase.openOnDevice(),
+        notifications: LocalNotificationService(backgroundHandler: hydraBackgroundNotificationHandler),
+        widgets: HomeWidgetPublisher(),
+      );
+
+  /// Builds the graph from injectable parts (used by [create] and by tests).
+  /// Optional platform services that fail to initialise degrade silently.
+  static Future<AppServices> assemble({
+    required AppDatabase db,
+    required NotificationService notifications,
+    required WidgetPublisher widgets,
+    AppClock? clock,
+    Future<String> Function()? timezone,
+  }) async {
     ensureTimeZonesInitialized();
-    final clock = AppClock();
-    final db = await AppDatabase.openOnDevice();
+    final c = clock ?? AppClock();
     final errors = ErrorReporter();
     final analytics = AnalyticsService([LogAnalyticsSink()]);
-    final notifications = LocalNotificationService(backgroundHandler: hydraBackgroundNotificationHandler);
     final settings = SettingsRepository(db);
     final remote = HttpRemoteConfigService(settings);
     await remote.load();
@@ -94,16 +106,21 @@ class AppServices {
     final core = buildCore(
       db: db,
       notifications: notifications,
-      widgets: HomeWidgetPublisher(),
+      widgets: widgets,
       analytics: analytics,
       errors: errors,
-      timezoneName: deviceTimezone,
-      clock: clock,
+      timezoneName: timezone ?? deviceTimezone,
+      clock: c,
       flags: () => remote.current.flags,
       localeCode: () => null,
     );
     await core.bootstrap(locale: systemLocaleCode);
-    await _initNotifications(core, notifications);
+    try {
+      await _initNotifications(core, notifications);
+    } catch (e, st) {
+      // Notifications unavailable: tracking and everything else still works.
+      Log.error('notifications', 'init failed; continuing without', error: e, stack: st);
+    }
 
     final subscription = RevenueCatSubscriptionService(settings);
     final consent = UmpConsentService();
@@ -126,7 +143,7 @@ class AppServices {
         remote: remote,
         totalLogs: core.totalLogCount,
         installAgeDays: core.installAgeDays,
-        now: clock.now,
+        now: c.now,
       ),
       health: health,
       healthSync: HealthSyncService(
@@ -134,18 +151,18 @@ class AppServices {
         hydration: core.hydration,
         settings: settings,
         timezoneName: () => _cachedZone,
-        now: clock.now,
+        now: c.now,
       ),
       export: ExportService(
         hydration: core.hydration,
         vessels: core.vessels,
         routines: core.routines,
         profile: core.profiles,
-        now: clock.now,
+        now: c.now,
       ),
       remote: remote,
       smartBottle: UnsupportedSmartBottleService(),
-      clock: clock,
+      clock: c,
     );
   }
 

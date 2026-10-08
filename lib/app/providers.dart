@@ -30,12 +30,15 @@ final routinesProvider = StreamProvider<List<Routine>>((ref) => ref.watch(corePr
 
 /// Fires once a minute while the app is in the foreground so "next reminder"
 /// and pace stay fresh. No timers run in the background.
-final tickProvider = StreamProvider<int>((ref) async* {
+final tickProvider = StreamProvider<int>((ref) {
+  final controller = StreamController<int>()..add(0);
   var n = 0;
-  yield n;
-  await for (final _ in Stream<void>.periodic(const Duration(minutes: 1))) {
-    yield ++n;
-  }
+  final timer = Timer.periodic(const Duration(minutes: 1), (_) => controller.add(++n));
+  ref.onDispose(() {
+    timer.cancel();
+    controller.close();
+  });
+  return controller.stream;
 });
 
 /// Bumped by actions that change reminder state stored outside the profile

@@ -267,7 +267,7 @@ class HTile extends StatelessWidget {
                   ],
                 ),
               ),
-              if (trailing != null) trailing!,
+              if (trailing != null) Flexible(child: trailing!),
               if (trailing == null && onTap != null)
                 Icon(Icons.chevron_right, color: t.inkMuted, semanticLabel: ''),
             ],
@@ -286,11 +286,13 @@ class TileGroup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = context.hx;
-    return Container(
-      decoration: BoxDecoration(
-        color: t.surface,
+    // Material (not a coloured Container) so ListTile/SwitchListTile inside
+    // render ink correctly.
+    return Material(
+      color: t.surface,
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(Radii.md),
-        border: Border.all(color: t.hairline),
+        side: BorderSide(color: t.hairline),
       ),
       clipBehavior: Clip.antiAlias,
       child: Column(

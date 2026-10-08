@@ -82,14 +82,17 @@ class _DashboardBody extends ConsumerWidget {
     final pulse = ref.watch(logPulseProvider);
     final stats = ref.watch(statsProvider).value;
     final insight = stats?.dailyInsight;
-    final chip = paceChipFor(l, snap);
+    final firstDayEmpty = state.ctx.input.historyDays <= 1 && state.ctx.entries.isEmpty;
+    final chip = paceChipFor(l, snap, firstDayEmpty: firstDayEmpty);
 
     final consumed = Formatters.volumeValue(state.ctx.consumedMl, p.unit, locale);
     final target = Formatters.volume(p.dailyTargetMl, p.unit, locale);
     final percent = (snap.percent * 100).round();
 
     String? finishLine;
-    if (snap.goalReached) {
+    if (firstDayEmpty) {
+      finishLine = l.paceFirstDayBody;
+    } else if (snap.goalReached) {
       finishLine = l.paceGoalReachedBody;
     } else if (snap.beforeWake) {
       finishLine = null;
@@ -100,7 +103,7 @@ class _DashboardBody extends ConsumerWidget {
     } else if (snap.estimatedFinish != null) {
       finishLine = l.paceFinishBy(Formatters.time(snap.estimatedFinish!, state.ctx.location, locale, use24h: use24));
     }
-    final spread = (!snap.goalReached &&
+    final spread = (!snap.goalReached && !firstDayEmpty &&
             snap.suggestedPerCheckInMl != null &&
             (snap.state == PaceState.slightlyBehind || snap.state == PaceState.significantlyBehind))
         ? l.paceSpreadBody(Formatters.volume(snap.suggestedPerCheckInMl!, p.unit, locale))

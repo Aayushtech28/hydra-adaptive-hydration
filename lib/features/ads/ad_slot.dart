@@ -31,6 +31,14 @@ class _AdSlotState extends ConsumerState<AdSlot> {
   }
 
   Future<void> _load() async {
+    try {
+      await _loadInner();
+    } catch (_) {
+      // Ads are optional: any failure simply leaves the slot empty.
+    }
+  }
+
+  Future<void> _loadInner() async {
     if (widget.placement.format != AdFormat.banner && widget.placement.format != AdFormat.native) {
       return;
     }

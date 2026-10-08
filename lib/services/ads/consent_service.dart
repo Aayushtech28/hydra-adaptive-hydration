@@ -46,7 +46,10 @@ class UmpConsentService implements ConsentService {
   @override
   Future<void> gather() async {
     final done = Completer<void>();
-    try {
+    // The UMP plugin reports some platform failures asynchronously (e.g. the
+    // plugin is unavailable on this platform), outside any try/catch. A
+    // guarded zone turns those into "no ads", never a crash.
+    unawaited(runZonedGuarded(() async {
       ConsentInformation.instance.requestConsentInfoUpdate(
         ConsentRequestParameters(),
         () async {
@@ -58,7 +61,7 @@ class UmpConsentService implements ConsentService {
               await _refresh();
               if (!done.isCompleted) done.complete();
             });
-          } catch (e) {
+          } catch (_) {
             await _refresh();
             if (!done.isCompleted) done.complete();
           }
@@ -69,11 +72,12 @@ class UmpConsentService implements ConsentService {
           if (!done.isCompleted) done.complete();
         },
       );
-      await done.future.timeout(const Duration(seconds: 20), onTimeout: () {});
-    } catch (e, st) {
-      Log.error('consent', 'gather failed', error: e, stack: st);
+    }, (e, st) {
+      Log.warning('consent', 'consent unavailable; ads stay off', fields: {'type': e.runtimeType.toString()});
       _canRequest = false;
-    }
+      if (!done.isCompleted) done.complete();
+    }));
+    await done.future.timeout(const Duration(seconds: 20), onTimeout: () {});
   }
 
   Future<void> _refresh() async {

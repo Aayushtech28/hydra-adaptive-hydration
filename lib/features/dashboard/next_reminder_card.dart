@@ -143,7 +143,9 @@ class _NextReminderCardState extends ConsumerState<NextReminderCard> {
 }
 
 /// Maps pace state to chip text/kind (symbol + text, never colour alone).
-({StatusKind kind, String label}) paceChipFor(AppLocalizations l, PaceSnapshot s) {
+({StatusKind kind, String label}) paceChipFor(AppLocalizations l, PaceSnapshot s, {bool firstDayEmpty = false}) {
+  // A brand-new user with nothing logged yet is not "behind": stay neutral.
+  if (firstDayEmpty) return (kind: StatusKind.neutral, label: l.paceFirstDay);
   if (s.goalReached) return (kind: StatusKind.good, label: l.paceGoalReached);
   if (s.beforeWake) return (kind: StatusKind.neutral, label: l.paceBeforeWake);
   return switch (s.state) {

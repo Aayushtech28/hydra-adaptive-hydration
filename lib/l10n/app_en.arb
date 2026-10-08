@@ -1053,5 +1053,11 @@
         "type": "String"
       }
     }
-  }
+  },
+  "startupErrorTitle": "HYDRA couldn't start",
+  "startupErrorBody": "Your data is safe on this device. Please try again.",
+  "routeNotFound": "That page doesn't exist.",
+  "commonOpenSettings": "Open settings",
+  "paceFirstDay": "Ready when you are",
+  "paceFirstDayBody": "Your first day. Log a drink and HYDRA starts learning your rhythm."
 }

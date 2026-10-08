@@ -42,8 +42,12 @@ class AdCoordinator {
   int _interstitialsThisSession = 0;
 
   static Future<bool> _defaultOnline() async {
-    final r = await Connectivity().checkConnectivity();
-    return !r.contains(ConnectivityResult.none);
+    try {
+      final r = await Connectivity().checkConnectivity();
+      return !r.contains(ConnectivityResult.none);
+    } catch (_) {
+      return false; // can't tell → treat as offline → no ads, app unaffected
+    }
   }
 
   Future<AdDecision> decide(AdPlacement placement) async {

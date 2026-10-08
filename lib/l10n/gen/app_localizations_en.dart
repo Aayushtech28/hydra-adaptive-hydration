@@ -2029,4 +2029,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get supportLicenses => 'Open-source licenses';
+
+  @override
+  String get startupErrorTitle => 'HYDRA couldn\'t start';
+
+  @override
+  String get startupErrorBody =>
+      'Your data is safe on this device. Please try again.';
+
+  @override
+  String get routeNotFound => 'That page doesn\'t exist.';
+
+  @override
+  String get commonOpenSettings => 'Open settings';
+
+  @override
+  String get paceFirstDay => 'Ready when you are';
+
+  @override
+  String get paceFirstDayBody =>
+      'Your first day. Log a drink and HYDRA starts learning your rhythm.';
 }
