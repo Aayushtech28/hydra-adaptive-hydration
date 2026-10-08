@@ -198,6 +198,12 @@ class HydrationRepository {
     return q.watchSingle().map((r) => r.read(sum) ?? 0);
   }
 
+  Future<int> count() async {
+    final c = _db.hydrationEntries.id.count();
+    final q = _db.selectOnly(_db.hydrationEntries)..addColumns([c]);
+    return (await q.getSingle()).read(c) ?? 0;
+  }
+
   Future<LocalDate?> firstEntryDate() async {
     final m = _db.hydrationEntries.localDate.min();
     final q = _db.selectOnly(_db.hydrationEntries)..addColumns([m]);

@@ -138,20 +138,31 @@ class ExportService {
   /// Hands the file to the platform share sheet (save to Files, email, ...).
   Future<void> share({required bool csv}) async {
     final f = await writeFile(csv: csv);
-    await SharePlus.instance.share(
-      ShareParams(files: [XFile(f.path)], subject: 'HYDRA data export'),
-    );
+    try {
+      await SharePlus.instance.share(
+        ShareParams(files: [XFile(f.path)], subject: 'HYDRA data export'),
+      );
+    } finally {
+      // Don't leave a plaintext copy of the user's history in temp storage.
+      try {
+        if (f.existsSync()) f.deleteSync();
+      } catch (_) {}
+    }
   }
 
   /// Best-effort removal of the temporary export after sharing.
   Future<void> cleanup() async {
-    final dir = await getTemporaryDirectory();
-    for (final f in dir.listSync().whereType<File>()) {
-      if (f.path.contains('hydra-export-')) {
-        try {
-          f.deleteSync();
-        } catch (_) {}
+    try {
+      final dir = await getTemporaryDirectory();
+      for (final f in dir.listSync().whereType<File>()) {
+        if (f.path.contains('hydra-export-')) {
+          try {
+            f.deleteSync();
+          } catch (_) {}
+        }
       }
+    } catch (_) {
+      // Temp storage unavailable: nothing to clean, and never a reason to fail.
     }
   }
 }

@@ -17,6 +17,32 @@ enum AppEnv {
 ///     flutter run --dart-define=HYDRA_ENV=dev
 ///     flutter build appbundle --dart-define=HYDRA_ENV=prod \
 ///       --dart-define=ADMOB_BANNER_ANDROID=ca-app-pub-xxx/yyy ...
+/// Pure check used by tests, the startup log and the diagnostics report.
+/// A production build must not ship placeholder legal/support links or
+/// without store SDK keys.
+List<String> releaseConfigProblems({
+  required AppEnv env,
+  required String privacyUrl,
+  required String termsUrl,
+  required String supportEmail,
+  required String revenueCatAndroid,
+  required String revenueCatIos,
+}) {
+  if (env != AppEnv.prod) return const [];
+  bool bad(String v) =>
+      v.isEmpty || v.contains('.example') || !v.startsWith('https://');
+  return [
+    if (bad(privacyUrl)) 'PRIVACY_URL is missing or a placeholder',
+    if (bad(termsUrl)) 'TERMS_URL is missing or a placeholder',
+    if (supportEmail.isEmpty || supportEmail.endsWith('.example'))
+      'SUPPORT_EMAIL is missing or a placeholder',
+    if (revenueCatAndroid.isEmpty)
+      'RC_KEY_ANDROID is not set (purchases disabled on Android)',
+    if (revenueCatIos.isEmpty)
+      'RC_KEY_IOS is not set (purchases disabled on iOS)',
+  ];
+}
+
 class AppConfig {
   const AppConfig._();
 
@@ -114,6 +140,15 @@ class AppConfig {
     'TERMS_URL',
     defaultValue: 'https://hydra.example/terms',
   );
+  static List<String> get problems => releaseConfigProblems(
+    env: env,
+    privacyUrl: privacyPolicyUrl,
+    termsUrl: termsUrl,
+    supportEmail: supportEmail,
+    revenueCatAndroid: revenueCatKeyAndroid,
+    revenueCatIos: revenueCatKeyIos,
+  );
+
   static const String supportEmail = String.fromEnvironment(
     'SUPPORT_EMAIL',
     defaultValue: 'support@hydra.example',

@@ -89,6 +89,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           unit: _unit,
           dailyTargetMl: _targetMl,
           targetIsUserChosen: _customTarget,
+          // "Start without reminders" must mean none, including on Android 12
+          // and older where notification permission is implicitly granted.
+          remindersEnabled: askPermission,
         ),
       );
       if (askPermission) {

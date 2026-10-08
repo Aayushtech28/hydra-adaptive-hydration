@@ -7,7 +7,6 @@ import '../core/logging/log.dart';
 import '../core/time/hydra_time.dart';
 import '../core/time/local_date.dart';
 import '../core/units/formatters.dart';
-import '../core/units/volume_unit.dart';
 import '../core/util/validation.dart';
 import '../data/database/app_database.dart';
 import '../data/repositories/hydration_repository.dart';
@@ -19,6 +18,7 @@ import '../data/repositories/vessel_repository.dart';
 import '../domain/hre/types.dart';
 import '../domain/models/entities.dart';
 import '../domain/models/enums.dart';
+import '../domain/models/routine_resolver.dart';
 import '../services/analytics/analytics_service.dart';
 import '../services/error_reporter.dart';
 import '../services/notifications/notification_service.dart';
@@ -146,6 +146,7 @@ class HydraCore {
     BeverageType beverage = BeverageType.water,
   }) async {
     final when = (at ?? clock.now()).toUtc();
+    _rejectFuture(when);
     final tz = await timezoneName();
     final entry = await hydration.add(
       volumeMl: volumeMl,
@@ -185,11 +186,19 @@ class HydraCore {
   }
 
   Future<void> editEntry(String id, {int? volumeMl, DateTime? at}) async {
+    if (at != null) _rejectFuture(at.toUtc());
     final before = await hydration.getById(id);
     final updated = await hydration.update(id, volumeMl: volumeMl, at: at);
     await summaries.invalidate(updated.localDate);
     if (before != null) await summaries.invalidate(before.localDate);
     unawaited(_afterChange(reason: 'edit'));
+  }
+
+  /// A drink cannot happen in the future (small clock skew allowed).
+  void _rejectFuture(DateTime t) {
+    if (t.isAfter(clock.now().toUtc().add(const Duration(minutes: 5)))) {
+      throw const ValidationException(ValidationCode.timeInvalid, 'future');
+    }
   }
 
   // ---- reminder controls -------------------------------------------------
@@ -239,6 +248,70 @@ class HydraCore {
 
   Future<void> declineFewerReminders() =>
       settings.setTime(SettingKeys.askedFewerReminders, clock.now());
+
+  /// Adds a quiet span to the routine that applies today (or the one in use),
+  /// without ever shadowing the profile's weekday/weekend schedule: when no
+  /// routine applies, routines mirroring the profile are created (two if the
+  /// profile has a separate weekend schedule).
+  Future<void> addQuietSpan(
+    TimeSpan span, {
+    required String weekdayName,
+    required String weekendName,
+  }) async {
+    final p = await profiles.get();
+    if (p == null) return;
+    final rs = await routines.getAll();
+    final resolved = RoutineResolver.resolve(
+      profile: p,
+      routines: rs,
+      date: await today(),
+    );
+    final target = rs.where((r) => r.id == resolved.routineId).firstOrNull;
+    if (target != null) {
+      await routines.upsert(
+        target.copyWith(quietSpans: [...target.quietSpans, span]),
+      );
+    } else if (p.weekendDifferent) {
+      await routines.upsert(
+        routines
+            .blank(
+              name: weekdayName,
+              kind: RoutineKind.weekday,
+              wake: p.wakeMinute,
+              sleep: p.sleepMinute,
+              weekdays: {1, 2, 3, 4, 5},
+              mode: p.mode,
+            )
+            .copyWith(quietSpans: [span]),
+      );
+      await routines.upsert(
+        routines
+            .blank(
+              name: weekendName,
+              kind: RoutineKind.weekend,
+              wake: p.weekendWakeMinute,
+              sleep: p.weekendSleepMinute,
+              weekdays: {6, 7},
+              mode: p.mode,
+            )
+            .copyWith(quietSpans: [span]),
+      );
+    } else {
+      await routines.upsert(
+        routines
+            .blank(
+              name: weekdayName,
+              kind: RoutineKind.weekday,
+              wake: p.wakeMinute,
+              sleep: p.sleepMinute,
+              weekdays: {1, 2, 3, 4, 5, 6, 7},
+              mode: p.mode,
+            )
+            .copyWith(quietSpans: [span]),
+      );
+    }
+    await reschedule(reason: 'quiet_hours');
+  }
 
   // ---- notification actions (UI isolate *and* background isolate) --------
 
@@ -384,7 +457,7 @@ class HydraCore {
     analytics.log(AnalyticsEvent.onboardingCompleted);
   }
 
-  Future<int> totalLogCount() async => (await hydration.all()).length;
+  Future<int> totalLogCount() => hydration.count();
 
   Future<int> installAgeDays() async {
     final t = await settings.getTime(SettingKeys.firstLaunchAt);
@@ -413,15 +486,4 @@ class HydraCore {
   /// Convenience used by tests/diagnostics.
   Future<LocalDate> today() async =>
       logicalDateOf(clock.now(), locationFor(await timezoneName()));
-}
-
-/// Unit helper for validated user input at the UI boundary.
-int? parseVolumeInput(
-  String text,
-  VolumeUnit unit, {
-  String decimalSeparator = '.',
-}) {
-  final v = parseLocalizedNumber(text, decimalSeparator: decimalSeparator);
-  final r = validateVolume(v, unit);
-  return r is VolumeOk ? r.ml : null;
 }

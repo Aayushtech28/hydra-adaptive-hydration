@@ -9,6 +9,11 @@ enum ConsentState { unknown, required, notRequired, obtained }
 /// Wraps Google's User Messaging Platform. Ads are only ever requested when
 /// [canRequestAds] is true. Failure to reach UMP means *no ads*, never
 /// ads-without-consent.
+/// Anonymous product analytics are on by default **only** when UMP positively
+/// says consent is not required; unknown (UMP unreachable) or required ⇒ off
+/// until the user opts in.
+bool defaultAnalyticsEnabled(ConsentState s) => s == ConsentState.notRequired;
+
 abstract class ConsentService {
   ConsentState get status;
   bool get canRequestAds;

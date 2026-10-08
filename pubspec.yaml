@@ -29,7 +29,6 @@ dependencies:
   path_provider: ^2.1.6
   purchases_flutter: ^10.14.0
   share_plus: ^13.3.1
-  shared_preferences: ^2.5.6
   sqlite3: ^3.7.0
   timezone: ^0.11.1
   url_launcher: ^6.3.3
@@ -40,8 +39,6 @@ dev_dependencies:
   flutter_lints: ^6.0.0
   drift_dev: ^2.35.1
   build_runner: ^2.16.2
-  mocktail: ^1.0.5
-
 flutter:
   uses-material-design: true
   generate: true

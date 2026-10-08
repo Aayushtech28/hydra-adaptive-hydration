@@ -158,31 +158,13 @@ class NotificationsScreen extends ConsumerWidget {
                           const SizedBox(height: Gap.sm),
                           FilledButton(
                             onPressed: () async {
-                              final core = ref.read(coreProvider);
-                              final rs = await core.routines.getAll();
-                              // Add to the routine in use (or create a default one).
-                              Routine target;
-                              final active = rs
-                                  .where((r) => r.id == p.activeRoutineId)
-                                  .firstOrNull;
-                              if (active != null) {
-                                target = active;
-                              } else {
-                                target = core.routines.blank(
-                                  name: l.youRoutines,
-                                  kind: RoutineKind.custom,
-                                  wake: p.wakeMinute,
-                                  sleep: p.sleepMinute,
-                                  weekdays: {1, 2, 3, 4, 5, 6, 7},
-                                  mode: p.mode,
-                                );
-                              }
-                              await core.routines.upsert(
-                                target.copyWith(
-                                  quietSpans: [...target.quietSpans, s],
-                                ),
-                              );
-                              await core.reschedule(reason: 'quiet_hours');
+                              await ref
+                                  .read(coreProvider)
+                                  .addQuietSpan(
+                                    s,
+                                    weekdayName: l.routineKindWeekday,
+                                    weekendName: l.routineKindWeekend,
+                                  );
                               ref.read(revisionProvider.notifier).bump();
                             },
                             child: Text(l.remindersQuietAccept),

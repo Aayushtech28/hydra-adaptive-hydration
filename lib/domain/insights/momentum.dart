@@ -2,7 +2,6 @@ import 'dart:math' as math;
 
 import '../../core/time/local_date.dart';
 import '../models/enums.dart';
-import 'consistency.dart';
 import 'day_stats.dart';
 
 enum MomentumComponent {
@@ -319,7 +318,3 @@ abstract final class EligibleDays {
     return out.length > maxDays ? out.sublist(out.length - maxDays) : out;
   }
 }
-
-/// Convenience for consumers needing the standing consistency alongside.
-ConsistencyResult consistencyFor(List<DayStats> days, LocalDate asOf) =>
-    ConsistencyCalculator.compute(days, asOf);

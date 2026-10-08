@@ -8,6 +8,7 @@ import 'app/app.dart';
 import 'app/providers.dart';
 import 'app/router.dart';
 import 'app/services.dart';
+import 'core/config/app_config.dart';
 import 'core/logging/log.dart';
 import 'services/error_reporter.dart';
 
@@ -30,6 +31,9 @@ Future<Widget> _boot() async {
     try {
       await HomeWidget.registerInteractivityCallback(hydraWidgetCallback);
     } catch (_) {}
+    for (final problem in AppConfig.problems) {
+      Log.critical('config', 'release config: $problem');
+    }
     final services = await AppServices.create();
     final profile = await services.core.profiles.get();
     return ProviderScope(

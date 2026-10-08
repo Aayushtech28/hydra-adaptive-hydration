@@ -210,17 +210,6 @@ class LogPulse extends Notifier<int> {
 
 final logPulseProvider = NotifierProvider<LogPulse, int>(LogPulse.new);
 
-/// Debug-only simulated clock offset (days) to exercise rollover.
-class SimulatedDays extends Notifier<int> {
-  @override
-  int build() => 0;
-  void set(int v) => state = v;
-}
-
-final simulatedDaysProvider = NotifierProvider<SimulatedDays, int>(
-  SimulatedDays.new,
-);
-
 // ---- palette (premium themes) -------------------------------------------------
 
 /// Active accent palette. Aurora/Graphite need Pro; Aurora can also be

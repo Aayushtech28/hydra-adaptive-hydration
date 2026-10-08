@@ -32,10 +32,12 @@ class ProUpsell extends StatelessWidget {
             children: [
               Icon(Icons.auto_awesome, size: 18, color: context.hx.accent),
               const SizedBox(width: 8),
-              Text(
-                l.paywallTitle,
-                style: context.text.labelLarge?.copyWith(
-                  color: context.hx.accent,
+              Flexible(
+                child: Text(
+                  l.paywallTitle,
+                  style: context.text.labelLarge?.copyWith(
+                    color: context.hx.accent,
+                  ),
                 ),
               ),
             ],

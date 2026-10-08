@@ -130,8 +130,10 @@ class EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = context.hx;
+    // Scrollable so large text sizes never overflow; Center keeps it centred
+    // when there is room.
     return Center(
-      child: Padding(
+      child: SingleChildScrollView(
         padding: EdgeInsets.all(compact ? Gap.lg : Gap.xl),
         child: Column(
           mainAxisSize: MainAxisSize.min,

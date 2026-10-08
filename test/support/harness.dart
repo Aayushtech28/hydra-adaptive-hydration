@@ -12,6 +12,7 @@ import 'package:hydra/services/widgets/widget_publisher.dart';
 
 class FakeNotificationService implements NotificationService {
   NotificationPermission perm = NotificationPermission.granted;
+  int requestCalls = 0;
   List<ScheduledReminder> scheduled = [];
   int replaceCalls = 0;
   int cancelCalls = 0;
@@ -29,7 +30,11 @@ class FakeNotificationService implements NotificationService {
   @override
   Future<NotificationPermission> permission() async => perm;
   @override
-  Future<NotificationPermission> requestPermission() async => perm;
+  Future<NotificationPermission> requestPermission() async {
+    requestCalls++;
+    return perm;
+  }
+
   @override
   Future<void> replaceAll(
     List<ScheduledReminder> reminders, {

@@ -208,19 +208,19 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Row(
+                                Wrap(
+                                  spacing: 8,
+                                  crossAxisAlignment: WrapCrossAlignment.center,
                                   children: [
                                     Text(
                                       periodName(p.period),
                                       style: context.text.titleMedium,
                                     ),
-                                    if (p.period == ProPeriod.annual) ...[
-                                      const SizedBox(width: 8),
+                                    if (p.period == ProPeriod.annual)
                                       StatusChip(
                                         kind: StatusKind.good,
                                         label: l.paywallBestValue,
                                       ),
-                                    ],
                                   ],
                                 ),
                                 if (p.hasFreeTrial && p.trialDays != null)
@@ -268,8 +268,8 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
               ),
             ],
             const SizedBox(height: Gap.sm),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            Wrap(
+              alignment: WrapAlignment.center,
               children: [
                 TextButton(
                   onPressed: _busy ? null : _restore,
@@ -283,7 +283,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
             ),
             const SizedBox(height: Gap.md),
             Text(l.paywallTerms, style: context.text.bodySmall),
-            Row(
+            Wrap(
               children: [
                 TextButton(
                   onPressed: () => openUrl(context, AppConfig.termsUrl),

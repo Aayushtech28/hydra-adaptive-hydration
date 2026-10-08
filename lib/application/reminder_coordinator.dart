@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/widgets.dart' show Locale;
 
 import '../core/logging/log.dart';
@@ -123,7 +121,10 @@ class ReminderCoordinator {
     });
 
     final permission = await notifications.permission();
-    if (permission != NotificationPermission.granted ||
+    // Nothing is scheduled before onboarding finishes (on Android < 13 the
+    // permission is implicitly granted, so this must be explicit).
+    if (!ctx.profile.onboardingComplete ||
+        permission != NotificationPermission.granted ||
         !ctx.profile.remindersEnabled) {
       await reminders.cancelFuturePending(now);
       await notifications.cancelAll();
@@ -193,9 +194,6 @@ class ReminderCoordinator {
     if (e.outcome == ReminderOutcome.logged) return;
     await reminders.resolve(eventId, outcome, _now());
   }
-
-  static String encode(SchedulerSummary s) =>
-      jsonEncode({'count': s.scheduledCount});
 }
 
 class SchedulerSummary {

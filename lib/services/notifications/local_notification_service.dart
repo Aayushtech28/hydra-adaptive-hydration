@@ -38,6 +38,10 @@ class LocalNotificationService implements NotificationService {
   @override
   Stream<NotificationAction> get actions => _actions.stream;
 
+  String _labelKey(ActionLabels l) =>
+      '${l.snooze}|${l.logActions.map((a) => '${a.ml}:${a.label}').join(',')}';
+  String? _initializedLabels;
+
   @override
   Future<void> init({
     required ActionLabels labels,
@@ -47,6 +51,10 @@ class LocalNotificationService implements NotificationService {
     ensureTimeZonesInitialized();
     _channelName = channelName;
     _channelDescription = channelDescription;
+    await _initialize(labels);
+  }
+
+  Future<void> _initialize(ActionLabels labels) async {
     await _plugin.initialize(
       settings: InitializationSettings(
         android: const AndroidInitializationSettings('@mipmap/ic_launcher'),
@@ -61,6 +69,7 @@ class LocalNotificationService implements NotificationService {
       onDidReceiveNotificationResponse: _onResponse,
       onDidReceiveBackgroundNotificationResponse: backgroundHandler,
     );
+    _initializedLabels = _labelKey(labels);
     _initialized = true;
   }
 
@@ -168,6 +177,12 @@ class LocalNotificationService implements NotificationService {
     required ActionLabels labels,
   }) async {
     if (!_initialized) return;
+    // iOS bakes action buttons into the registered category, so re-register
+    // when the user's quick-add amounts (and therefore labels) changed.
+    if (defaultTargetPlatform == TargetPlatform.iOS &&
+        _labelKey(labels) != _initializedLabels) {
+      await _initialize(labels);
+    }
     await _plugin.cancelAllPendingNotifications();
     final details = NotificationDetails(
       android: AndroidNotificationDetails(

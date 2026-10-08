@@ -9,6 +9,7 @@ import '../../app/theme/tokens.dart';
 import '../../core/config/app_config.dart';
 import '../../data/repositories/misc_repositories.dart';
 import '../../l10n/gen/app_localizations.dart';
+import '../../services/ads/consent_service.dart' show defaultAnalyticsEnabled;
 import '../../services/analytics/analytics_service.dart';
 import '../../services/notifications/notification_service.dart';
 import '../common/widgets.dart';
@@ -35,7 +36,7 @@ final _privacyStateProvider =
       final stored = await s.getString(SettingKeys.analyticsEnabled);
       return (
         analytics: stored == null
-            ? !svc.consent.regionRequiresConsent
+            ? defaultAnalyticsEnabled(svc.consent.status)
             : stored == '1',
         hideWidget: await s.getBool('privacy.widgetHideAmounts'),
         healthOn: await svc.healthSync.enabled,
@@ -86,10 +87,14 @@ class PrivacyScreen extends ConsumerWidget {
     );
     if (ok != true) return;
     final svc = ref.read(servicesProvider);
-    await svc.core.deleteAllData();
-    await svc.export.cleanup();
-    // Fresh profile → router sends the user back to onboarding.
-    await svc.core.bootstrap(locale: AppServices.systemLocaleCode);
+    try {
+      await svc.core.deleteAllData();
+      await svc.export.cleanup();
+    } finally {
+      // Whatever happened above, never leave the app without a profile:
+      // a fresh one sends the user back through onboarding.
+      await svc.core.bootstrap(locale: AppServices.systemLocaleCode);
+    }
     ref.invalidate(dashboardProvider);
     ref.invalidate(statsProvider);
     if (context.mounted) {

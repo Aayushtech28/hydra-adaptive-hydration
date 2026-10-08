@@ -113,11 +113,11 @@ class HealthSyncService {
           rethrow;
         }
       }
-      var removed = 0;
-      for (final id in plan.toRemoveLocal) {
-        await hydration.delete(id);
-        removed++;
-      }
+      // Deletions made inside the health app are deliberately NOT mirrored.
+      // HealthKit hides denied-read status (it returns an empty list), so
+      // "missing from Health" cannot be told apart from "access lost", and a
+      // sync problem must never delete local entries.
+      const removed = 0;
       await settings.setTime(SettingKeys.healthLastSync, now);
       return SyncReport(
         imported: imported,

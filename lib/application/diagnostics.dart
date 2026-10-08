@@ -1,6 +1,7 @@
 import 'dart:io' show Platform;
 
 import '../app/services.dart';
+import '../core/config/app_config.dart';
 import '../data/database/app_database.dart';
 import '../services/health/health_service.dart';
 
@@ -42,5 +43,8 @@ Future<String> buildDiagnosticsReport(
     ..writeln(
       'ad consent: ${svc.consent.status.name}, canRequestAds=${svc.consent.canRequestAds}',
     );
+  for (final problem in AppConfig.problems) {
+    b.writeln('config problem: $problem');
+  }
   return b.toString();
 }

@@ -78,7 +78,9 @@ class HomeWidgetPublisher implements WidgetPublisher {
         );
       }
       await HomeWidget.updateWidget(
-        androidName: androidProvider,
+        // Fully qualified: with -PAPP_ID_SUFFIX the applicationId differs from the
+        // code namespace, so a bare class name would not resolve.
+        qualifiedAndroidName: 'com.hydra.hydra.$androidProvider',
         iOSName: iosWidget,
       );
     } catch (e, st) {

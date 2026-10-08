@@ -99,12 +99,15 @@ class HttpRemoteConfigService implements RemoteConfigService {
   Future<void> refresh() async {
     const url = AppConfig.remoteConfigUrl;
     if (url.isEmpty) return; // not configured: bundled defaults stay in force
+    final uri = Uri.tryParse(url);
+    if (uri == null || uri.scheme != 'https') {
+      Log.warning('remote_config', 'ignored: REMOTE_CONFIG_URL must be https');
+      return;
+    }
     final client = _clientFactory()
       ..connectionTimeout = const Duration(seconds: 6);
     try {
-      final req = await client
-          .getUrl(Uri.parse(url))
-          .timeout(const Duration(seconds: 8));
+      final req = await client.getUrl(uri).timeout(const Duration(seconds: 8));
       final res = await req.close().timeout(const Duration(seconds: 8));
       if (res.statusCode != 200) return;
       final body = await res

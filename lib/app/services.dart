@@ -99,6 +99,8 @@ class AppServices {
     required WidgetPublisher widgets,
     AppClock? clock,
     Future<String> Function()? timezone,
+    SubscriptionService? subscription,
+    HealthService? healthService,
   }) async {
     ensureTimeZonesInitialized();
     final c = clock ?? AppClock();
@@ -132,23 +134,23 @@ class AppServices {
       );
     }
 
-    final subscription = RevenueCatSubscriptionService(settings);
+    final sub = subscription ?? RevenueCatSubscriptionService(settings);
     final consent = UmpConsentService();
     final ads = AdMobService();
-    final health = PlatformHealthService();
+    final health = healthService ?? PlatformHealthService();
     return AppServices._(
       db: db,
       core: core,
       notifications: notifications,
       errors: errors,
       analytics: analytics,
-      subscription: subscription,
+      subscription: sub,
       consent: consent,
       ads: ads,
       adCoordinator: AdCoordinator(
         service: ads,
         consent: consent,
-        subscription: subscription,
+        subscription: sub,
         settings: settings,
         remote: remote,
         totalLogs: core.totalLogCount,
@@ -192,7 +194,7 @@ class AppServices {
       final settings = core.settings;
       final stored = await settings.getString(SettingKeys.analyticsEnabled);
       final enabled = stored == null
-          ? !consent.regionRequiresConsent
+          ? defaultAnalyticsEnabled(consent.status)
           : stored == '1';
       await analytics.setEnabled(enabled);
       await errors.setRemoteEnabled(enabled);
