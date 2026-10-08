@@ -109,19 +109,24 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
             Gap.xxl,
           ),
           children: [
-            SegmentedButton<_View>(
-              showSelectedIcon: false,
-              segments: [
-                ButtonSegment(value: _View.day, label: Text(l.historyDay)),
-                ButtonSegment(value: _View.week, label: Text(l.historyWeek)),
-                ButtonSegment(value: _View.month, label: Text(l.historyMonth)),
-                ButtonSegment(
-                  value: _View.calendar,
-                  label: Text(l.historyCalendar),
-                ),
+            // Chips wrap instead of overflowing at large text sizes.
+            Wrap(
+              spacing: Gap.sm,
+              runSpacing: Gap.sm,
+              children: [
+                for (final (v, label) in [
+                  (_View.day, l.historyDay),
+                  (_View.week, l.historyWeek),
+                  (_View.month, l.historyMonth),
+                  (_View.calendar, l.historyCalendar),
+                ])
+                  ChoiceChip(
+                    label: Text(label),
+                    selected: _view == v,
+                    onSelected: (_) => setState(() => _view = v),
+                    materialTapTargetSize: MaterialTapTargetSize.padded,
+                  ),
               ],
-              selected: {_view},
-              onSelectionChanged: (s) => setState(() => _view = s.first),
             ),
             const SizedBox(height: Gap.lg),
             switch (_view) {
@@ -269,10 +274,11 @@ class _DayView extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: Gap.sm),
-                Row(
+                Wrap(
+                  spacing: Gap.lg,
+                  runSpacing: Gap.xs,
                   children: [
                     _Legend(color: t.inkMuted, label: l.historyLegendPlan),
-                    const SizedBox(width: Gap.lg),
                     _Legend(color: t.accent, label: l.historyLegendActual),
                   ],
                 ),

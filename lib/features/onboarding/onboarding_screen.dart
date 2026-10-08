@@ -235,52 +235,58 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   Widget _welcome(AppLocalizations l) {
     final t = context.hx;
-    return Padding(
-      padding: const EdgeInsets.all(Gap.screen),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 72,
-            height: 72,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [t.waterTop, t.waterBottom],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+    // Scrollable so very large text sizes never overflow.
+    return LayoutBuilder(
+      builder: (context, c) => SingleChildScrollView(
+        padding: const EdgeInsets.all(Gap.screen),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(minHeight: c.maxHeight - Gap.screen * 2),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 72,
+                height: 72,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [t.waterTop, t.waterBottom],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(22),
+                ),
+                child: const Icon(
+                  Icons.water_drop_rounded,
+                  color: Colors.white,
+                  size: 40,
+                  semanticLabel: '',
+                ),
               ),
-              borderRadius: BorderRadius.circular(22),
-            ),
-            child: const Icon(
-              Icons.water_drop_rounded,
-              color: Colors.white,
-              size: 40,
-              semanticLabel: '',
-            ),
+              const SizedBox(height: Gap.xl),
+              Text(
+                l.appName,
+                style: context.text.labelLarge?.copyWith(
+                  letterSpacing: 4,
+                  color: t.accent,
+                ),
+              ),
+              const SizedBox(height: Gap.sm),
+              Semantics(
+                header: true,
+                child: Text(
+                  l.onbWelcomeTitle,
+                  style: context.text.displayMedium?.copyWith(fontSize: 38),
+                ),
+              ),
+              const SizedBox(height: Gap.lg),
+              Text(
+                l.onbWelcomeBody,
+                style: context.text.bodyLarge?.copyWith(color: t.inkMuted),
+              ),
+            ],
           ),
-          const SizedBox(height: Gap.xl),
-          Text(
-            l.appName,
-            style: context.text.labelLarge?.copyWith(
-              letterSpacing: 4,
-              color: t.accent,
-            ),
-          ),
-          const SizedBox(height: Gap.sm),
-          Semantics(
-            header: true,
-            child: Text(
-              l.onbWelcomeTitle,
-              style: context.text.displayMedium?.copyWith(fontSize: 38),
-            ),
-          ),
-          const SizedBox(height: Gap.lg),
-          Text(
-            l.onbWelcomeBody,
-            style: context.text.bodyLarge?.copyWith(color: t.inkMuted),
-          ),
-        ],
+        ),
       ),
     );
   }
